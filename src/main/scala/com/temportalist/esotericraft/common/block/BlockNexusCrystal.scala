@@ -38,26 +38,31 @@ class BlockNexusCrystal extends BlockTile(ModBlocks, classOf[TENexusCrystal]) {
 	def constructStructure(world: World, pos: BlockPos): Unit = {
 		val blockStatePositions = ListBuffer[(IBlockState, BlockPos)]()
 		val baseState = ModBlocks.nexusPillar.getBlockState.getBaseState
-		def getBlockState(facingX: EnumFacing, facingZ: EnumFacing, height: Int): IBlockState = {
-			baseState.
-					withProperty(StateProperties.FACING_AXIS_X, facingX).
-					withProperty(StateProperties.FACING_AXIS_Z, facingZ).
-					withProperty(BlockNexusPillar.PILLAR_HEIGHT, Int.box(height))
-		}
 
 		val crystal = new V3O(pos)
-		V3O.AXIS_FACING(EnumFacing.Axis.X).foreach(facingX => {
-			V3O.AXIS_FACING(EnumFacing.Axis.Z).foreach(facingZ => {
-				for (height <- 0 to 3) {
-					val state = getBlockState(facingX, facingZ, height)
-					val pos = crystal.copy() + new V3O(
-						-facingX.getFrontOffsetX * 3,
-						-4 + height,
-						-facingZ.getFrontOffsetZ * 3)
-					blockStatePositions += ((state, pos.toBlockPos))
-				}
-			})
-		})
+		for (corner <- 0 to 3) {
+			val state = baseState.
+					withProperty(BlockNexusPillar.PILLAR_CORNER, Int.box(corner)).
+					withProperty(BlockNexusPillar.PILLAR_DO_RENDER, Boolean.box(true))
+			val xz = corner match {
+				case 0 => (+1, -1)
+				case 1 => (+1, +1)
+				case 2 => (-1, +1)
+				case 3 => (-1, -1)
+				case _ => (0, 0)
+			}
+			val pos = crystal.copy() + new V3O(xz._1 * 3, -4, xz._2 * 3)
+			blockStatePositions += ((state, pos.toBlockPos))
+			val hiddenState = state.withProperty(
+				BlockNexusPillar.PILLAR_DO_RENDER, Boolean.box(false))
+			def append(i: Int): Unit =
+				blockStatePositions += ((hiddenState, (pos + (V3O.UP * i)).toBlockPos))
+			for (i <- 1 to 3) append(i)
+			pos += new V3O(-xz._1, 0, -xz._2)
+			append(4)
+			pos += new V3O(-xz._1, 0, -xz._2)
+			append(4)
+		}
 
 		blockStatePositions.foreach(statePos => {
 			world.setBlockState(statePos._2, statePos._1)
