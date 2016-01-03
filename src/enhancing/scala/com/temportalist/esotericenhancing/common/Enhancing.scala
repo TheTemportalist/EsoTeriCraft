@@ -4,8 +4,10 @@ import com.temportalist.esotericenhancing.common.init.{Enhancements, ModBlocks}
 import com.temportalist.origin.api.common.resource.{IModDetails, IModResource}
 import com.temportalist.origin.foundation.common.IMod
 import com.temportalist.origin.foundation.common.proxy.IProxy
-import net.minecraft.util.EnumChatFormatting
-import net.minecraftforge.event.entity.player.ItemTooltipEvent
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.util.{EntityDamageSource, EnumChatFormatting}
+import net.minecraftforge.event.entity.living.LivingAttackEvent
+import net.minecraftforge.event.entity.player.{AttackEntityEvent, ItemTooltipEvent}
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.{Mod, SidedProxy}
@@ -14,7 +16,7 @@ import net.minecraftforge.fml.common.{Mod, SidedProxy}
   * Created by TheTemportalist on 12/31/2015.
   */
 @Mod(modid = Enhancing.MOD_ID, name = Enhancing.MOD_NAME,
-	version = Enhancing.getModVersion, modLanguage = "scala",
+	version = Enhancing.MOD_VERSION, modLanguage = "scala",
 	guiFactory = Enhancing.proxyClient,
 	dependencies = "required-after:esotericraft;"
 )
@@ -72,9 +74,32 @@ object Enhancing extends IMod with IModResource {
 					EnumChatFormatting.LIGHT_PURPLE +
 							enhancement._1.getName +
 							EnumChatFormatting.DARK_PURPLE +
-							" (" + enhancement._1.getPower + ")"
+							" (" + enhancement._2 + ")"
 				)
 			})
+		}
+	}
+
+	@SubscribeEvent
+	def livingAttack(event: LivingAttackEvent): Unit = {
+		event.source match {
+			case damageSource: EntityDamageSource =>
+				if (damageSource.getIsThornsDamage) return
+				damageSource.getEntity match {
+					case player: EntityPlayer => // player is attacker
+						EnhancingNBT.foreachEnhancement(player, (enhancement, power) => {
+							enhancement.onPlayerAttacking(player, event.entityLiving, power)
+						})
+					case _ =>
+				}
+				event.entityLiving match {
+					case player: EntityPlayer => // player is being attacked
+						EnhancingNBT.foreachEnhancement(player, (enhancement, power) => {
+							enhancement.onPlayerAttacked(player, damageSource.getEntity, power)
+						})
+					case _ =>
+				}
+			case _ =>
 		}
 	}
 

@@ -1,5 +1,6 @@
 package com.temportalist.esotericraft.common
 
+import com.temportalist.esotericraft.common.init.ModBlocks
 import com.temportalist.origin.api.common.resource.{IModDetails, IModResource}
 import com.temportalist.origin.foundation.common.IMod
 import com.temportalist.origin.foundation.common.proxy.IProxy
@@ -11,7 +12,7 @@ import net.minecraftforge.fml.common.{SidedProxy, Mod}
   * Created by TheTemportalist on 12/31/2015.
   */
 @Mod(modid = EsoTeriCraft.MOD_ID, name = EsoTeriCraft.MOD_NAME,
-	version = EsoTeriCraft.getModVersion, modLanguage = "scala",
+	version = EsoTeriCraft.MOD_VERSION, modLanguage = "scala",
 	guiFactory = EsoTeriCraft.proxyClient,
 	dependencies = ""
 )
@@ -43,7 +44,7 @@ object EsoTeriCraft extends IMod with IModResource {
 
 	@Mod.EventHandler
 	def preInit(event: FMLPreInitializationEvent): Unit = {
-		super.preInitialize(this, event, this.proxy, null)
+		super.preInitialize(this, event, this.proxy, null, ModBlocks)
 
 	}
 

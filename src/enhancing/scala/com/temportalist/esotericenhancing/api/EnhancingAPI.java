@@ -1,5 +1,7 @@
 package com.temportalist.esotericenhancing.api;
 
+import net.minecraftforge.common.MinecraftForge;
+
 import java.util.HashMap;
 
 /**
@@ -16,6 +18,7 @@ public class EnhancingAPI {
 		int id = EnhancingAPI.objectToID.size();
 		EnhancingAPI.objectToID.put(enhancement, id);
 		EnhancingAPI.idToObject.put(id, enhancement);
+		MinecraftForge.EVENT_BUS.register(enhancement);
 	}
 
 	public static int getGlobalID(Enhancement enhancement) {

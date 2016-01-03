@@ -8,14 +8,19 @@ import net.minecraft.nbt.NBTTagCompound
   */
 class EsotericNBT {
 
-	def checkEsotericNBT(stack: ItemStack): Unit = {
+	def checkEsotericNBT(stack: ItemStack): Boolean = {
+		if (stack == null) return false
 		if (!stack.hasTagCompound) stack.setTagCompound(new NBTTagCompound)
 		if (!stack.getTagCompound.hasKey(EsotericNBT.ESOTERIC_TAG_KEY))
 			stack.getTagCompound.setTag(EsotericNBT.ESOTERIC_TAG_KEY, new NBTTagCompound)
+		true
 	}
 
 	final def getEsotericTag(stack: ItemStack): NBTTagCompound = {
-		stack.getTagCompound.getTag(EsotericNBT.ESOTERIC_TAG_KEY).asInstanceOf[NBTTagCompound]
+		if (this.checkEsotericNBT(stack)) {
+			stack.getTagCompound.getTag(EsotericNBT.ESOTERIC_TAG_KEY).asInstanceOf[NBTTagCompound]
+		}
+		null
 	}
 
 }

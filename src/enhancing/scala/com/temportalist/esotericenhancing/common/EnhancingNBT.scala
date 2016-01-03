@@ -17,33 +17,40 @@ object EnhancingNBT extends EsotericNBT {
 
 	final val ENHANCEMENTS_TAG_KEY = "enhancements"
 
-	override def checkEsotericNBT(stack: ItemStack): Unit = {
-		super.checkEsotericNBT(stack)
-		if (!this.isEnhanced(stack))
+	override def checkEsotericNBT(stack: ItemStack): Boolean = {
+		if (super.checkEsotericNBT(stack) &&
+				stack.getTagCompound.getTag(EsotericNBT.ESOTERIC_TAG_KEY).
+						asInstanceOf[NBTTagCompound].hasKey(EnhancingNBT.ENHANCEMENTS_TAG_KEY)) {
 			this.getEsotericTag(stack).setTag(EnhancingNBT.ENHANCEMENTS_TAG_KEY, new NBTTagList)
+			true
+		}
+		else false
 	}
 
 	def isEnhanced(stack: ItemStack): Boolean = {
-		this.getEsotericTag(stack).hasKey(EnhancingNBT.ENHANCEMENTS_TAG_KEY) &&
-		this.getEnhancementsTag(stack).tagCount() > 0
+		if (this.checkEsotericNBT(stack)) {
+			val tag = this.getEnhancementsTag(stack)
+			tag != null && tag.tagCount() > 0
+		} else false
 	}
 
 	def getEnhancementsTag(stack: ItemStack): NBTTagList = {
-		this.checkEsotericNBT(stack)
-		this.getEsotericTag(stack).getTagList(
-			EnhancingNBT.ENHANCEMENTS_TAG_KEY, NBTHelper.getNBTType[NBTTagCompound])
+		if (this.checkEsotericNBT(stack))
+			this.getEsotericTag(stack).getTagList(
+				EnhancingNBT.ENHANCEMENTS_TAG_KEY, NBTHelper.getNBTType[NBTTagCompound])
+		else null
 	}
 
 	def setEnhancementsTag(stack: ItemStack, tagList: NBTTagList): Unit = {
 		if (tagList.getTagType != 0 && tagList.getTagType != NBTHelper.getNBTType[NBTTagCompound]) return
-		this.checkEsotericNBT(stack)
-		this.getEsotericTag(stack).setTag(EnhancingNBT.ENHANCEMENTS_TAG_KEY, tagList)
+		if (this.checkEsotericNBT(stack))
+			this.getEsotericTag(stack).setTag(EnhancingNBT.ENHANCEMENTS_TAG_KEY, tagList)
 	}
 
 	def getEnhancements(stack: ItemStack): Array[(Enhancement, Float)] = {
 		val ret = ListBuffer[(Enhancement, Float)]()
 		val tagList = this.getEnhancementsTag(stack)
-		for (i <- 0 until tagList.tagCount()) {
+		if (tagList != null) for (i <- 0 until tagList.tagCount()) {
 			val tagCom = tagList.getCompoundTagAt(i)
 			val enhancement = EnhancingAPI.getEnhancement(tagCom.getInteger("globalID"))
 			if (enhancement != null) ret += ((enhancement, tagCom.getFloat("power")))
@@ -52,7 +59,8 @@ object EnhancingNBT extends EsotericNBT {
 	}
 
 	def enhance(stack: ItemStack, enhancement: Enhancement, power: Float): Unit = {
-		val enhancements = this.getEnhancementsTag(stack)
+		var enhancements = this.getEnhancementsTag(stack)
+		if (enhancements != null) enhancements = new NBTTagList
 		enhancements.appendTag({
 			val tagCom = new NBTTagCompound
 			tagCom.setInteger("globalID", enhancement.getGlobalID)
@@ -92,6 +100,40 @@ object EnhancingNBT extends EsotericNBT {
 
 		// return
 		enhancementList.toArray
+	}
+
+	def hasEnhancement(stack: ItemStack, enhancement: Enhancement): Boolean = {
+		val targetID = enhancement.getGlobalID
+		val tagList = this.getEnhancementsTag(stack)
+		if (tagList != null) for (i <- 0 until tagList.tagCount()) {
+			val tagCom = tagList.getCompoundTagAt(i)
+			if (tagCom.getInteger("globalID") == targetID) return true
+		}
+		false
+	}
+
+	def hasEnhancement(player: EntityPlayer, enhancement: Enhancement): Float = {
+		val targetID = enhancement.getGlobalID
+		this.getAllEnhancements(player).foreach(enhancementPower => {
+			if (enhancementPower._1.getGlobalID == targetID) return enhancementPower._2
+		})
+		-1f
+	}
+
+	def getPower(stack: ItemStack, enhancement: Enhancement): Float = {
+		val targetID = enhancement.getGlobalID
+		val tagList = this.getEnhancementsTag(stack)
+		if (tagList != null) for (i <- 0 until tagList.tagCount()) {
+			val tagCom = tagList.getCompoundTagAt(i)
+			if (tagCom.getInteger("globalID") == targetID) return tagCom.getFloat("power")
+		}
+		-1f
+	}
+
+	def foreachEnhancement[U](player: EntityPlayer, f: (Enhancement, Float) => U): Unit = {
+		EnhancingNBT.getAllEnhancements(player).foreach(enhancementPower => {
+			f(enhancementPower._1, enhancementPower._2)
+		})
 	}
 
 }
