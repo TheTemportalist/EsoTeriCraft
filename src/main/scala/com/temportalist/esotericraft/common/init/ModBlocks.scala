@@ -1,7 +1,7 @@
 package com.temportalist.esotericraft.common.init
 
 import com.temportalist.esotericraft.common.EsoTeriCraft
-import com.temportalist.esotericraft.common.block.BlockNexusCrystal
+import com.temportalist.esotericraft.common.block.{BlockNexusPillar, BlockNexusCrystal}
 import com.temportalist.esotericraft.common.tile.TENexusCrystal
 import com.temportalist.origin.foundation.common.register.BlockRegister
 import com.temportalist.origin.internal.common.Origin
@@ -13,6 +13,7 @@ import net.minecraft.block.Block
 object ModBlocks extends BlockRegister {
 
 	var nexusCrystal: Block = null
+	var nexusPillar: Block = null
 
 	/**
 	  * This method is used to register TileEntities.
@@ -23,8 +24,9 @@ object ModBlocks extends BlockRegister {
 	}
 
 	override def register(): Unit = {
-		this.nexusCrystal = new BlockNexusCrystal
-		Origin.addBlockToTab(this.nexusCrystal)
+
+		this.nexusCrystal = new BlockNexusCrystal().addToOriginTab()
+		this.nexusPillar = new BlockNexusPillar().addToOriginTab()
 
 	}
 

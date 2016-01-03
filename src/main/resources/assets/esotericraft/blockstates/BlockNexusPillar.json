@@ -1,0 +1,17 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "textures": { },
+    "model": "esotericraft:BlockNexusPillar.obj",
+    "custom": { "flip-v": true },
+    "transform": {
+      "translation": [ 0, 0, 0 ]
+    }
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{
+
+    }]
+  }
+}

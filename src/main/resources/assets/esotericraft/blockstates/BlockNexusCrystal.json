@@ -5,11 +5,19 @@
     "model": "esotericraft:BlockNexusCrystal.obj",
     "custom": { "flip-v": true },
     "transform": {
-      "translation": [ 0.5, 0.5, 0.5 ]
+      "translation": [ 0.5, 1.0, 0.5 ]
     }
   },
   "variants": {
     "normal": [{}],
-    "inventory": [{}]
+    "inventory": [{
+      "transform": {
+
+        "translation": [ 0.5, 0.5, 0.3 ],
+        "scale": [ 0.75, 0.75, 0.75 ]
+        
+      }
+
+    }]
   }
 }

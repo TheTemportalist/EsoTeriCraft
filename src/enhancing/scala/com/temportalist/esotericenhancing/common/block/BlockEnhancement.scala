@@ -1,6 +1,7 @@
 package com.temportalist.esotericenhancing.common.block
 
 import com.temportalist.esotericenhancing.common.Enhancing
+import com.temportalist.esotericenhancing.common.init.ModBlocks
 import com.temportalist.origin.api.common.block.BlockBase
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayer
@@ -10,7 +11,7 @@ import net.minecraft.world.World
 /**
   * Created by TheTemportalist on 12/31/2015.
   */
-class BlockEnhancement extends BlockBase(Enhancing.getModID, "enhancement") {
+class BlockEnhancement extends BlockBase(ModBlocks) {
 
 	override def onBlockActivated(world: World, pos: BlockPos, state: IBlockState,
 			player: EntityPlayer, side: EnumFacing, hitX: Float, hitY: Float,
