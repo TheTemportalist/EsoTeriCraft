@@ -2,7 +2,7 @@ package com.temportalist.esotericraft.common.block
 
 import java.util
 
-import net.minecraft.block.properties.PropertyDirection
+import net.minecraft.block.properties.{PropertyInteger, PropertyDirection}
 import net.minecraft.util.EnumFacing
 
 /**
@@ -17,5 +17,9 @@ object StateProperties {
 		util.Arrays.asList(EnumFacing.UP, EnumFacing.DOWN))
 	val FACING_AXIS_Z = PropertyDirection.create("facing_axis_z",
 		util.Arrays.asList(EnumFacing.SOUTH, EnumFacing.NORTH))
+
+	def createPropInt(name: String, min: Int, max: Int): PropertyInteger = {
+		PropertyInteger.create(name, min, max)
+	}
 
 }

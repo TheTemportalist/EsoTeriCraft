@@ -1,17 +1,33 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "textures": { },
+    "textures": {},
     "model": "esotericraft:BlockNexusPillar.obj",
     "custom": { "flip-v": true },
-    "transform": {
-      "translation": [ 0, 0, 0 ]
-    }
+    "transform": "forge:default-block"
   },
   "variants": {
-    "normal": [{}],
-    "inventory": [{
+    "normal": [{}], "inventory": [{}],
 
-    }]
+    "facing_axis_x=west,facing_axis_z=south,pillar_height=0": [{ "y": 0 }],
+    "facing_axis_x=west,facing_axis_z=south,pillar_height=1": [{ "model": "builtin/generated" }],
+    "facing_axis_x=west,facing_axis_z=south,pillar_height=2": [{ "model": "builtin/generated" }],
+    "facing_axis_x=west,facing_axis_z=south,pillar_height=3": [{ "model": "builtin/generated" }],
+
+    "facing_axis_x=east,facing_axis_z=south,pillar_height=0": [{ "y": 270 }],
+    "facing_axis_x=east,facing_axis_z=south,pillar_height=1": [{ "model": "builtin/generated" }],
+    "facing_axis_x=east,facing_axis_z=south,pillar_height=2": [{ "model": "builtin/generated" }],
+    "facing_axis_x=east,facing_axis_z=south,pillar_height=3": [{ "model": "builtin/generated" }],
+
+    "facing_axis_x=west,facing_axis_z=north,pillar_height=0": [{ "y": 90 }],
+    "facing_axis_x=west,facing_axis_z=north,pillar_height=1": [{ "model": "builtin/generated" }],
+    "facing_axis_x=west,facing_axis_z=north,pillar_height=2": [{ "model": "builtin/generated" }],
+    "facing_axis_x=west,facing_axis_z=north,pillar_height=3": [{ "model": "builtin/generated" }],
+
+    "facing_axis_x=east,facing_axis_z=north,pillar_height=0": [{ "y": 180 }],
+    "facing_axis_x=east,facing_axis_z=north,pillar_height=1": [{ "model": "builtin/generated" }],
+    "facing_axis_x=east,facing_axis_z=north,pillar_height=2": [{ "model": "builtin/generated" }],
+    "facing_axis_x=east,facing_axis_z=north,pillar_height=3": [{ "model": "builtin/generated" }]
+
   }
 }
