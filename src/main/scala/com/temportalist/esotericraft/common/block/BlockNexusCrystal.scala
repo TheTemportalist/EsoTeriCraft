@@ -24,8 +24,6 @@ class BlockNexusCrystal extends BlockTile(ModBlocks, classOf[TENexusCrystal]) {
 
 	override def getRenderType: Int = 3
 
-	override def getMetaFromState(state: IBlockState): Int = 0
-
 	override def hasCustomItemModel: Boolean = true
 
 	override def onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState,

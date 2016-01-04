@@ -1,6 +1,7 @@
 package com.temportalist.esotericraft.common
 
 import com.temportalist.esotericraft.common.init.ModBlocks
+import com.temportalist.esotericraft.common.world.{StructureNexus, WorldEsoteric}
 import com.temportalist.origin.api.common.resource.{IModDetails, IModResource}
 import com.temportalist.origin.foundation.common.IMod
 import com.temportalist.origin.foundation.common.proxy.IProxy
@@ -44,7 +45,8 @@ object EsoTeriCraft extends IMod with IModResource {
 
 	@Mod.EventHandler
 	def preInit(event: FMLPreInitializationEvent): Unit = {
-		super.preInitialize(this, event, this.proxy, null, ModBlocks)
+		super.preInitialize(this, event, this.proxy, ModOptions, ModBlocks,
+			WorldEsoteric, StructureNexus)
 
 	}
 
