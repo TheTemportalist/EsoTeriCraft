@@ -10,7 +10,9 @@ import net.minecraft.nbt.{NBTTagList, NBTTagCompound}
 import net.minecraft.util.BlockPos
 import net.minecraft.world.{ChunkCoordIntPair, World}
 import net.minecraft.world.chunk.IChunkProvider
+import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.IWorldGenerator
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -26,18 +28,23 @@ object WorldGenEsoteric extends IWorldGenerator {
 
 	override def generate(random: Random, chunkX: Int, chunkZ: Int, world: World,
 			chunkGenerator: IChunkProvider, chunkProvider: IChunkProvider): Unit = {
-		println("trying to gen 1")
 		if (world.provider.getDimensionId != 0) return
 		val worldData = EsotericWorldData.forWorld(world)
 
-		println("trying to gen 2")
 		val pos = new ChunkCoordIntPair(chunkX, chunkZ)
 		val chunk_and_distance = this.getClosestChunk(pos)
-		if (chunk_and_distance._2 >= 0 &&
-				(chunk_and_distance._2 < 200 || random.nextDouble() < 0.5)) return
+		val hasClosest = this.esotericChunks.nonEmpty
+		val isWithinMin = chunk_and_distance._2 < 200
+		val d = random.nextDouble()
+		println(hasClosest + ": " + (!isWithinMin) + " " + (d < 0.5))
+		if (hasClosest) println(this.esotericChunks)
+		if (isWithinMin) println(chunk_and_distance._2)
+		val shouldGen = if (hasClosest) !isWithinMin && d < 0.5 else d < 0.5
+		if (!shouldGen) return
+		println("genning at " + pos.getCenterXPos + " x " + pos.getCenterZPosition)
 
 		this.convertChunkBiome(world, pos)
-		val hasNexus = !this.hasNexusWithin(pos, 5000) && random.nextDouble() < 0.8 &&
+		val hasNexus = //!this.hasNexusWithin(pos, 5000 / 16) && random.nextDouble() < 0.8 &&
 				this.spawnNexus(world, pos, random)
 		this.esotericChunks(pos) = hasNexus
 		EsoTeriCraft.log("Generated esoteric biome at world pos " +
@@ -59,7 +66,7 @@ object WorldGenEsoteric extends IWorldGenerator {
 			possiblePos: ChunkCoordIntPair): (ListBuffer[ChunkCoordIntPair], Double) = {
 		if (this.esotericChunks.isEmpty) (null, -1)
 		else {
-			var distanceToPossible_smallest = 0D
+			var distanceToPossible_smallest = Double.MaxValue
 			var closest = ListBuffer[ChunkCoordIntPair]()
 			this.iterateEsotericChunks(possiblePos, set => {
 				if (set._2 < distanceToPossible_smallest) {
@@ -80,13 +87,13 @@ object WorldGenEsoteric extends IWorldGenerator {
 			b.getCenterXPos, b.getCenterZPosition)
 
 	private def convertChunkBiome(world: World, pos: ChunkCoordIntPair): Unit = {
-		world.getChunkFromChunkCoords(
-			pos.getXStart, pos.getZStart).setBiomeArray(this.biomeArray)
+		world.getChunkFromChunkCoords(pos.chunkXPos, pos.chunkZPos).setBiomeArray(this.biomeArray)
+		world.getChunkFromChunkCoords(pos.chunkXPos, pos.chunkZPos).setChunkModified()
 	}
 
 	private def hasNexusWithin(pos: ChunkCoordIntPair, distance: Double): Boolean = {
 		if (this.esotericChunks.isEmpty) return false
-		else this.iterateEsotericChunks(pos, set => if (set._2 <= distance && set._3) return true)
+		else this.iterateEsotericChunks(pos, set => if (set._3  && set._2 <= distance) return true)
 		false
 	}
 
@@ -96,13 +103,17 @@ object WorldGenEsoteric extends IWorldGenerator {
 		//val centerOffset = 4
 
 		val sideBuffer = 16 - nexusSize
-		val start = new V3O(rand.nextInt(sideBuffer), 0, rand.nextInt(sideBuffer))
+		val start = new V3O(
+			rand.nextInt(sideBuffer) + pos.getXStart, 0, rand.nextInt(sideBuffer) + pos.getZStart)
 		//val center = start + new V3O(centerOffset).suppressedYAxis()
 
+		// todo find lowest block and level the area
 		val tallestPos = this.getTallestHeightInArea(world, start, nexusSize)
 		if (tallestPos < 0) return false
+		println("gen platform")
 		this.generatePlatform(world, start, tallestPos, nexusSize)
-		StructureNexus.generate(world, start + tallestPos + V3O.UP)
+		println("gen nexus")
+		StructureNexus.generate(world, start + (V3O.UP * (tallestPos + 1)))
 	}
 
 	private def getTallestHeightInArea(world: World, startXZ: V3O, size: Int): Int = {
@@ -121,12 +132,13 @@ object WorldGenEsoteric extends IWorldGenerator {
 		val stableGround = topMaterial.isSolid && topMaterial.isOpaque
 		val y = topPos.y + (if (stableGround) 0 else 1)
 
-		val minX = start.x_i()
+		val minX = start.x_i() + 1
 		val maxX = minX + size
-		val minZ = start.z_i()
+		val minZ = start.z_i() + 1
 		val maxZ = minZ + size
-		for {x <- minX to maxX
-		     z <- minZ to maxZ}
+		println(minX + ":" + maxX + "  " + minZ + ":" + maxZ)
+		for {x <- minX until maxX
+		     z <- minZ until maxZ}
 			world.setBlockState(new BlockPos(x, y, z), platformState)
 
 		var yPos = y - 1
@@ -134,17 +146,24 @@ object WorldGenEsoteric extends IWorldGenerator {
 		var didAddLeg = false
 		do {
 			pos = new BlockPos(minX, yPos, minZ)
-			didAddLeg = didAddLeg || world.setBlockState(pos, legState)
+			if (!world.isAirBlock(pos))
+				didAddLeg = didAddLeg || world.setBlockState(pos, legState)
 			pos = new BlockPos(minX, yPos, maxZ)
-			didAddLeg = didAddLeg || world.setBlockState(pos, legState)
+			if (!world.isAirBlock(pos))
+				didAddLeg = didAddLeg || world.setBlockState(pos, legState)
 			pos = new BlockPos(maxX, yPos, minZ)
-			didAddLeg = didAddLeg || world.setBlockState(pos, legState)
+			if (!world.isAirBlock(pos))
+				didAddLeg = didAddLeg || world.setBlockState(pos, legState)
 			pos = new BlockPos(maxX, yPos, maxZ)
-			didAddLeg = didAddLeg || world.setBlockState(pos, legState)
+			if (!world.isAirBlock(pos))
+				didAddLeg = didAddLeg || world.setBlockState(pos, legState)
 			yPos -= 1
-		} while (didAddLeg)
+		} while (didAddLeg && Math.abs(y - yPos) < 30)
 
 	}
+
+	@SubscribeEvent
+	def worldUnload(event: WorldEvent.Unload): Unit = this.esotericChunks.clear()
 
 	def writeEsotericChunks(nbt: NBTTagCompound): Unit = {
 		val nbtBiomeNexus = new NBTTagList

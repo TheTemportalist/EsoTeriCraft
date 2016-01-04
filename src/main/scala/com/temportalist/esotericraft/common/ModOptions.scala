@@ -15,7 +15,7 @@ object ModOptions extends OptionRegister {
 
 	override def register(): Unit = {
 		this.biomeEsotericID = this.getAndComment(
-			"general", "Esoteric Biome ID", "", this.biomeEsotericID)
+			"general", "Esoteric Biome ID", "", this.findFreeBiomeID)
 		if (this.biomeEsotericID < 0) this.biomeEsotericID = this.findFreeBiomeID
 
 	}

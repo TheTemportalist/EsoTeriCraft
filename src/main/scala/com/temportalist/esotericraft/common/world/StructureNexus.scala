@@ -10,7 +10,7 @@ import com.temportalist.origin.api.common.lib.V3O
 object StructureNexus extends WorldStructure(7, 5, 7) {
 
 	override def register(): Unit = {
-		val centerOffset = new V3O(4, 5, 0)
+		val centerOffset = new V3O(4, 5, 4)
 		// add the nexus
 		this.addBlockState(
 			ModBlocks.nexusCrystal.getBlockState.getBaseState, centerOffset)
@@ -31,7 +31,7 @@ object StructureNexus extends WorldStructure(7, 5, 7) {
 			val prongState = baseState_hidden.
 					withProperty(BlockNexusPillar.PILLAR_CORNER, Int.box(corner)).
 					withProperty(BlockNexusPillar.PILLAR_DO_RENDER, Boolean.box(true))
-			this.addBlockState(prongState, statePos)
+			this.addBlockState(prongState, statePos.copy())
 
 			def appendWithHeight(i: Int): Unit =
 				this.addBlockState(baseState_hidden, statePos + (V3O.UP * i))

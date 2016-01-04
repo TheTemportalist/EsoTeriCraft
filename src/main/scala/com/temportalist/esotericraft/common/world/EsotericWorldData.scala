@@ -8,7 +8,7 @@ import net.minecraft.world.{World, WorldSavedData}
 /**
   * Created by TheTemportalist on 1/3/2016.
   */
-class EsotericWorldData extends WorldSavedData(EsotericWorldData.MAPPING_KEY) {
+class EsotericWorldData(str: String) extends WorldSavedData(str) {
 
 	override def writeToNBT(nbt: NBTTagCompound): Unit = {
 		EsoTeriCraft.log("Saving Esoteric World Data")
@@ -34,7 +34,8 @@ object EsotericWorldData {
 		val storage: MapStorage = world.getPerWorldStorage
 		var data = storage.loadData(classOf[EsotericWorldData], EsotericWorldData.MAPPING_KEY)
 		if (data == null) {
-			data = new EsotericWorldData
+			EsoTeriCraft.log("Adding esoteric world data")
+			data = new EsotericWorldData(EsotericWorldData.MAPPING_KEY)
 			storage.setData(EsotericWorldData.MAPPING_KEY, data)
 		}
 		data

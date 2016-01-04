@@ -1,12 +1,13 @@
 package com.temportalist.esotericraft.common
 
 import com.temportalist.esotericraft.common.init.ModBlocks
-import com.temportalist.esotericraft.common.world.{StructureNexus, WorldEsoteric}
+import com.temportalist.esotericraft.common.world.{WorldGenEsoteric, StructureNexus, WorldEsoteric}
 import com.temportalist.origin.api.common.resource.{IModDetails, IModResource}
 import com.temportalist.origin.foundation.common.IMod
 import com.temportalist.origin.foundation.common.proxy.IProxy
+import com.temportalist.origin.foundation.common.register.Registry
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
-import net.minecraftforge.fml.common.{SidedProxy, Mod}
+import net.minecraftforge.fml.common.{Mod, SidedProxy}
 
 /**
   * The main class for the mod

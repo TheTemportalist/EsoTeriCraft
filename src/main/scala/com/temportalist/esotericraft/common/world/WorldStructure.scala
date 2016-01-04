@@ -11,7 +11,7 @@ import scala.collection.mutable.ListBuffer
 /**
   * Created by TheTemportalist on 1/3/2016.
   */
-abstract class WorldStructure(width: Int, height: Int, depth: Int) extends Register.Unusual {
+abstract class WorldStructure(width: Int, height: Int, depth: Int) extends Register.Post {
 
 	private val size = new V3O(width, height, depth)
 	private val blockStatePositions = ListBuffer[(IBlockState, V3O, Int)]()
@@ -44,6 +44,7 @@ abstract class WorldStructure(width: Int, height: Int, depth: Int) extends Regis
 		this.iterateOverStates(set => {
 			world.setBlockState((set._2 + origin).toBlockPos, set._1, set._3)
 		})
+		println("done")
 		true
 	}
 

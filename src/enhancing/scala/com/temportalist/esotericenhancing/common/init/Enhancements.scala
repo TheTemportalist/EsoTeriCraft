@@ -5,9 +5,7 @@ import com.temportalist.origin.foundation.common.register.Register
 /**
   * Created by TheTemportalist on 12/31/2015.
   */
-object Enhancements extends Register.Unusual {
-
-
+object Enhancements extends Register.Post {
 
 	override def register(): Unit = {
 
