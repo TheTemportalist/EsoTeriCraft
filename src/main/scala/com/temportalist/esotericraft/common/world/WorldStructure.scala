@@ -44,7 +44,7 @@ abstract class WorldStructure(width: Int, height: Int, depth: Int) extends Regis
 		this.iterateOverStates(set => {
 			world.setBlockState((set._2 + origin).toBlockPos, set._1, set._3)
 		})
-		println("done")
+		//println("done")
 		true
 	}
 

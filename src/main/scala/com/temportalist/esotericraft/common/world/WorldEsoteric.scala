@@ -11,9 +11,11 @@ import net.minecraftforge.fml.common.registry.GameRegistry
 object WorldEsoteric extends Register.Post {
 
 	var biomeEsoteric: BiomeGenBase = null
+	var biomeUmbra: BiomeGenBase = null
 
 	override def register(): Unit = {
-		this.biomeEsoteric = new BiomeGenEsoteric(ModOptions.biomeEsotericID)
+		this.biomeEsoteric = new BiomeGenEsoteric().setBiomeName("Esoteric")
+		this.biomeUmbra = new BiomeGenUmbra().setBiomeName("Umbra")
 		GameRegistry.registerWorldGenerator(WorldGenEsoteric, -999)
 		Registry.registerHandler(WorldGenEsoteric)
 

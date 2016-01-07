@@ -1,6 +1,7 @@
 package com.temportalist.esotericenhancing.common
 
 import com.temportalist.esotericenhancing.common.init.{Enhancements, ModBlocks}
+import com.temportalist.esotericraft.api.ApiEsotericraft
 import com.temportalist.origin.api.common.resource.{IModDetails, IModResource}
 import com.temportalist.origin.foundation.common.IMod
 import com.temportalist.origin.foundation.common.proxy.IProxy
@@ -49,6 +50,7 @@ object Enhancing extends IMod with IModResource {
 	@Mod.EventHandler
 	def preInit(event: FMLPreInitializationEvent): Unit = {
 		super.preInitialize(this, event, this.proxy, null, ModBlocks, Enhancements)
+		ApiEsotericraft.registerModule(HookHandlerEnhancing)
 
 	}
 
