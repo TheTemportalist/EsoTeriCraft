@@ -2,17 +2,22 @@ package temportalist.esotericraft.common
 
 import net.minecraft.entity.ai.{EntityAIBase, EntityAIFleeSun, EntityAIRestrictSun}
 import net.minecraft.entity.monster.EntityMob
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.{Entity, EntityLiving}
+import net.minecraft.util.ResourceLocation
+import net.minecraftforge.common.IExtendedEntityProperties
 import net.minecraftforge.event.entity.living.LivingSpawnEvent
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 import net.minecraftforge.fml.common.eventhandler.Event.Result
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.{Mod, ObfuscationReflectionHelper, SidedProxy}
-import temportalist.esotericraft.api.ApiEsotericraft
+import net.minecraftforge.fml.relauncher.Side
+import temportalist.esotericraft.api.{IEsotericPlayer, ApiEsotericraft}
 import temportalist.esotericraft.common.extended.EsotericPlayer
 import temportalist.esotericraft.common.init.ModBlocks
+import temportalist.esotericraft.common.network.PacketEsoTeriCraft_Server
 import temportalist.esotericraft.common.world.{StructureNexus, WorldEsoteric}
-import temportalist.origin.api.common.resource.{IModDetails, IModResource}
+import temportalist.origin.api.common.resource.{EnumResource, IModDetails, IModResource}
 import temportalist.origin.foundation.common.IMod
 import temportalist.origin.foundation.common.proxy.IProxy
 import temportalist.origin.foundation.common.register.Registry
@@ -61,6 +66,10 @@ object EsoTeriCraft extends IMod with IModResource {
 		Registry.registerExtendedPlayer(ApiEsotericraft.KEY_EXTENDED,
 			classOf[EsotericPlayer], deathPersistence = true)
 
+		this.registerNetwork()
+		this.registerPacket(classOf[PacketEsoTeriCraft_Server.Handler],
+			classOf[PacketEsoTeriCraft_Server], Side.SERVER)
+
 	}
 
 	@Mod.EventHandler
@@ -71,6 +80,15 @@ object EsoTeriCraft extends IMod with IModResource {
 	@Mod.EventHandler
 	def postInit(event: FMLPostInitializationEvent): Unit = {
 		super.postInitialize(event, this.proxy)
+		this.loadResource("overlaySlots", (EnumResource.GUI, "overlay.png"))
+		//this.setResource("overlaySlots", new ResourceLocation("textures/gui/widgets.png"))
+	}
+
+	def getEsotericPlayer(player: EntityPlayer): EsotericPlayer = {
+		player.getExtendedProperties(ApiEsotericraft.KEY_EXTENDED) match {
+			case ext: EsotericPlayer => ext
+			case _ => null
+		}
 	}
 
 	@SubscribeEvent

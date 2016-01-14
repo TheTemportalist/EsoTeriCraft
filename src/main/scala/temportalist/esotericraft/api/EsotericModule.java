@@ -6,7 +6,9 @@ import net.minecraft.entity.player.EntityPlayer;
 /**
  * Created by TheTemportalist on 1/4/2016.
  */
-public class EsotericraftModule {
+public abstract class EsotericModule {
+
+	abstract public ModuleTrigger[] createTriggers();
 
 	public final int getID() {
 		return ApiEsotericraft.getID(this);
@@ -21,6 +23,10 @@ public class EsotericraftModule {
 
 	public boolean onImpartingFinished(EntityPlayer player, TENexusCrystal nexusTile) {
 		return true;
+	}
+
+	public Object getImpartingReturn(EntityPlayer player, TENexusCrystal nexusTile) {
+		return null;
 	}
 
 }

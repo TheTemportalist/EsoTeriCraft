@@ -5,10 +5,14 @@ package temportalist.esotericraft.api;
  */
 public interface IEsotericPlayer {
 
-	void impart(EsotericraftModule module);
+	void impart(EsotericModule module);
 
-	boolean canImpart(EsotericraftModule module);
+	boolean canImpart(EsotericModule module);
 
-	boolean hasKnowledgeOf(EsotericraftModule module);
+	boolean hasKnowledgeOf(EsotericModule module);
+
+	void switchSpell(boolean increment);
+
+	void setSpell(int index, Spell spell);
 
 }

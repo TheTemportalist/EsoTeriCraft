@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiScreen
 import net.minecraftforge.fml.client.IModGuiFactory
 import net.minecraftforge.fml.client.IModGuiFactory.{RuntimeOptionCategoryElement, RuntimeOptionGuiHandler}
 import temportalist.esotericraft.common.ProxyCommon
+import temportalist.origin.foundation.common.register.Registry
 
 /**
   * Created by TheTemportalist on 12/31/2015.
@@ -13,6 +14,7 @@ import temportalist.esotericraft.common.ProxyCommon
 class ProxyClient extends ProxyCommon with IModGuiFactory {
 
 	override def preInit(): Unit = {
+		Registry.registerHandler(HotBarEvents)
 	}
 
 	override def register(): Unit = {}

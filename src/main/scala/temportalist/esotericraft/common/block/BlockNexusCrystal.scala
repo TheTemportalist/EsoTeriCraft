@@ -23,6 +23,8 @@ class BlockNexusCrystal extends BlockTile(ModBlocks, classOf[TENexusCrystal]) {
 
 	override def hasCustomItemModel: Boolean = true
 
+	override def usesOBJ: Boolean = true
+
 	override def onBlockAdded(world: World, pos: BlockPos, state: IBlockState): Unit = {
 		// todo set prongs to multiblock state
 	}

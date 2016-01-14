@@ -67,18 +67,40 @@ processResources
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
 
+    // EsoTeriCraft
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-                
         // replace version and mcversion
         expand 'version':project.version, 'mcversion':project.minecraft.version
     }
-        
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
+
+    // Enhancing
+    /*
+    from(sourceSets.enhancing.resources.srcDirs) {
+        include 'mcmod.info'
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+    from(sourceSets.enhancing.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+    */
+
+    // Galvanization
+    /*
+    from(sourceSets.galvanization.resources.srcDirs) {
+        include 'mcmod.info'
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+    from(sourceSets.galvanization.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+    */
+
 }
 
 idea { module { inheritOutputDirs = true } }

@@ -9,6 +9,7 @@ import net.minecraft.util.{AxisAlignedBB, BlockPos, ITickable}
 import temportalist.esotericraft.api.ApiEsotericraft
 import temportalist.origin.api.common.lib.V3O
 import temportalist.origin.api.common.tile.ITileSaver
+import temportalist.origin.api.common.utility.Stacks
 
 /**
   * Created by TheTemportalist on 1/2/2016.
@@ -19,6 +20,8 @@ class TENexusCrystal extends TileEntity with ITickable with ITileSaver {
 	private var impartingModuleID: Int = -1
 	private var impartingTicks: Int = -1
 	private val impartingTicksMax: Int = 20 * 5
+	private var impartingBlock: IBlockState = null
+
 	private var triggerBlockPos: BlockPos = null
 
 	override def update(): Unit = {
@@ -29,14 +32,17 @@ class TENexusCrystal extends TileEntity with ITickable with ITileSaver {
 				this.impartingModuleID = -1
 				this.impartingTicks = -1
 				this.impartingPlayer = null
+				this.impartingBlock = null
 			}
 			// decrement ticks
 			if (this.impartingTicks >= 0) this.impartingTicks -= 1
 			// check player availability every second
 			if (this.impartingTicks % 20 == 0 || this.impartingTicks <= 0) {
-				val players = this.getWorld.getEntitiesWithinAABB(
-					classOf[EntityPlayer], this.getBoundingBox)
-				if (!players.contains(this.impartingPlayer)) {
+				val playerNullOrNotUnder = this.impartingPlayer == null ||
+						!this.isPlayerUnder(this.impartingPlayer)
+				val hasImpartingSacrifice = this.impartingBlock == null ||
+						this.getWorld.getBlockState(this.triggerBlockPos) == this.impartingBlock
+				if (playerNullOrNotUnder || !hasImpartingSacrifice) {
 					ApiEsotericraft.getModule(this.impartingModuleID).
 							onImpartingInterrupted(this.impartingPlayer, this,
 								this.impartingTicks.toFloat / this.impartingTicksMax)
@@ -46,9 +52,17 @@ class TENexusCrystal extends TileEntity with ITickable with ITileSaver {
 			// impart magic to player
 			if (this.impartingTicks <= 0) {
 				val module = ApiEsotericraft.getModule(this.impartingModuleID)
-				println("impart")
 				if (module.onImpartingFinished(this.impartingPlayer, this))
 					ApiEsotericraft.Player.impart(this.impartingPlayer, module)
+				module.getImpartingReturn(this.impartingPlayer, this) match {
+					case stack: ItemStack =>
+						if (this.impartingPlayer.inventory.addItemStackToInventory(stack))
+							Stacks.spawnItemStack(this.getWorld, new V3O(this),
+								stack, this.getWorld.rand)
+					case state: IBlockState =>
+						this.getWorld.setBlockState(this.triggerBlockPos, state)
+					case _ =>
+				}
 				resetImparting()
 			}
 		}
@@ -60,7 +74,7 @@ class TENexusCrystal extends TileEntity with ITickable with ITileSaver {
 	override def setPos(posIn: BlockPos): Unit = {
 		super.setPos(posIn)
 		this.setBoundingBox(posIn)
-		this.triggerBlockPos = posIn.down(5)
+		this.triggerBlockPos = posIn.down(4)
 	}
 
 	private var boundingBox: AxisAlignedBB = null
@@ -96,11 +110,15 @@ class TENexusCrystal extends TileEntity with ITickable with ITileSaver {
 	// ~~~~~~~~~~~ Effect handling ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	def tryDoEffect(player: EntityPlayer): Boolean = {
+		// make sure the player is around
 		if (this.isPlayerUnder(player)) {
+			// get the trigger present
 			val trigger =
 				if (player.getCurrentEquippedItem != null) player.getCurrentEquippedItem
 				else this.getWorld.getBlockState(this.triggerBlockPos)
+			// get the trigger module for said trigger
 			val module = ApiEsotericraft.getModuleForTrigger(trigger)
+			// start process if applicable
 			if (module != null && module.onImpartingStarted(player, this)) {
 				trigger match {
 					case stack: ItemStack =>
@@ -109,7 +127,8 @@ class TENexusCrystal extends TileEntity with ITickable with ITileSaver {
 						if (oldStack.stackSize <= 0) oldStack = null
 						player.setCurrentItemOrArmor(0, oldStack)
 					case state: IBlockState =>
-						this.getWorld.setBlockToAir(this.triggerBlockPos)
+						//this.getWorld.setBlockToAir(this.triggerBlockPos)
+						this.impartingBlock = state
 					case _ =>
 				}
 				this.impartingModuleID = module.getID
@@ -128,7 +147,6 @@ class TENexusCrystal extends TileEntity with ITickable with ITileSaver {
 		val inY = this.boundingBox.minY <= pPos.yCoord && pPos.yCoord <= bb.maxY
 		val inZ = this.boundingBox.minZ <= pPos.zCoord && pPos.zCoord <= bb.maxZ
 		this.hasBoundingBox && inX && inY && inZ
-
 	}
 
 }
