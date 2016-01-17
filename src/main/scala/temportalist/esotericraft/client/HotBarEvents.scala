@@ -2,6 +2,7 @@ package temportalist.esotericraft.client
 
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.client.settings.KeyBinding
 import net.minecraftforge.client.event.{MouseEvent, RenderGameOverlayEvent}
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
@@ -9,14 +10,31 @@ import org.lwjgl.opengl.GL11
 import temportalist.esotericraft.api.ApiEsotericraft
 import temportalist.esotericraft.common.EsoTeriCraft
 import temportalist.esotericraft.common.network.PacketEsoTeriCraft_Server
-import temportalist.origin.api.client.utility.{TessRenderer, Rendering}
+import temportalist.origin.api.client.utility.{Rendering, TessRenderer}
 import temportalist.origin.api.common.lib.V3O
+import temportalist.origin.api.common.resource.IModDetails
+import temportalist.origin.foundation.client.{IKeyBinder, KeyHandler}
+import temportalist.origin.foundation.common.register.Registry
 
 /**
   * Created by TheTemportalist on 1/12/2016.
   */
 @SideOnly(Side.CLIENT)
-object HotBarEvents {
+object HotBarEvents extends IKeyBinder {
+
+	def preInit(): Unit = {
+		Registry.registerHandler(this)
+		KeyHandler.register(this)
+
+	}
+
+	override def register(): Unit = {}
+
+	override def getMod: IModDetails = EsoTeriCraft
+
+	override def onKeyPressed(keyBinding: KeyBinding): Unit = {
+
+	}
 
 	@SubscribeEvent
 	def mouseEvent(event: MouseEvent): Unit = {
@@ -43,7 +61,7 @@ object HotBarEvents {
 		val center = new V3O(centerX, centerY)
 
 		val hot_bar = esoteric.getHotBar
-		val currentSlot = esoteric.getCurrent
+		val currentSlot = esoteric.getCurrentSlot
 		val halfBarSize = new V3O(82, 22)
 		val slotSizeVec = new V3O(20, 22)
 		val imgSize = new V3O(184, 22)
@@ -78,18 +96,20 @@ object HotBarEvents {
 			Rendering.pop_gl()
 
 			// render icons in hot bar
-			//val spacing =
-			for (i <- hot_bar.indices) if (hot_bar(i) != null) {
-			//	val offset =
-			}
 			Rendering.push_gl()
-
+			val objectStart = center - (halfBarSize + slotSizeVec / 2).suppressedYAxis() + 3
+			val spacing = V3O.EAST * 4
+			for (i <- hot_bar.indices) if (hot_bar(i) != null) {
+				val offset = objectStart + (spacing + slotSizeVec) * i
+				hot_bar(i).draw(offset.x, offset.y, 1F)
+			}
 			Rendering.pop_gl()
 
 		}
 		else {
-			// todo render current if not null
-
+			val current = esoteric.getCurrentSpell
+			val pos = center + 2
+			if (current != null) current.draw(pos.x, pos.y, 0.5F)
 		}
 
 	}

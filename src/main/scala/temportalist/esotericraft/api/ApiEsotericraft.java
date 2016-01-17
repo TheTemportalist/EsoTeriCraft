@@ -1,8 +1,11 @@
 package temportalist.esotericraft.api;
 
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.IExtendedEntityProperties;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,6 +94,37 @@ public class ApiEsotericraft {
 		public static void switchSpell(EntityPlayer player, boolean increment) {
 			IEsotericPlayer esoteric = Player.getProps(player);
 			if (esoteric != null) esoteric.switchSpell(increment);
+		}
+
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static class Keys {
+
+		public interface IKeyBinder {
+
+			void onKeyPressed(KeyBinding keyBinding);
+
+			void register();
+
+		}
+
+		private static List<KeyBinding> keyBindings = new ArrayList<KeyBinding>();
+
+		public static void register(String modid, IKeyBinder binder, KeyBinding... keyBindings) {
+
+		}
+
+		public static String getModName(IKeyBinder binder) {
+			return null;
+		}
+
+		public static IKeyBinder[] getKeyBinders() {
+			return null;
+		}
+
+		public static KeyBinding[] getKeysForBinder(IKeyBinder binder) {
+			return null;
 		}
 
 	}

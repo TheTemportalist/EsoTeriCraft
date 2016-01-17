@@ -14,7 +14,8 @@ import temportalist.origin.foundation.common.register.Registry
 class ProxyClient extends ProxyCommon with IModGuiFactory {
 
 	override def preInit(): Unit = {
-		Registry.registerHandler(HotBarEvents)
+		HotBarEvents.preInit()
+
 	}
 
 	override def register(): Unit = {}

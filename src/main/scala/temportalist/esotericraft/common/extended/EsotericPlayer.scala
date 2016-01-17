@@ -20,7 +20,8 @@ class EsotericPlayer(p: EntityPlayer) extends ExtendedEntity(p) with IEsotericPl
 	override def impart(module: EsotericModule): Unit = {
 		if (this.getEntity.getEntityWorld.isRemote) return
 		if (this.canImpart(module)) this.impartedModules += module.getID
-		if (WorldHelper.isServer) this.syncEntity("impartedModules", this.impartedModules.toArray)
+		if (WorldHelper.isServer(this.getEntity))
+			this.syncEntity("impartedModules", this.impartedModules.toArray)
 	}
 
 	override def canImpart(module: EsotericModule): Boolean = !this.hasKnowledgeOf(module)
@@ -71,7 +72,13 @@ class EsotericPlayer(p: EntityPlayer) extends ExtendedEntity(p) with IEsotericPl
 
 	def getHotBar: Array[Spell] = this.hot_bar
 
-	def getCurrent: Int = this.currentSlot
+	def getCurrentSlot: Int = this.currentSlot
+
+	def getCurrentSpell: Spell = {
+		var index = this.currentSlot
+		if (index >= 5) index -= 1
+		this.hot_bar(index)
+	}
 
 	// ~~~~~~~~~~~ Handling NBT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

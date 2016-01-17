@@ -31,7 +31,7 @@ import scala.collection.mutable.ListBuffer
 @Mod(modid = EsoTeriCraft.MOD_ID, name = EsoTeriCraft.MOD_NAME,
 	version = EsoTeriCraft.MOD_VERSION, modLanguage = "scala",
 	guiFactory = EsoTeriCraft.proxyClient,
-	dependencies = ""
+	dependencies = "required-after:origin"
 )
 object EsoTeriCraft extends IMod with IModResource {
 
