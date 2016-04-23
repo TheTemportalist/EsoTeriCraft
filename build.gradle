@@ -1,0 +1,144 @@
+// For those who want the bleeding edge
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+    }
+}
+
+apply plugin: 'scala'
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven {
+        name "ddd"
+        url "http://doubledoordev.net:8082/artifactory/mods"//http://box1.dmodoomsirius.me:8081/artifactory/libs-release/"
+    }
+    maven {
+        name "dsiriusArt"
+        url "http://box1.dmodoomsirius.me:8081/artifactory/libs-release/"
+    }
+}
+
+dependencies {
+    deobfCompile "temportalist.origin:Origin:${version_origin_dep}"
+    deobfCompile "mezz.jei:jei_${version_minecraft}:${version_jei}"
+}
+
+ext.getBuildNumber = {
+    if (System.getenv("BUILD_NUMBER") != null) return "${System.getenv("BUILD_NUMBER")}"
+    else if (project.hasProperty("bambooBuildNumber")) return project.bambooBuildNumber
+    else return getDate()
+}
+
+def getDate() {
+    def date = new Date()
+    def formattedDate = date.format('MM-dd-yyyy_HH-mm-ss')
+    return formattedDate
+}
+
+group = "${org}.${groupName}"
+
+minecraft {
+    version = "${version_minecraft}-${version_forge}${version_forge_b}"
+    runDir = "run"
+    mappings = "${version_mcp}"
+
+    replace "required-after:Forge", "required-after:Forge@[${version_forge},)"
+    replace "required-after:origin", "required-after:origin@[${version_origin},)"
+    replace "@MOD_VERSION@", "${version_major}.${version_minor}.${version_patch}"
+}
+
+archivesBaseName = "${archiveName}-${project.minecraft.version}"
+version = "${version_major}.${version_minor}.${version_patch}." + getBuildNumber()
+
+jar {
+    from sourceSets.api.output;
+    from sourceSets.main.output;
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.api.scala;
+    from sourceSets.main.scala;
+    classifier = 'sources'
+}
+
+tasks.build.dependsOn sourcesJar
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        expand 'version': project.version, 'mcversion': project.minecraft.version
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+
+}
+
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+uploadArchives {
+    repositories {
+        // official DDD maven stuffs
+        if (project.hasProperty("dddUser") && project.hasProperty("dddPass")) {
+            mavenDeployer {
+                repository(url: "http://doubledoordev.net:8082/artifactory/mods") {
+                    authentication(userName: dddUser, password: dddPass)
+                }
+                pom {
+                    groupId = project.group
+                    version = project.version
+                    artifactId = "${archiveName}"
+                    project {
+                        name project.archivesBaseName
+                        packaging 'jar'
+                        description '${gitConfig.gitName}'
+                        url 'https://github.com/TheTemportalist/${gitConfig.gitName}'
+
+                        scm {
+                            url 'https://github.com/TheTemportalist/${gitConfig.gitName}'
+                            connection 'scm:git:git://github.com/TheTemportalist/${gitConfig.gitName}.git'
+                            developerConnection 'scm:git:git@github.com:TheTemportalist/${gitConfig.gitName}.git'
+                        }
+
+                        issueManagement {
+                            system 'github'
+                            url 'https://github.com/TheTemportalist/${gitConfig.gitName}/issues'
+                        }
+
+                        licenses {
+                            license {
+                                name '${gitConfig.license}'
+                                url 'https://github.com/TheTemportalist/${gitConfig.gitName}/blob/master/LICENSE'
+                                distribution 'repo'
+                            }
+                        }
+
+                        developers {
+                            developer {
+                                id 'TheTemportalist'
+                                name 'TheTemportalist'
+                                roles { role 'developer' }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
