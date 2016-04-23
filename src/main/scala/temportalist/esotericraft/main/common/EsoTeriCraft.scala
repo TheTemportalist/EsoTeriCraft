@@ -3,7 +3,8 @@ package temportalist.esotericraft.main.common
 import net.minecraftforge.common.capabilities.CapabilityManager
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 import net.minecraftforge.fml.common.{Mod, SidedProxy}
-import temportalist.esotericraft.main.common.capability.CapabilityPlayer
+import net.minecraftforge.fml.relauncher.Side
+import temportalist.esotericraft.main.common.capability.{CapabilityPlayer, PacketCapabilityPlayer}
 import temportalist.esotericraft.main.common.capability_new.api.CapabilityWrapper
 import temportalist.origin.foundation.common.registers.{OptionRegister, Register}
 import temportalist.origin.foundation.common.{IProxy, ModBase}
@@ -61,6 +62,10 @@ object EsoTeriCraft extends ModBase {
 	@Mod.EventHandler
 	def preInit(event: FMLPreInitializationEvent): Unit = {
 		super.preInitialize(event)
+
+		this.registerNetwork()
+		this.registerMessage(classOf[PacketCapabilityPlayer.Handler],
+			classOf[PacketCapabilityPlayer], Side.CLIENT)
 
 		EsoTeriCraft.log("Registering Capabilities")
 		CapabilityPlayer.register()

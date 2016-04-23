@@ -1,8 +1,9 @@
 package temportalist.esotericraft.main.common.capability.api
 
-import net.minecraft.item.{Item, ItemStack}
+import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTBase
 import net.minecraft.world.World
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint
 
 /**
   *
@@ -14,14 +15,26 @@ import net.minecraft.world.World
   */
 trait ICapability[T, N <: NBTBase] {
 
-	def initEntity(world: World, t: T): Unit = {}
+	// ~~~~~~~~~~ Capability ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	def initItem(item: Item, stack: ItemStack): Unit = {}
+	private var owner: T = _
 
-	def getNew: N
+	def initEntity(world: World, t: T): Unit = {
+		this.owner = t
+	}
+
+	def initItem(t: T, stack: ItemStack): Unit = {
+		this.owner = t
+	}
+
+	final def getOwner: T = this.owner
+
+	// ~~~~~~~~~~ NBT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	def getNewNBT: N
 
 	def serializeNBT: N = {
-		val nbt = this.getNew
+		val nbt = this.getNewNBT
 		this.writeToNBT(nbt)
 		nbt
 	}
@@ -33,5 +46,21 @@ trait ICapability[T, N <: NBTBase] {
 	}
 
 	def readFromNBT(nbt: N): Unit = {}
+
+	// ~~~~~~~~~~ Packets ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	final def markDirtyInit(): Unit = this.markDirty(EnumDirty.INIT, null, null)
+
+	final def markDirtyData(getNBT: (Any*) => NBTBase, data: Any*): Unit =
+		this.markDirty(EnumDirty.DATA, getNBT, data:_*)
+
+	final def markDirty(state: EnumDirty, getNBT: (Any*) => NBTBase, data: Any*): Unit = {
+		state match {
+			case EnumDirty.INIT => this.sendNBTToClient(this.serializeNBT)
+			case EnumDirty.DATA => this.sendNBTToClient(getNBT(data:_*))
+		}
+	}
+
+	def sendNBTToClient(nbt: NBTBase): Unit
 
 }

@@ -9,6 +9,7 @@ import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.capabilities.{Capability, CapabilityManager}
 import net.minecraftforge.event.AttachCapabilitiesEvent
+import net.minecraftforge.fml.common.FMLLog
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import temportalist.origin.foundation.common.IMod
 
@@ -21,6 +22,10 @@ import temportalist.origin.foundation.common.IMod
 abstract class Handler[E, N <: NBTBase, T <: ICapability[E, N]] {
 
 	protected var CAPABILITY_KEY: ResourceLocation = null
+
+	def isValid(e: AnyRef): Boolean
+
+	def cast(e: AnyRef): E
 
 	def getClassCapability: Class[T]
 
@@ -52,14 +57,15 @@ object Handler {
 
 		@SubscribeEvent
 		def attachCapabilities(event: AttachCapabilitiesEvent.Entity): Unit = {
-			event.getEntity match {
-				case e: E =>
-					val cap = this.getNewCapabilityInstance
-					cap.initEntity(e.getEntityWorld, e)
-					event.addCapability(this.CAPABILITY_KEY,
-						new CapSerializable[N, T](this.getCapability, cap)
-					)
-				case _ =>
+			val entity = event.getEntity
+			if (this.isValid(entity)) {
+				val e = this.cast(entity)
+				FMLLog.info("Attaching capability entity " + this.CAPABILITY_KEY.toString + " to " + e.getClass.getCanonicalName)
+				val cap = this.getNewCapabilityInstance
+				cap.initEntity(e.getEntityWorld, e)
+				event.addCapability(this.CAPABILITY_KEY,
+					new CapSerializable[N, T](this.getCapability, cap)
+				)
 			}
 		}
 
@@ -70,14 +76,15 @@ object Handler {
 
 		@SubscribeEvent
 		def attachCapabilities(event: AttachCapabilitiesEvent.TileEntity): Unit = {
-			event.getTileEntity match {
-				case e: E =>
-					val cap = this.getNewCapabilityInstance
-					cap.initEntity(e.getWorld, e)
-					event.addCapability(this.CAPABILITY_KEY,
-						new CapSerializable[N, T](this.getCapability, cap)
-					)
-				case _ =>
+			val tile = event.getTileEntity
+			if (this.isValid(tile)) {
+				val e = this.cast(tile)
+				FMLLog.info("Attaching capability tile " + this.CAPABILITY_KEY.toString + " to " + e.getClass.getCanonicalName)
+				val cap = this.getNewCapabilityInstance
+				cap.initEntity(e.getWorld, e)
+				event.addCapability(this.CAPABILITY_KEY,
+					new CapSerializable[N, T](this.getCapability, cap)
+				)
 			}
 		}
 
@@ -88,14 +95,15 @@ object Handler {
 
 		@SubscribeEvent
 		def attachCapabilities(event: AttachCapabilitiesEvent.Item): Unit = {
-			event.getItem match {
-				case e: E =>
-					val cap = this.getNewCapabilityInstance
-					cap.initItem(e, event.getItemStack)
-					event.addCapability(this.CAPABILITY_KEY,
-						new CapSerializable[N, T](this.getCapability, cap)
-					)
-				case _ =>
+			val item = event.getItem
+			if (this.isValid(item)) {
+				val e = this.cast(item)
+				FMLLog.info("Attaching capability item " + this.CAPABILITY_KEY.toString + " to " + e.getClass.getCanonicalName)
+				val cap = this.getNewCapabilityInstance
+				cap.initItem(e, event.getItemStack)
+				event.addCapability(this.CAPABILITY_KEY,
+					new CapSerializable[N, T](this.getCapability, cap)
+				)
 			}
 		}
 
