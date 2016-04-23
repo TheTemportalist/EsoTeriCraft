@@ -1,5 +1,6 @@
 package temportalist.esotericraft.main.common.capability.api
 
+import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.NBTBase
 import net.minecraft.world.World
 
@@ -13,9 +14,9 @@ import net.minecraft.world.World
   */
 trait ICapability[T, N <: NBTBase] {
 
-	def getObjectAs(obj: AnyRef): T = obj.asInstanceOf[T]
+	def initEntity(world: World, t: T): Unit = {}
 
-	def init(world: World, t: T): Unit
+	def initItem(item: Item, stack: ItemStack): Unit = {}
 
 	def getNew: N
 

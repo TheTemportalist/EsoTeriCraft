@@ -62,7 +62,8 @@ object EsoTeriCraft extends ModBase {
 	def preInit(event: FMLPreInitializationEvent): Unit = {
 		super.preInitialize(event)
 
-		CapabilityPlayer.register(this)
+		EsoTeriCraft.log("Registering Capabilities")
+		CapabilityPlayer.register()
 
 	}
 
