@@ -1,13 +1,17 @@
 package temportalist.esotericraft.main.common
 
+import net.minecraftforge.common.capabilities.CapabilityManager
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 import net.minecraftforge.fml.common.{Mod, SidedProxy}
+import temportalist.esotericraft.main.common.capability.CapabilityPlayer
+import temportalist.esotericraft.main.common.capability_new.api.CapabilityWrapper
 import temportalist.origin.foundation.common.registers.{OptionRegister, Register}
 import temportalist.origin.foundation.common.{IProxy, ModBase}
 
 /**
   *
   * Created by TheTemportalist on 4/23/2016.
+  *
   * @author TheTemportalist
   */
 @Mod(modid = EsoTeriCraft.MOD_ID, name = EsoTeriCraft.MOD_NAME, version = EsoTeriCraft.MOD_VERSION,
@@ -17,11 +21,13 @@ import temportalist.origin.foundation.common.{IProxy, ModBase}
 )
 object EsoTeriCraft extends ModBase {
 
+	// ~~~~~~~~~~ Details & Proxy ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 	final val MOD_ID = "esotericraft"
 	final val MOD_NAME = "EsoTeriCraft"
 	final val MOD_VERSION = "@MOD_VERSION@"
-	final val proxyClient = "temportalist.compression.main.client.ProxyClient"
-	final val proxyServer = "temportalist.compression.main.server.ProxyServer"
+	final val proxyClient = "temportalist." + MOD_ID + ".main.client.ProxyClient"
+	final val proxyServer = "temportalist." + MOD_ID + ".main.server.ProxyServer"
 
 	/**
 	  *
@@ -46,6 +52,8 @@ object EsoTeriCraft extends ModBase {
 
 	override def getProxy: IProxy = this.proxy
 
+	// ~~~~~~~~~~ Inits ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 	override def getOptions: OptionRegister = null
 
 	override def getRegisters: Seq[Register] = Seq()
@@ -54,6 +62,12 @@ object EsoTeriCraft extends ModBase {
 	def preInit(event: FMLPreInitializationEvent): Unit = {
 		super.preInitialize(event)
 
+		CapabilityPlayer.register(this)
+
+	}
+
+	def register[T](wrap: CapabilityWrapper[T]): Unit = {
+		CapabilityManager.INSTANCE.register(wrap.getCapability, wrap.getStorage, wrap.getFactory)
 	}
 
 	@Mod.EventHandler
