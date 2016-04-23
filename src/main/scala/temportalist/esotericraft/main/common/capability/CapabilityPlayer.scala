@@ -4,6 +4,8 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.{NBTBase, NBTTagCompound}
 import net.minecraft.world.World
 import net.minecraftforge.common.capabilities.{Capability, CapabilityInject}
+import net.minecraftforge.event.entity.player.PlayerEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint
 import temportalist.esotericraft.main.common.EsoTeriCraft
 import temportalist.esotericraft.main.common.capability.api.Handler.HandlerEntity
@@ -58,22 +60,41 @@ class CapabilityPlayer extends ICapability[EntityPlayer, NBTTagCompound] {
 }
 object CapabilityPlayer extends HandlerEntity[EntityPlayer, NBTTagCompound, CapabilityPlayer] {
 
-	override def isValid(e: AnyRef): Boolean = e.isInstanceOf[EntityPlayer]
+	// ~~~~~~~~~~ Setup And Register ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	override def cast(e: AnyRef): EntityPlayer = e.asInstanceOf[EntityPlayer]
+	@CapabilityInject(classOf[CapabilityPlayer])
+	var CAPABILITY: Capability[CapabilityPlayer] = null
 
 	def register(): Unit = {
 		super.register(EsoTeriCraft, "EsotericPlayer")
 		EsoTeriCraft.log("Registered Capability EsotericPlayer")
 	}
 
-	@CapabilityInject(classOf[CapabilityPlayer])
-	var CAPABILITY: Capability[CapabilityPlayer] = null
+	// ~~~~~~~~~~ Overrides ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	override def getClassCapability: Class[CapabilityPlayer] = classOf[CapabilityPlayer]
 
 	override def getCapability: Capability[CapabilityPlayer] = this.CAPABILITY
 
 	override def getNewCapabilityInstance: CapabilityPlayer = new CapabilityPlayer
+
+	// ~~~~~~~~~~ Validation ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	override def isValid(e: AnyRef): Boolean = e.isInstanceOf[EntityPlayer]
+
+	override def cast(e: AnyRef): EntityPlayer = e.asInstanceOf[EntityPlayer]
+
+	// ~~~~~~~~~~ Getting per player ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	def get(player: EntityPlayer): CapabilityPlayer = player.getCapability(this.CAPABILITY, null)
+
+	// ~~~~~~~~~~ Death Persistence ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	@SubscribeEvent
+	def onPlayerClone(event: PlayerEvent.Clone): Unit = {
+		if (!event.isWasDeath) return
+		val data = this.get(event.getOriginal).serializeNBT
+		this.get(event.getEntityPlayer).deserializeNBT(data)
+	}
 
 }

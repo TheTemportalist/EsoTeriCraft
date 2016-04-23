@@ -40,7 +40,7 @@ object PacketCapabilityPlayer {
 		override def run(): Unit = {
 			val world = Minecraft.getMinecraft.theWorld
 			val player = world.getEntityByID(this.eID).asInstanceOf[EntityPlayer]
-			player.getCapability(CapabilityPlayer.CAPABILITY, null).onDataReceived(this.data)
+			CapabilityPlayer.get(player).onDataReceived(this.data)
 		}
 
 	}
