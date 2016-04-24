@@ -14,6 +14,10 @@ buildscript {
 
 apply plugin: 'scala'
 
+sourceSets {
+    sorcery;
+}
+
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 repositories {
@@ -55,19 +59,30 @@ minecraft {
 
     replace "required-after:Forge", "required-after:Forge@[${version_forge},)"
     replace "required-after:origin", "required-after:origin@[${version_origin},)"
+    replace "required-after:esotericraft", "required-after:esotericraft@[${version_major}.${version_minor}.${version_patch},)"
     replace "@MOD_VERSION@", "${version_major}.${version_minor}.${version_patch}"
 }
 
 archivesBaseName = "${archiveName}-${project.minecraft.version}"
 version = "${version_major}.${version_minor}.${version_patch}." + getBuildNumber()
 
+sourceSets {
+    sorcery.compileClasspath += api.compileClasspath
+    sorcery.compileClasspath += api.output;
+    
+    main.compileClasspath += sorcery.compileClasspath;
+    main.compileClasspath += sorcery.output;
+}
+
 jar {
     from sourceSets.api.output;
+    from sourceSets.sorcery.output;
     from sourceSets.main.output;
 }
 
 task sourcesJar(type: Jar) {
     from sourceSets.api.scala;
+    from sourceSets.sorcery.scala;
     from sourceSets.main.scala;
     classifier = 'sources'
 }

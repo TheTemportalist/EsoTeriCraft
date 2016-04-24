@@ -3,7 +3,6 @@ package temportalist.esotericraft.main.common.capability.api
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTBase
 import net.minecraft.world.World
-import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint
 
 /**
   *

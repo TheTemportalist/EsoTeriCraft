@@ -1,18 +1,16 @@
 package temportalist.esotericraft.main.common
 
-import net.minecraftforge.common.capabilities.CapabilityManager
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 import net.minecraftforge.fml.common.{Mod, SidedProxy}
-import net.minecraftforge.fml.relauncher.Side
-import temportalist.esotericraft.main.common.capability.{CapabilityPlayer, PacketCapabilityPlayer}
-import temportalist.esotericraft.main.common.capability_new.api.CapabilityWrapper
+import temportalist.esotericraft.main.server.CommandETC
+import temportalist.origin.foundation.common.modTraits.IHasCommands
 import temportalist.origin.foundation.common.registers.{OptionRegister, Register}
 import temportalist.origin.foundation.common.{IProxy, ModBase}
+import temportalist.origin.foundation.server.ICommand
 
 /**
   *
   * Created by TheTemportalist on 4/23/2016.
-  *
   * @author TheTemportalist
   */
 @Mod(modid = EsoTeriCraft.MOD_ID, name = EsoTeriCraft.MOD_NAME, version = EsoTeriCraft.MOD_VERSION,
@@ -20,7 +18,7 @@ import temportalist.origin.foundation.common.{IProxy, ModBase}
 	guiFactory = EsoTeriCraft.proxyClient,
 	dependencies = "required-after:Forge;" + "required-after:origin;"
 )
-object EsoTeriCraft extends ModBase {
+object EsoTeriCraft extends ModBase with IHasCommands {
 
 	// ~~~~~~~~~~ Details & Proxy ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -63,17 +61,6 @@ object EsoTeriCraft extends ModBase {
 	def preInit(event: FMLPreInitializationEvent): Unit = {
 		super.preInitialize(event)
 
-		this.registerNetwork()
-		this.registerMessage(classOf[PacketCapabilityPlayer.Handler],
-			classOf[PacketCapabilityPlayer], Side.CLIENT)
-
-		EsoTeriCraft.log("Registering Capabilities")
-		CapabilityPlayer.register()
-
-	}
-
-	def register[T](wrap: CapabilityWrapper[T]): Unit = {
-		CapabilityManager.INSTANCE.register(wrap.getCapability, wrap.getStorage, wrap.getFactory)
 	}
 
 	@Mod.EventHandler
@@ -87,4 +74,7 @@ object EsoTeriCraft extends ModBase {
 		super.postInitialize(event)
 
 	}
+
+	override def getCommands: Seq[ICommand] = Seq(CommandETC)
+
 }

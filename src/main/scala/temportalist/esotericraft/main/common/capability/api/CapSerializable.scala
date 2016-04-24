@@ -3,6 +3,7 @@ package temportalist.esotericraft.main.common.capability.api
 import net.minecraft.nbt.NBTBase
 import net.minecraft.util.EnumFacing
 import net.minecraftforge.common.capabilities.{Capability, ICapabilitySerializable}
+import temportalist.esotericraft.main.common.EsoTeriCraft
 
 /**
   *
@@ -23,7 +24,7 @@ class CapSerializable[N <: NBTBase, C <: ICapability[_, N]](
 	}
 
 	override def getCapability[T](capability: Capability[T], enumFacing: EnumFacing): T = {
-		if (this.hasCapability(capability, enumFacing)) injected.cast(this.cap)
+		if (capability == this.injected) injected.cast(this.cap)
 		else null.asInstanceOf[T]
 	}
 

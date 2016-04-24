@@ -1,4 +1,4 @@
-package temportalist.esotericraft.api;
+package temportalist.esotericraft.api.sorcery;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -6,6 +6,10 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.RegistryNamespaced;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
+import net.minecraftforge.fml.common.registry.PersistentRegistryManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -15,36 +19,45 @@ import org.lwjgl.opengl.GL11;
  * Created by TheTemportalist on 4/23/2016.
  * @author TheTemportalist
  */
-public class Spell {
+public class Spell extends IForgeRegistryEntry.Impl<Spell> {
+
+	public static final RegistryNamespaced<ResourceLocation, Spell> REGISTRY =
+			PersistentRegistryManager.createRegistry(
+					new ResourceLocation("esotericsorcery:spells"),
+					Spell.class, null, 0, 31999, true, null, null, null
+			);
 
 	private final String name;
-	private ResourceLocation texture;
+	private ResourceLocation textureLocation;
 
-	protected Spell(String name) {
+	public Spell(String name) {
 		this.name = name;
-		ApiEsotericraft.Spells.register(this);
+		this.textureLocation = null;
 	}
 
-	protected Spell(String name, ResourceLocation texture) {
+	public Spell(String name, ResourceLocation texture) {
 		this(name);
-		this.setTexture(texture);
+		this.textureLocation = texture;
 	}
 
-	public final Spell setTexture(ResourceLocation texture) {
-		this.texture = texture;
-		return this;
+	public Spell(String mod_id, String name) {
+		this(name);
+		this.setRegistryName(mod_id, name);
+		GameRegistry.register(this);
 	}
 
-	public final ResourceLocation getTexture() {
-		return this.texture;
+	public Spell(String mod_id, String name, ResourceLocation texture) {
+		this(name, texture);
+		this.setRegistryName(mod_id, name);
+		GameRegistry.register(this);
 	}
 
 	public final String getName() {
 		return this.name;
 	}
 
-	public final int getGlobalID() {
-		return ApiEsotericraft.Spells.getGlobalID(this);
+	public ResourceLocation getTexture() {
+		return this.textureLocation;
 	}
 
 	@SideOnly(Side.CLIENT)
