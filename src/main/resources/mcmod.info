@@ -1,16 +1,50 @@
 [
-{
-  "modid": "esotericraft",
-  "name": "EsoTeriCraft",
-  "description": "",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
-  "url": "",
-  "updateUrl": "",
-  "authors": ["TheTemportalist"],
-  "credits": "",
-  "logoFile": "",
-  "screenshots": [],
-  "dependencies": []
-}
+	{
+		"modid": "esotericraft",
+		"name": "EsoTeriCraft",
+		"description": "",
+		"url": "",
+		"updateUrl": "",
+
+		"authors": ["TheTemportalist"],
+		"version": "${version}",
+		"mcversion": "${mcversion}",
+
+		"credits": "",
+		"logoFile": "",
+		"screenshots": [],
+		"dependencies": []
+	},
+	{
+		"modid": "esotericsorcery",
+		"name": "Esoteric Sorcery",
+		"description": "",
+		"url": "",
+		"updateUrl": "",
+
+		"authors": ["TheTemportalist"],
+		"version": "${version}",
+		"mcversion": "${mcversion}",
+
+		"credits": "",
+		"logoFile": "",
+		"screenshots": [],
+		"dependencies": []
+	},
+	{
+		"modid": "esotericutils",
+		"name": "Esoteric Utils",
+		"description": "",
+		"url": "",
+		"updateUrl": "",
+
+		"authors": ["TheTemportalist"],
+		"version": "${version}",
+		"mcversion": "${mcversion}",
+
+		"credits": "",
+		"logoFile": "",
+		"screenshots": [],
+		"dependencies": []
+	}
 ]

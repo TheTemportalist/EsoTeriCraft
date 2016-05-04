@@ -14,11 +14,6 @@ buildscript {
 
 apply plugin: 'scala'
 
-sourceSets {
-    sorcery;
-    utils;
-}
-
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 repositories {
@@ -66,37 +61,6 @@ minecraft {
 
 archivesBaseName = "${archiveName}-${project.minecraft.version}"
 version = "${version_major}.${version_minor}.${version_patch}." + getBuildNumber()
-
-sourceSets {
-
-    sorcery.compileClasspath += api.compileClasspath
-    sorcery.compileClasspath += api.output;
-    main.compileClasspath += sorcery.compileClasspath;
-    main.compileClasspath += sorcery.output;
-
-    utils.compileClasspath += api.compileClasspath;
-    utils.compileClasspath += api.output;
-    main.compileClasspath += utils.compileClasspath;
-    main.compileClasspath += utils.output;
-
-}
-
-jar {
-    from sourceSets.api.output;
-    from sourceSets.sorcery.output;
-    from sourceSets.utils.output;
-    from sourceSets.main.output;
-}
-
-task sourcesJar(type: Jar) {
-    from sourceSets.api.scala;
-    from sourceSets.sorcery.scala;
-    from sourceSets.utils.scala;
-    from sourceSets.main.scala;
-    classifier = 'sources'
-}
-
-tasks.build.dependsOn sourcesJar
 
 processResources {
     inputs.property "version", project.version
