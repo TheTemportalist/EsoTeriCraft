@@ -1,0 +1,29 @@
+{
+	"forge_marker": 1,
+	"defaults": {
+		"model": "minecraft:cube_all",
+		"textures": { "all": "esotericraft:blocks/BlockPillar" },
+		"transform": "forge:default-block",
+		"custom": { "flip-v": true }
+	},
+	"variants": {
+		"normal": [{}],
+		"inventory": [{}],
+
+		"corner": {
+			"0": { "y": 180 },
+			"1": { "y": 270 },
+			"2": { "y": 0 },
+			"3": { "y": 90 }
+		},
+
+		"render_state": {
+			"0": { },
+			"1": { },
+			"2": {
+				"model": "esotericraft:BlockNexusPillar.obj"
+			}
+		}
+
+	}
+}

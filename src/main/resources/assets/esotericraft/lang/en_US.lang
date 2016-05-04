@@ -1,2 +1,5 @@
 esotericraft.commands.esoteric.usage=/esoteric spell <player name> add <name>
 esotericraft.commands.esoteric.usage.spell=/esoteric spell <player name> add <name>
+
+tile.esotericraft:BlockCrystal.name=Crystal
+tile.esotericraft:BlockPillar.name=Pillar

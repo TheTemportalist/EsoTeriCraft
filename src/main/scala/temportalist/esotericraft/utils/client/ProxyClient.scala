@@ -17,16 +17,7 @@ import temportalist.esotericraft.utils.common.init.ModItems
 class ProxyClient extends ProxyCommon with IModGuiFactory with IModelLoader {
 
 	override def preInit(): Unit = {
-
-		val item = ModItems.spindle
-		//this.registerModel(item, item.getItemMetaRange, Utils, item.name)
-
-		/*
-		ModelLoader.setCustomModelResourceLocation(ModItems.spindle, 0,
-			new ModelResourceLocation(Utils.getModId + ":" + ModItems.spindle.getClass.getSimpleName, "inventory")
-		)
-		*/
-		//this.autoLoadModels(Utils)
+		this.autoLoadModels(Utils)
 
 	}
 

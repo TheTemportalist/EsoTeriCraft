@@ -16,7 +16,7 @@ import net.minecraftforge.event.entity.player.{PlayerSleepInBedEvent, SleepingLo
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper
 import net.minecraftforge.fml.common.eventhandler.{Event, SubscribeEvent}
 import temportalist.esotericraft.utils.common.Utils
-import temportalist.esotericraft.utils.common.util.NBT
+import temportalist.esotericraft.main.common.util.NBT
 import temportalist.origin.api.common.IModDetails
 import temportalist.origin.api.common.item.ItemBase
 import temportalist.origin.api.common.lib.Vect

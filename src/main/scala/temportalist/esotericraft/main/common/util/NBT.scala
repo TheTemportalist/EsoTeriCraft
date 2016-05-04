@@ -1,4 +1,4 @@
-package temportalist.esotericraft.utils.common.util
+package temportalist.esotericraft.main.common.util
 
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
@@ -38,7 +38,10 @@ object NBT {
 
 	def store(x: Double, y: Double, z: Double): NBTTagCompound = this.store(new NBTTagCompound, x, y, z)
 
-	def store(nbt: NBTTagCompound, pos: BlockPos): NBTTagCompound = this.store(nbt, pos.getX, pos.getY, pos.getZ)
+	def store(nbt: NBTTagCompound, pos: BlockPos): NBTTagCompound = {
+		if (pos != null) this.store(nbt, pos.getX, pos.getY, pos.getZ)
+		else nbt
+	}
 
 	def store(pos: BlockPos): NBTTagCompound = this.store(new NBTTagCompound, pos)
 

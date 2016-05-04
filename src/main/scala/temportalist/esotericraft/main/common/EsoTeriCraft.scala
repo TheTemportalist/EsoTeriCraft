@@ -2,6 +2,7 @@ package temportalist.esotericraft.main.common
 
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 import net.minecraftforge.fml.common.{Mod, SidedProxy}
+import temportalist.esotericraft.main.common.init.ModBlocks
 import temportalist.esotericraft.main.server.CommandETC
 import temportalist.origin.foundation.common.modTraits.IHasCommands
 import temportalist.origin.foundation.common.registers.{OptionRegister, Register}
@@ -11,6 +12,7 @@ import temportalist.origin.foundation.server.ICommand
 /**
   *
   * Created by TheTemportalist on 4/23/2016.
+  *
   * @author TheTemportalist
   */
 @Mod(modid = EsoTeriCraft.MOD_ID, name = EsoTeriCraft.MOD_NAME, version = EsoTeriCraft.MOD_VERSION,
@@ -55,7 +57,7 @@ object EsoTeriCraft extends ModBase with IHasCommands {
 
 	override def getOptions: OptionRegister = null
 
-	override def getRegisters: Seq[Register] = Seq()
+	override def getRegisters: Seq[Register] = Seq(ModBlocks)
 
 	@Mod.EventHandler
 	def preInit(event: FMLPreInitializationEvent): Unit = {

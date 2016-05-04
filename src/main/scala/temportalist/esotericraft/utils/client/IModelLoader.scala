@@ -34,18 +34,18 @@ trait IModelLoader {
 	def registerOtherObjects(mod: IMod, reg: Register): Unit = {}
 
 	final def registerModel(mod: IMod, obj: ItemBase): Unit = {
-		this.registerModel(obj, obj.getItemMetaRange, mod, obj.name)
+		this.registerModel(obj, obj.getItemMetaRange, mod, obj.name, "inventory")
 	}
 
 	final def registerModel(mod: IMod, obj: BlockBase): Unit = {
 		if (obj.hasItemBlock)
-			this.registerModel(obj.getItemBlock, obj.getItemMetaRange, mod, obj.name)
+			this.registerModel(obj.getItemBlock, obj.getItemMetaRange, mod, obj.name, "inventory")
 	}
 
-	final def registerModel(item: Item, metas: Range, mod: IMod, name: String): Unit = {
+	final def registerModel(item: Item, metas: Range, mod: IMod, name: String, variant: String = null): Unit = {
 		for (meta <- metas)
 			ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(
-				mod.getDetails.getModId + ":" + name
+				mod.getDetails.getModId + ":" + name, variant
 			))
 	}
 
