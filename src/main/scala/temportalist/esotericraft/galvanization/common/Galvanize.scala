@@ -3,7 +3,7 @@ package temportalist.esotericraft.galvanization.common
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 import net.minecraftforge.fml.common.{Mod, SidedProxy}
 import temportalist.esotericraft.api.init.{IEsoTeriCraft, PluginEsoTeriCraft}
-import temportalist.esotericraft.galvanization.common.init.ModItems
+import temportalist.esotericraft.galvanization.common.init.{ModEntities, ModItems}
 import temportalist.origin.foundation.common.{IProxy, ModBase}
 import temportalist.origin.foundation.common.registers.{OptionRegister, Register}
 
@@ -62,7 +62,7 @@ object Galvanize extends ModBase {
 
 	override def getOptions: OptionRegister = Options
 
-	override def getRegisters: Seq[Register] = Seq(ModItems)
+	override def getRegisters: Seq[Register] = Seq(ModItems, ModEntities)
 
 	@Mod.EventHandler
 	def preInit(event: FMLPreInitializationEvent): Unit = {

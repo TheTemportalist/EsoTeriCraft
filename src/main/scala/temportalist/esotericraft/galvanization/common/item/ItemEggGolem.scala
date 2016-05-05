@@ -24,13 +24,17 @@ class ItemEggGolem extends ItemCreative() with INBTHandler {
 	override def itemInteractionForEntity(stack: ItemStack, playerIn: EntityPlayer,
 			target: EntityLivingBase, hand: EnumHand): Boolean = {
 		if (this.canUse(playerIn) && playerIn.isSneaking) {
+
 			Galvanize.log(EntityList.getEntityString(target))
+
 			val tag = this.getTagOrElseSet(stack)
 			tag.setString(ENTITY_ID, EntityList.getEntityString(target))
 			stack.setTagCompound(tag)
 			//val ret = this.set(stack, ENTITY_ID, EntityList.getEntityString(target))
 			//Galvanize.log("" + ret)
+
 			Galvanize.log("" + stack.getTagCompound)
+
 			playerIn.setHeldItem(hand, stack)
 			true
 		}
@@ -43,10 +47,17 @@ class ItemEggGolem extends ItemCreative() with INBTHandler {
 		if (stack.getTagCompound.hasKey(ENTITY_ID)) {
 
 			if (!worldIn.isRemote) {
+
+				val entityName = this.get[String](stack, ENTITY_ID)
+				Galvanize.log(entityName)
+
 				Galvanize.log("add empty")
-				val empty = new EntityEmpty(worldIn, modelEntityID = stack.getTagCompound.getString(ENTITY_ID))
+
+				val empty = new EntityEmpty(worldIn, modelEntityID = entityName)
 				empty.setPosition(pos.getX + 0.5, pos.getY + 1, pos.getZ + 0.5)
-				worldIn.spawnEntityInWorld(empty)
+				val ret = worldIn.spawnEntityInWorld(empty)
+				Galvanize.log("" + ret)
+
 			}
 			//this.removeTag(stack, ENTITY_ID)
 			EnumActionResult.SUCCESS
