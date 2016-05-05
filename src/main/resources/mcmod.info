@@ -14,37 +14,5 @@
 		"logoFile": "",
 		"screenshots": [],
 		"dependencies": []
-	},
-	{
-		"modid": "esotericsorcery",
-		"name": "Esoteric Sorcery",
-		"description": "",
-		"url": "",
-		"updateUrl": "",
-
-		"authors": ["TheTemportalist"],
-		"version": "${version}",
-		"mcversion": "${mcversion}",
-
-		"credits": "",
-		"logoFile": "",
-		"screenshots": [],
-		"dependencies": []
-	},
-	{
-		"modid": "esotericutils",
-		"name": "Esoteric Utils",
-		"description": "",
-		"url": "",
-		"updateUrl": "",
-
-		"authors": ["TheTemportalist"],
-		"version": "${version}",
-		"mcversion": "${mcversion}",
-
-		"credits": "",
-		"logoFile": "",
-		"screenshots": [],
-		"dependencies": []
 	}
 ]

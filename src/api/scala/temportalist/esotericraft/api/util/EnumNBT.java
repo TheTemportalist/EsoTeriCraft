@@ -1,4 +1,4 @@
-package temportalist.esotericraft.main.common.util;
+package temportalist.esotericraft.api.util;
 
 /**
  * Created by TheTemportalist on 4/26/2016.

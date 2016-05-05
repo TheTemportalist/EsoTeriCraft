@@ -10,8 +10,8 @@ import net.minecraftforge.client.model.obj.OBJLoader
 import net.minecraftforge.fml.client.IModGuiFactory
 import net.minecraftforge.fml.client.IModGuiFactory.{RuntimeOptionCategoryElement, RuntimeOptionGuiHandler}
 import temportalist.esotericraft.main.common.init.ModBlocks
+import temportalist.esotericraft.api.util.IModelLoader
 import temportalist.esotericraft.main.common.{EsoTeriCraft, ProxyCommon}
-import temportalist.esotericraft.utils.client.IModelLoader
 
 /**
   * Created by TheTemportalist on 12/31/2015.

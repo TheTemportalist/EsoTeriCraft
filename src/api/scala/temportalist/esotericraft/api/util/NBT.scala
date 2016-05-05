@@ -1,4 +1,4 @@
-package temportalist.esotericraft.main.common.util
+package temportalist.esotericraft.api.util
 
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer

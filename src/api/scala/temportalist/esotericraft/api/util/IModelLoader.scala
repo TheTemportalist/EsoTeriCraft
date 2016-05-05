@@ -1,4 +1,4 @@
-package temportalist.esotericraft.utils.client
+package temportalist.esotericraft.api.util
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.item.Item
