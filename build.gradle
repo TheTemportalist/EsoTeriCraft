@@ -62,6 +62,24 @@ minecraft {
 archivesBaseName = "${archiveName}-${project.minecraft.version}"
 version = "${version_major}.${version_minor}.${version_patch}." + getBuildNumber()
 
+sourceSets {
+    main.compileClasspath += api.compileClasspath;
+    main.compileClasspath += api.output;
+}
+
+jar {
+    from sourceSets.api.output;
+    from sourceSets.main.output;
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.api.scala;
+    from sourceSets.main.scala;
+    classifier = 'sources'
+}
+
+tasks.build.dependsOn sourcesJar
+
 processResources {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version

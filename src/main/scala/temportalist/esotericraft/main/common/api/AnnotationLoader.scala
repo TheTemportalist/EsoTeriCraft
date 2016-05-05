@@ -30,7 +30,9 @@ class AnnotationLoader[T](private val annotation: Class[_], private val instance
 			try {
 				val annotatedClass = Class.forName(dataAnnotatedClass.getClassName)
 				val instanceClass = annotatedClass.asSubclass(this.instance)
-				instances += instanceClass.newInstance()
+				val instance = instanceClass.newInstance()
+				instances += instance
+				this.onInstanceCreated(instance)
 			}
 			catch {
 				case e: Exception =>
@@ -39,5 +41,7 @@ class AnnotationLoader[T](private val annotation: Class[_], private val instance
 		}
 		instances
 	}
+
+	def onInstanceCreated(instance: T): Unit = {}
 
 }

@@ -14,5 +14,37 @@
 		"logoFile": "",
 		"screenshots": [],
 		"dependencies": []
-	}
+	},
+     	{
+     		"modid": "esotericutils",
+     		"name": "Esoteric Utils",
+     		"description": "",
+     		"url": "",
+     		"updateUrl": "",
+
+     		"authors": ["TheTemportalist"],
+     		"version": "${version}",
+     		"mcversion": "${mcversion}",
+
+     		"credits": "",
+     		"logoFile": "",
+     		"screenshots": [],
+     		"dependencies": []
+     	},
+		{
+			"modid": "esotericgalvanization",
+			"name": "Esoteric Galvanization",
+			"description": "",
+			"url": "",
+			"updateUrl": "",
+
+			"authors": ["TheTemportalist"],
+			"version": "${version}",
+			"mcversion": "${mcversion}",
+
+			"credits": "",
+			"logoFile": "",
+			"screenshots": [],
+			"dependencies": []
+		}
 ]

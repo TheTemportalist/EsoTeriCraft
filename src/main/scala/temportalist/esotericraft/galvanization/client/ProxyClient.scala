@@ -1,4 +1,4 @@
-package temportalist.esotericraft.main.client
+package temportalist.esotericraft.galvanization.client
 
 import java.util
 
@@ -6,11 +6,12 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraftforge.client.model.ModelLoader
-import net.minecraftforge.client.model.obj.OBJLoader
 import net.minecraftforge.fml.client.IModGuiFactory
 import net.minecraftforge.fml.client.IModGuiFactory.{RuntimeOptionCategoryElement, RuntimeOptionGuiHandler}
-import temportalist.esotericraft.main.common.init.ModBlocks
-import temportalist.esotericraft.main.common.{EsoTeriCraft, ProxyCommon}
+import net.minecraftforge.fml.client.registry.RenderingRegistry
+import temportalist.esotericraft.galvanization.common.entity.EntityEmpty
+import temportalist.esotericraft.galvanization.common.init.ModItems
+import temportalist.esotericraft.galvanization.common.{Galvanize, ProxyCommon}
 import temportalist.origin.foundation.client.IModelLoader
 
 /**
@@ -19,13 +20,13 @@ import temportalist.origin.foundation.client.IModelLoader
 class ProxyClient extends ProxyCommon with IModGuiFactory with IModelLoader {
 
 	override def preInit(): Unit = {
+		//this.autoLoadModels(Galvanize)
 
-		OBJLoader.INSTANCE.addDomain(EsoTeriCraft.getModId)
-		ModelLoader.setCustomModelResourceLocation(ModBlocks.crystal.getItemBlock, 0,
-			new ModelResourceLocation(EsoTeriCraft.getModId + ":BlockCrystal"))
+		ModelLoader.setCustomModelResourceLocation(ModItems.golemEgg, 0,
+			new ModelResourceLocation(Galvanize.getModId + ":" + ModItems.golemEgg.getClass.getSimpleName, "inventory")
+		)
 
-		this.registerModel(ModBlocks.pillar.getItemBlock, 0 until 1, EsoTeriCraft,
-			ModBlocks.pillar.getClass.getSimpleName, "normal")
+		RenderingRegistry.registerEntityRenderingHandler(classOf[EntityEmpty], RenderEmpty)
 
 	}
 

@@ -4,7 +4,7 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.BlockPos
-import temportalist.esotericraft.api.util.NBT
+import temportalist.esotericraft.main.common.util.NBT
 import temportalist.origin.api.common.tile.ITileSaver
 
 /**
@@ -22,10 +22,12 @@ class TilePillar extends TileEntity with ITileSaver {
 	}
 
 	def getCrystal: TileCrystal = {
-		this.getWorld.getTileEntity(this.posCrystal) match {
-			case tile: TileCrystal => tile
-			case _ => null
-		}
+		if (this.posCrystal != null)
+			this.getWorld.getTileEntity(this.posCrystal) match {
+				case tile: TileCrystal => return tile
+				case _ =>
+			}
+		null
 	}
 
 	def breakBlockPre(state: IBlockState): Unit = {
