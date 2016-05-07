@@ -1,6 +1,9 @@
 package temportalist.esotericraft.utils.common.init
 
 import net.minecraft.creativetab.CreativeTabs
+import net.minecraft.item.ItemStack
+import net.minecraftforge.fml.common.registry.GameRegistry
+import net.minecraftforge.oredict.ShapedOreRecipe
 import temportalist.origin.foundation.common.registers.ItemRegister
 
 /**
@@ -17,6 +20,14 @@ object ModItems extends ItemRegister {
 
 		this.spindle = this.registerObject(new ItemSpindle(this.getMod))
 		this.spindle.setCreativeTab(CreativeTabs.TOOLS)
+
+	}
+
+	override def registerCrafting(): Unit = {
+
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this.spindle, 4), "i", "s",
+			Char.box('i'), "ingotIron", Char.box('s'), "cobblestone"
+		))
 
 	}
 

@@ -31,7 +31,8 @@ class TilePillar extends TileEntity with ITileSaver {
 	}
 
 	def breakBlockPre(state: IBlockState): Unit = {
-		this.getCrystal.notifyOfBlockBreak()
+		if (this.posCrystal != null)
+			this.getCrystal.notifyOfBlockBreak()
 	}
 
 	override def writeToNBT(compound: NBTTagCompound): Unit = {
