@@ -1,5 +1,6 @@
 package temportalist.esotericraft.api.sorcery;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -19,7 +20,13 @@ public class ApiSorcery {
 		return CAPABILITY;
 	}
 
+	public static ISorceryPlayer get(EntityPlayer player) {
+		return player.getCapability(CAPABILITY, null);
+	}
+
 	public interface ISorceryPlayer extends INBTSerializable<NBTTagCompound> {
+
+		void cast();
 
 	}
 

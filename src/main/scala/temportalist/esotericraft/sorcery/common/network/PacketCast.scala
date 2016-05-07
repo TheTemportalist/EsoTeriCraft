@@ -1,8 +1,11 @@
 package temportalist.esotericraft.sorcery.common.network
 
+import net.minecraft.client.Minecraft
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraftforge.fml.common.network.simpleimpl.{IMessage, IMessageHandler, MessageContext}
 import net.minecraftforge.fml.relauncher.Side
-import temportalist.esotericraft.sorcery.common.capability.HandlerSorceryPlayer
+import temportalist.esotericraft.api.sorcery.ApiSorcery
+import temportalist.esotericraft.api.sorcery.ApiSorcery.ISorceryPlayer
 import temportalist.origin.foundation.common.network.IPacket
 
 /**
@@ -17,10 +20,28 @@ class PacketCast extends IPacket {
 
 }
 object PacketCast {
+
 	class Handler extends IMessageHandler[PacketCast, IMessage] {
+
 		override def onMessage(message: PacketCast, ctx: MessageContext): IMessage = {
+
+			ApiSorcery.get(this.getPlayer(ctx)) match {
+				case player: ISorceryPlayer => player.cast()
+				case _ =>
+			}
 
 			null
 		}
+
+		def getPlayer(ctx: MessageContext): EntityPlayer = {
+
+			ctx.side match {
+				case Side.CLIENT => Minecraft.getMinecraft.thePlayer
+				case Side.SERVER => ctx.getServerHandler.playerEntity
+			}
+
+		}
+
 	}
+
 }

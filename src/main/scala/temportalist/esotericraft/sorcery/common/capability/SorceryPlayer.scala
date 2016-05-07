@@ -26,4 +26,8 @@ class SorceryPlayer(private val player: EntityPlayer)
 
 	}
 
+	override def cast(): Unit = {
+		Sorcery.log("Cast")
+	}
+
 }

@@ -1,14 +1,15 @@
 package temportalist.esotericraft.sorcery.client
 
 import net.minecraft.client.settings.KeyBinding
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.input.Keyboard
 import temportalist.esotericraft.sorcery.common.Sorcery
-import temportalist.origin.api.client.{EnumHUDOverlay, EnumKeyCategory}
-import temportalist.origin.foundation.client.{IKeyBinder, IModClient}
+import temportalist.esotericraft.sorcery.common.network.PacketCast
+import temportalist.origin.api.client.{EnumKeyCategory, Rendering}
 import temportalist.origin.foundation.client.modTraits.IHasKeys
+import temportalist.origin.foundation.client.{IKeyBinder, IModClient}
 import temportalist.origin.foundation.common.IModPlugin
-import temportalist.origin.internal.common.Origin
 
 /**
   *
@@ -27,6 +28,7 @@ object Client extends IModClient with IHasKeys {
 	override def preInit(): Unit = {
 		super.preInit()
 
+		ModKeys.register()
 
 	}
 
@@ -46,7 +48,12 @@ object Client extends IModClient with IHasKeys {
 
 		override def onKeyPressed(keyBinding: KeyBinding): Unit = {
 			if (keyBinding.getKeyDescription == this.cast.getKeyDescription) {
-
+				val packet = new PacketCast()
+				packet.sendToServer(Sorcery)
+				val player = Rendering.mc.thePlayer
+				packet.sendToAllAround(Sorcery, new TargetPoint(
+					player.dimension, player.posX, player.posY, player.posZ, 128
+				))
 			}
 		}
 

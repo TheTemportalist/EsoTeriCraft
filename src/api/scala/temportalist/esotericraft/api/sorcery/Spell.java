@@ -69,17 +69,17 @@ public class Spell extends IForgeRegistryEntry.Impl<Spell> {
 		double vMin = this.getV_min(), vMax = this.getV_max();
 
 		Tessellator tess = Tessellator.getInstance();
-		VertexBuffer wr = tess.getBuffer();
-		wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+		VertexBuffer buffer = tess.getBuffer();
+		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 
 		// min max
-		wr.pos(x + 0, y + h, 0D).tex(uMin, vMax).color(1F, 1F, 1F, opacity).endVertex();
+		buffer.pos(x + 0, y + h, 0D).tex(uMin, vMax).color(1F, 1F, 1F, opacity).endVertex();
 		// max max
-		wr.pos(x + w, y + h, 0D).tex(uMax, vMax).color(1F, 1F, 1F, opacity).endVertex();
+		buffer.pos(x + w, y + h, 0D).tex(uMax, vMax).color(1F, 1F, 1F, opacity).endVertex();
 		// max min
-		wr.pos(x + w, y + 0, 0D).tex(uMax, vMin).color(1F, 1F, 1F, opacity).endVertex();
+		buffer.pos(x + w, y + 0, 0D).tex(uMax, vMin).color(1F, 1F, 1F, opacity).endVertex();
 		// min min
-		wr.pos(x + 0, y + 0, 0D).tex(uMin, vMin).color(1F, 1F, 1F, opacity).endVertex();
+		buffer.pos(x + 0, y + 0, 0D).tex(uMin, vMin).color(1F, 1F, 1F, opacity).endVertex();
 
 		tess.draw();
 		GlStateManager.popMatrix();
