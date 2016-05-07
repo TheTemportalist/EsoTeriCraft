@@ -62,7 +62,7 @@ public class HandlerSorceryPlayer
 		return Handler.class;
 	}
 
-	static class Handler extends PacketExtendedSync.Handler {
+	public static class Handler extends PacketExtendedSync.Handler {
 
 		public Handler() {
 			super();
