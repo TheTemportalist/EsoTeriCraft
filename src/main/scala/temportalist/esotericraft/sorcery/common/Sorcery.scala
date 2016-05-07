@@ -32,7 +32,7 @@ object Sorcery extends ModBase {
 	// ~~~~~~~~~~ Details & Proxy ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	final val MOD_ID = "esoteric" + "sorcery"
-	final val MOD_NAME = "Esoteric " + "Sorcery"
+	final val MOD_NAME = "Esoteric " + "ApiSorcery"
 	final val MOD_VERSION = "@MOD_VERSION@"
 
 	final val proxyClient = "temportalist.esotericraft.sorcery.client.ProxyClient"
@@ -64,7 +64,7 @@ object Sorcery extends ModBase {
 		this.registerNetwork()
 		this.registerMessage(classOf[PacketCast.Handler], classOf[PacketCast])
 
-		HandlerSorceryPlayer.init(this)
+		HandlerSorceryPlayer.init(this, "SorceryPlayer")
 
 	}
 

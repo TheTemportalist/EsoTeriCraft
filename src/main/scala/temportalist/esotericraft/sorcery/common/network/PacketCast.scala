@@ -2,6 +2,7 @@ package temportalist.esotericraft.sorcery.common.network
 
 import net.minecraftforge.fml.common.network.simpleimpl.{IMessage, IMessageHandler, MessageContext}
 import net.minecraftforge.fml.relauncher.Side
+import temportalist.esotericraft.sorcery.common.capability.HandlerSorceryPlayer
 import temportalist.origin.foundation.common.network.IPacket
 
 /**

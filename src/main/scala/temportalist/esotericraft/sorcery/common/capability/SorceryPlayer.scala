@@ -2,7 +2,7 @@ package temportalist.esotericraft.sorcery.common.capability
 
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
-import temportalist.esotericraft.api.sorcery.ISorceryPlayer
+import temportalist.esotericraft.api.sorcery.ApiSorcery.ISorceryPlayer
 import temportalist.esotericraft.sorcery.common.Sorcery
 import temportalist.origin.foundation.common.capability.IExtendedEntitySync
 import temportalist.origin.foundation.common.network.NetworkMod
@@ -16,6 +16,8 @@ import temportalist.origin.foundation.common.network.NetworkMod
 class SorceryPlayer(private val player: EntityPlayer)
 		extends ISorceryPlayer with IExtendedEntitySync[NBTTagCompound, EntityPlayer] {
 
+	override def getNetworkMod: NetworkMod = Sorcery
+
 	override def serializeNBT(): NBTTagCompound = {
 		new NBTTagCompound
 	}
@@ -23,7 +25,5 @@ class SorceryPlayer(private val player: EntityPlayer)
 	override def deserializeNBT(nbt: NBTTagCompound): Unit = {
 
 	}
-
-	override def getNetworkMod: NetworkMod = Sorcery
 
 }
