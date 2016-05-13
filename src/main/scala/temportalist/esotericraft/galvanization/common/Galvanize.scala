@@ -3,9 +3,13 @@ package temportalist.esotericraft.galvanization.common
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 import net.minecraftforge.fml.common.{Mod, SidedProxy}
 import temportalist.esotericraft.api.init.{IEsoTeriCraft, PluginEsoTeriCraft}
+import temportalist.esotericraft.galvanization.common.capability.HandlerPlayerGalvanize
 import temportalist.esotericraft.galvanization.common.init.{ModEntities, ModItems}
+import temportalist.esotericraft.galvanization.server.CommandSetPlayerModel
+import temportalist.origin.foundation.common.modTraits.IHasCommands
 import temportalist.origin.foundation.common.{IProxy, ModBase}
 import temportalist.origin.foundation.common.registers.{OptionRegister, Register}
+import temportalist.origin.foundation.server.ICommand
 
 /**
   *
@@ -18,7 +22,7 @@ import temportalist.origin.foundation.common.registers.{OptionRegister, Register
 	guiFactory = Galvanize.proxyClient,
 	dependencies = "required-after:Forge;" + "required-after:origin;" + "required-after:esotericraft;"
 )
-object Galvanize extends ModBase {
+object Galvanize extends ModBase with IHasCommands {
 
 	private var plugin: Plugin = _
 
@@ -68,6 +72,9 @@ object Galvanize extends ModBase {
 	def preInit(event: FMLPreInitializationEvent): Unit = {
 		super.preInitialize(event)
 
+		this.registerNetwork()
+		HandlerPlayerGalvanize.init(this, "PlayerGalvanize")
+
 	}
 
 	@Mod.EventHandler
@@ -81,5 +88,7 @@ object Galvanize extends ModBase {
 		super.postInitialize(event)
 
 	}
+
+	override def getCommands: Seq[ICommand] = Seq(CommandSetPlayerModel)
 
 }

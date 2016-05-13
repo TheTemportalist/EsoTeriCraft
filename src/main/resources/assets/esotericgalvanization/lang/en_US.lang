@@ -1,2 +1,7 @@
 
 item.esotericgalvanization:ItemEggGolem.name=Golem Egg
+
+esotericgalvanization.commands.setModel.usage=/setModel <namePlayer> <nameEntity>
+esotericgalvanization.commands.setModel.usage.invalidPlayer=Invalid player name
+esotericgalvanization.commands.setModel.usage.invalidEntity=Invalid entity name
+esotericgalvanization.commands.setModel.usage.notLivingEntity=Entity is not a living entity

@@ -20,6 +20,8 @@ import temportalist.origin.foundation.client.IModelLoader
 class ProxyClient extends ProxyCommon with IModGuiFactory with IModelLoader {
 
 	override def preInit(): Unit = {
+		super.preInit()
+		Client.preInit()
 		//this.autoLoadModels(Galvanize)
 
 		ModelLoader.setCustomModelResourceLocation(ModItems.golemEgg, 0,
