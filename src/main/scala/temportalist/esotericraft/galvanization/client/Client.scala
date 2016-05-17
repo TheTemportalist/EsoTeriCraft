@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.{ClientTickEvent, Phase
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.esotericraft.galvanization.common.capability.HelperGalvanize
-import temportalist.esotericraft.galvanization.common.capability.entity.EntityState
+import temportalist.esotericraft.galvanization.common.entity.emulator.EntityState
 import temportalist.origin.foundation.client.IModClient
 import temportalist.origin.foundation.common.IModPlugin
 

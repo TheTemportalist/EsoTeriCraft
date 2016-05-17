@@ -1,4 +1,4 @@
-package temportalist.esotericraft.galvanization.common.capability.entity
+package temportalist.esotericraft.galvanization.common.entity.emulator
 
 import javax.annotation.{Nonnull, Nullable}
 
