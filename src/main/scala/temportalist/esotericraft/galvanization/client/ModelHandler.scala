@@ -5,6 +5,7 @@ import javax.annotation.Nullable
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.entity.{Render, RenderLivingBase}
 import net.minecraft.entity.EntityLivingBase
+import temportalist.esotericraft.galvanization.common.Galvanize
 
 import scala.collection.{JavaConversions, mutable}
 
@@ -53,6 +54,7 @@ object ModelHandler {
 			info = this.entityModels(classCurrent).asInstanceOf[EntityModel[E, E]]
 			classCurrent = classCurrent.getSuperclass
 		}
+		//Galvanize.log("Found render for " + clazz.getSimpleName + " to " + classCurrent.getSimpleName)
 		info
 	}
 

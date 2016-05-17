@@ -53,7 +53,7 @@ class ItemEggGolem extends ItemCreative() with INBTHandler {
 
 				Galvanize.log("add empty")
 
-				val empty = new EntityEmpty(worldIn, modelEntityID = entityName)
+				val empty = new EntityEmpty(worldIn, entityName = entityName)
 				empty.setPosition(pos.getX + 0.5, pos.getY + 1, pos.getZ + 0.5)
 				val ret = worldIn.spawnEntityInWorld(empty)
 				Galvanize.log("" + ret)

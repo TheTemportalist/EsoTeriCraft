@@ -13,6 +13,7 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import temportalist.esotericraft.galvanization.client.{EntityModel, ModelHandler}
+import temportalist.esotericraft.galvanization.common.Galvanize
 
 /**
   *
@@ -29,6 +30,8 @@ trait IEntityEmulator {
 
 	// ~~~~~~~~~~ Getters ~~~~~~~~~~
 
+	final def getEntityName: String = this.entityName
+
 	final def getEntityState: EntityState = this.entityState
 
 	final def getEntityStateInstance(world: World): EntityLivingBase = {
@@ -39,9 +42,14 @@ trait IEntityEmulator {
 	@SideOnly(Side.CLIENT)
 	@Nullable
 	final def getEntityModelInstance(world: World): EntityModel[_ <: EntityLivingBase, _ <: EntityLivingBase] = {
-		if (this.entityModel == null)
-			this.entityModel = ModelHandler.getEntityModel(this.entityState.getInstance(world))
-		this.entityModel
+		this.getEntityState match {
+			case entityState: EntityState =>
+				//Galvanize.log("Current instance " + this.getEntityStateInstance(world).getClass.getSimpleName)
+				if (this.entityModel == null)
+					this.entityModel = ModelHandler.getEntityModel(entityState.getInstance(world))
+				this.entityModel
+			case _ => null
+		}
 	}
 
 	// ~~~~~~~~~~ Setters ~~~~~~~~~~
@@ -50,7 +58,7 @@ trait IEntityEmulator {
 		this.entityName = entityName
 	}
 
-	final def setEntityStateEntity(entityName: String, world: World): Unit = {
+	final def setEntityState(entityName: String, world: World): Unit = {
 		this.setEntityName(entityName)
 
 		if (world != null) {
@@ -62,10 +70,14 @@ trait IEntityEmulator {
 
 	private final def constructEntityState(world: World): Unit = {
 		EntityList.createEntityByName(this.entityName, world) match {
-			case living: EntityLivingBase => this.setEntityStateEntity(living)
+			case living: EntityLivingBase =>
+				this.setEntityStateEntity(living)
+				this.onEntityConstructed(this.getEntityStateInstance(world))
 			case _ =>
 		}
 	}
+
+	def onEntityConstructed(entity: EntityLivingBase): Unit = {}
 
 	final def setEntityStateEntity(entity: EntityLivingBase): Unit = {
 		if (entity == null) this.entityState = null

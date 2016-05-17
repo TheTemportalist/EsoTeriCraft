@@ -4,6 +4,8 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.common.capabilities.{Capability, ICapabilityProvider}
+import temportalist.esotericraft.galvanization.common.Galvanize
+import temportalist.esotericraft.galvanization.common.entity.EntityEmpty
 import temportalist.origin.foundation.common.capability.ExtendedHandler.ExtendedEntity
 import temportalist.origin.foundation.common.network.PacketExtendedSync
 
@@ -37,8 +39,13 @@ object HandlerPlayerGalvanize
 	override def getPacketHandlingClass: Class[_ <: Handler] = classOf[Handler]
 
 	class Handler extends PacketExtendedSync.Handler {
-		override protected def deserialize(entity: Entity, nbt: NBTTagCompound): Unit =
-			entity.getCapability(getCapabilityObject, null).deserializeNBT(nbt)
+		override protected def deserialize(entity: Entity, nbt: NBTTagCompound): Unit = {
+			entity match {
+				case player: EntityPlayer =>
+					player.getCapability(getCapabilityObject, null).deserializeNBT(nbt)
+				case _ =>
+			}
+		}
 	}
 
 }

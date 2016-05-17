@@ -53,7 +53,7 @@ object CommandSetPlayerModel extends Command {
 					val entityClass = map.get(entityName)
 					if (classOf[EntityLivingBase].isAssignableFrom(entityClass)) {
 						HelperGalvanize.get(player)
-								.setEntityStateEntity(entityName, player.getEntityWorld)
+								.setEntityState(entityName, player.getEntityWorld)
 					}
 					else wrongUsage("notLivingEntity")
 				}

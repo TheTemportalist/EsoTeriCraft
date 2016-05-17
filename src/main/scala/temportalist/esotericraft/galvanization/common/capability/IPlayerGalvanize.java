@@ -22,7 +22,7 @@ public interface IPlayerGalvanize extends INBTSerializable<NBTTagCompound> {
 
 	void onTickServer();
 
-	void setEntityStateEntity(String entityName, World world);
+	void setEntityState(String entityName, World world);
 
 	void setEntityStateEntity(EntityLivingBase entity);
 

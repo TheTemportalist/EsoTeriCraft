@@ -26,6 +26,7 @@ class PlayerGalvanize(private val player: EntityPlayer)
 	override def serializeNBT(): NBTTagCompound = {
 		val nbt = new NBTTagCompound
 
+		if (this.getEntityName != null) nbt.setString("entityName", this.getEntityName)
 		if (this.getEntityState != null) nbt.setTag("entity_state", this.getEntityState.serializeNBT())
 
 		nbt
@@ -36,7 +37,7 @@ class PlayerGalvanize(private val player: EntityPlayer)
 		if (nbt.hasKey("main")) {
 			nbt.getTag("main") match {
 				case tagStr: NBTTagString =>
-					this.setEntityStateEntity(tagStr.getString, this.getWorld)
+					this.setEntityState(tagStr.getString, this.getWorld)
 				case tagCom: NBTTagCompound =>
 					this.deserializeNBT(tagCom)
 				case _ =>
@@ -45,7 +46,7 @@ class PlayerGalvanize(private val player: EntityPlayer)
 		}
 
 		if (nbt.hasKey("entityName")) {
-			this.setEntityStateEntity(nbt.getString("entityName"), this.getWorld)
+			this.setEntityState(nbt.getString("entityName"), this.getWorld)
 		} else this.setEntityName(null)
 
 		var entityState: EntityState = null
