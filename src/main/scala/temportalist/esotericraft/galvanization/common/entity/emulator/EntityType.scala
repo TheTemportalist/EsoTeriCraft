@@ -42,7 +42,8 @@ class EntityType extends Comparable[EntityType] with INBTSerializable[NBTTagComp
 			val tagForCreation: NBTTagCompound = this.tagTemplate.copy()
 					.asInstanceOf[NBTTagCompound]
 			EntityList.createEntityFromNBT(tagForCreation, world) match {
-				case living: EntityLivingBase => entity = living
+				case living: EntityLivingBase =>
+					entity = living
 				case _ =>
 			}
 		}
@@ -118,7 +119,7 @@ class EntityType extends Comparable[EntityType] with INBTSerializable[NBTTagComp
 
 	override def deserializeNBT(nbt: NBTTagCompound): Unit = {
 		this.entityName = nbt.getString("id")
-		if (nbt.hasKey("tag_tempalte")) this.tagTemplate = nbt.getCompoundTag("tag_template")
+		if (nbt.hasKey("tag_template")) this.tagTemplate = nbt.getCompoundTag("tag_template")
 		if (nbt.hasKey("tag_entity")) this.tagEntity = nbt.getCompoundTag("tag_entity")
 	}
 
