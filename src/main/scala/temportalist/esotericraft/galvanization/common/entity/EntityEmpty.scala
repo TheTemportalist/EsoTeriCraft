@@ -2,12 +2,14 @@ package temportalist.esotericraft.galvanization.common.entity
 
 import io.netty.buffer.ByteBuf
 import net.minecraft.entity._
+import net.minecraft.entity.ai.{EntityAIFollowParent, EntityAILookIdle, EntityAIWatchClosest, _}
 import net.minecraft.entity.ai.attributes.IAttribute
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.init.Items
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.world.World
 import net.minecraftforge.fml.common.network.ByteBufUtils
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData
-import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.esotericraft.galvanization.common.entity.emulator.{EntityState, IEntityEmulator}
 
 /**
@@ -22,7 +24,6 @@ class EntityEmpty(world: World) extends EntityCreature(world) with IEntityAdditi
 		this(world)
 
 		this.setEntityState(entityName, this.getEntityWorld)
-		Galvanize.log("Init " + entityName)
 
 	}
 
@@ -58,12 +59,15 @@ class EntityEmpty(world: World) extends EntityCreature(world) with IEntityAdditi
 
 	override def initEntityAI(): Unit = {
 		//this.tasks.addTask(1, new EntityAIPlayer(this))
-		//this.tasks.addTask(2, new EntityAIWander(this, 0.6D))
-
+		//this.tasks.addTask(1, new EntityAIWander(this, 1D))
+		this.tasks.addTask(0, new EntityAISwimming(this))
+		this.tasks.addTask(1, new EntityAIPanic(this, 1.25D))
+		this.tasks.addTask(6, new EntityAIWander(this, 1.0D))
+		this.tasks.addTask(7, new EntityAIWatchClosest(this, classOf[EntityPlayer], 6.0F))
+		this.tasks.addTask(8, new EntityAILookIdle(this))
 	}
 
 	override def onEntityConstructed(entity: EntityLivingBase): Unit = {
-		Galvanize.log("on construct: " + entity.getClass.getSimpleName)
 		this.updateAttributes()
 		entity match {
 			case e: EntityCreature =>
@@ -78,6 +82,7 @@ class EntityEmpty(world: World) extends EntityCreature(world) with IEntityAdditi
 	override def writeEntityToNBT(nbt: NBTTagCompound): Unit = {
 
 		if (this.getEntityName != null) nbt.setString("entity_name", this.getEntityName)
+
 		if (this.getEntityState != null)
 			nbt.setTag("entity_state", this.getEntityState.serializeNBT())
 
@@ -99,17 +104,18 @@ class EntityEmpty(world: World) extends EntityCreature(world) with IEntityAdditi
 
 	override def writeSpawnData(buffer: ByteBuf): Unit = {
 
-		ByteBufUtils.writeUTF8String(buffer,
-			if (this.getEntityName != null) this.getEntityName else "")
+		val entityName = if (this.getEntityName != null) this.getEntityName else ""
+		ByteBufUtils.writeUTF8String(buffer, entityName)
 
-		ByteBufUtils.writeTag(buffer,
-			if (this.getEntityState != null) this.getEntityState.serializeNBT() else new NBTTagCompound)
+		val stateTag = if (this.getEntityState != null) this.getEntityState.serializeNBT() else new NBTTagCompound
+		ByteBufUtils.writeTag(buffer, stateTag)
 
 	}
 
 	override def readSpawnData(buffer: ByteBuf): Unit = {
 
-		this.setEntityName(ByteBufUtils.readUTF8String(buffer))
+		val entityName = ByteBufUtils.readUTF8String(buffer)
+		this.setEntityName(entityName)
 
 		val entityStateTag = ByteBufUtils.readTag(buffer)
 		if (!entityStateTag.hasNoTags) {

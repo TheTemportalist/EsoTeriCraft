@@ -13,7 +13,6 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import temportalist.esotericraft.galvanization.client.{EntityModel, ModelHandler}
-import temportalist.esotericraft.galvanization.common.Galvanize
 
 /**
   *
@@ -44,7 +43,6 @@ trait IEntityEmulator {
 	final def getEntityModelInstance(world: World): EntityModel[_ <: EntityLivingBase, _ <: EntityLivingBase] = {
 		this.getEntityState match {
 			case entityState: EntityState =>
-				//Galvanize.log("Current instance " + this.getEntityStateInstance(world).getClass.getSimpleName)
 				if (this.entityModel == null)
 					this.entityModel = ModelHandler.getEntityModel(entityState.getInstance(world))
 				this.entityModel
@@ -86,6 +84,7 @@ trait IEntityEmulator {
 
 	final def setEntityState(state: EntityState): Unit = {
 		this.entityState = state
+		this.entityModel = null
 	}
 
 	final def clearEntityState(): Unit = this.entityState = null

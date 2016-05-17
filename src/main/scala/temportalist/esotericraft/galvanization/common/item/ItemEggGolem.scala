@@ -49,14 +49,10 @@ class ItemEggGolem extends ItemCreative() with INBTHandler {
 			if (!worldIn.isRemote) {
 
 				val entityName = this.get[String](stack, ENTITY_ID)
-				Galvanize.log(entityName)
-
-				Galvanize.log("add empty")
 
 				val empty = new EntityEmpty(worldIn, entityName = entityName)
 				empty.setPosition(pos.getX + 0.5, pos.getY + 1, pos.getZ + 0.5)
 				val ret = worldIn.spawnEntityInWorld(empty)
-				Galvanize.log("" + ret)
 
 			}
 			//this.removeTag(stack, ENTITY_ID)
