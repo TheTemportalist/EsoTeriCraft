@@ -7,6 +7,8 @@ package temportalist.esotericraft.api.init;
  */
 public interface IEsoTeriCraft {
 
+	@interface PluginEsoTeriCraft { }
+
 	void onCreated();
 
 }
