@@ -7,6 +7,8 @@ import net.minecraftforge.common.util.INBTSerializable
 
 /**
   *
+  * Based HEAVILY on [[https://github.com/iChun/Morph/blob/master/src/main/java/morph/common/morph/MorphInfo.java]]
+  *
   * Created by TheTemportalist on 5/7/2016.
   *
   * @author TheTemportalist
@@ -31,10 +33,13 @@ final class EntityState extends Comparable[EntityState] with INBTSerializable[NB
 		else this.instance.getName
 	}
 
-	def getInstance(world: World): EntityLivingBase = {
+	def getInstance(world: World, onChange: (EntityLivingBase) => Unit = null): EntityLivingBase = {
 		if (this.instance != null && this.instance.getEntityWorld != world)
 			this.instance = null
-		if (this.instance == null) this.instance = this.entityType.createInstance(world)
+		if (this.instance == null) {
+			this.instance = this.entityType.createInstance(world)
+			if (onChange != null) onChange(instance)
+		}
 		this.instance
 	}
 

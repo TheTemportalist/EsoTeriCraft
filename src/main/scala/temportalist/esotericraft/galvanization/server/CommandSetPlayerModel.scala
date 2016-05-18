@@ -40,7 +40,7 @@ object CommandSetPlayerModel extends Command {
 				val entityName = args(1)
 
 				if (entityName == "None") {
-					HelperGalvanize.get(player).clearEntityState()
+					HelperGalvanize.get(player).clearEntityState(player.getEntityWorld)
 				}
 				else {
 					val map = EntityList.NAME_TO_CLASS

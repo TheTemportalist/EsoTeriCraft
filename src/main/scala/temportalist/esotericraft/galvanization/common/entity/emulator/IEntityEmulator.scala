@@ -8,11 +8,18 @@ import net.minecraft.entity.monster.EntitySlime
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.{EntityList, EntityLivingBase}
 import net.minecraft.inventory.EntityEquipmentSlot
+import net.minecraft.nbt.{NBTBase, NBTTagCompound}
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+import temportalist.esotericraft.api.galvanize.IAbility
 import temportalist.esotericraft.galvanization.client.{EntityModel, ModelHandler}
+import temportalist.esotericraft.galvanization.common.Galvanize
+import temportalist.esotericraft.galvanization.common.entity.emulator.ability.AbilityLoader
+
+import scala.collection.JavaConversions
+import scala.collection.mutable.ListBuffer
 
 /**
   *
@@ -24,6 +31,7 @@ trait IEntityEmulator {
 
 	private var entityName: String = null
 	private var entityState: EntityState = _
+	private var abilities: Iterable[IAbility[_ <: NBTBase]] = Array[IAbility[_ <: NBTBase]]()
 	@SideOnly(Side.CLIENT)
 	private var entityModel: EntityModel[_ <: EntityLivingBase, _ <: EntityLivingBase] = _
 
@@ -34,9 +42,30 @@ trait IEntityEmulator {
 	final def getEntityState: EntityState = this.entityState
 
 	final def getEntityStateInstance(world: World): EntityLivingBase = {
-		if (this.entityState != null) this.entityState.getInstance(world)
-		else null
+		if (this.entityState != null)
+			this.entityState.getInstance(world,
+				(instance: EntityLivingBase) => {
+					val self = this.getSelfEntityInstance
+					// Abilities being removed
+					for (ability <- this.abilities) ability.onRemovalFrom(self)
+					// Fetch new abilities
+					this.abilities = Galvanize.getAbilitiesFor(instance)
+					// Abilities being added
+					for (ability <- this.abilities) ability.onApplicationTo(self)
+				}
+			)
+		else {
+			val self = this.getSelfEntityInstance
+			// Abilities being removed
+			for (ability <- this.abilities) ability.onRemovalFrom(self)
+			this.abilities = Array[IAbility[_ <: NBTBase]]()
+			null
+		}
 	}
+
+	final def getEntityAbilities: java.lang.Iterable[IAbility[_ <: NBTBase]] = JavaConversions.asJavaIterable(this._getEntityAbilities)
+
+	final def _getEntityAbilities: Iterable[IAbility[_ <: NBTBase]] = this.abilities
 
 	@SideOnly(Side.CLIENT)
 	@Nullable
@@ -57,7 +86,11 @@ trait IEntityEmulator {
 	}
 
 	final def setEntityState(entityName: String, world: World): Unit = {
-		this.setEntityName(entityName)
+		if (entityName.isEmpty) {
+			this.clearEntityState(world)
+			return
+		}
+		else this.setEntityName(entityName)
 
 		if (world != null) {
 			if (!world.isRemote) this.syncEntityNameToClient(this.entityName)
@@ -87,7 +120,12 @@ trait IEntityEmulator {
 		this.entityModel = null
 	}
 
-	final def clearEntityState(): Unit = this.entityState = null
+	final def clearEntityState(world: World): Unit = {
+		if (!world.isRemote) this.syncEntityNameToClient("")
+		this.entityName = null
+		this.entityState = null
+		this.getEntityStateInstance(world)
+	}
 
 	// ~~~~~~~~~~ Syncing ~~~~~~~~~~
 
@@ -106,6 +144,7 @@ trait IEntityEmulator {
 					this.setSizeAndEye(living.width, living.height, living.getEyeHeight, self)
 				case _ => // null
 			}
+			for (ability <- this._getEntityAbilities) ability.onUpdate(self)
 			this.syncEntityWithSelf(entInstance, self)
 		}
 	}
@@ -121,6 +160,7 @@ trait IEntityEmulator {
 					this.setSizeAndEye(living.width, living.height, living.getEyeHeight, self)
 				case _ => // null
 			}
+			for (ability <- this._getEntityAbilities) ability.onUpdate(self)
 		}
 
 	}
@@ -254,6 +294,54 @@ trait IEntityEmulator {
 			// End
 
 		}
+	}
+
+	// ~~~~~~~~~~ NBT ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	final def serializeNBTEmulator: NBTTagCompound = this.serializeNBT()
+
+	private final def serializeNBT(): NBTTagCompound = {
+		val nbt = new NBTTagCompound
+
+		for (ability <- this.abilities) {
+			val id = AbilityLoader.getAbilityID(ability)
+			if (id != null)
+				nbt.setTag(id, {
+					val abilityTag = new NBTTagCompound
+					val mappingArgArray = ability.encodeMappingArguments()
+					var mappingArgs = ""
+					for (i <- mappingArgArray.indices) {
+						mappingArgs += mappingArgArray(i)
+						if (i < mappingArgArray.length - 1)
+							mappingArgs += ","
+					}
+					abilityTag.setString("mappingArguments", mappingArgs)
+					abilityTag.setTag("nbt", ability.serializeNBT())
+					abilityTag
+				})
+		}
+
+		nbt
+	}
+
+	final def deserializeNBTEmulator(nbt: NBTTagCompound): Unit = this.deserializeNBT(nbt)
+
+	private def deserializeNBT(nbt: NBTTagCompound): Unit = {
+
+		val abilityKeys = JavaConversions.asScalaSet(nbt.getKeySet)
+		var abilities = ListBuffer[IAbility[_ <: NBTBase]]()
+		for (abilityName <- abilityKeys) {
+			val abilityTag = nbt.getCompoundTag(abilityName)
+			val mappingArgs = abilityTag.getString("mappingArguments")
+			Galvanize.createAbility(abilityName, mappingArgs, abilityName + "|" + mappingArgs) match {
+				case ability: IAbility[_] =>
+					ability.asInstanceOf[IAbility[_ <: NBTBase]].deserialize(abilityTag.getTag("nbt"))
+					abilities += ability.asInstanceOf[IAbility[_ <: NBTBase]]
+				case _ =>
+			}
+		}
+		this.abilities = abilities.toArray.asInstanceOf[Array[IAbility[_ <: NBTBase]]]
+
 	}
 
 }

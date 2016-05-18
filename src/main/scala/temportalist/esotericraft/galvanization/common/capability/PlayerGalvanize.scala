@@ -12,8 +12,6 @@ import temportalist.origin.foundation.common.network.NetworkMod
 
 /**
   *
-  * Based HEAVILY on [[https://github.com/iChun/Morph/blob/master/src/main/java/morph/common/morph/MorphInfo.java]]
-  *
   * Created by TheTemportalist on 5/7/2016.
   *
   * @author TheTemportalist
@@ -28,6 +26,7 @@ class PlayerGalvanize(private val player: EntityPlayer)
 
 		if (this.getEntityName != null) nbt.setString("entityName", this.getEntityName)
 		if (this.getEntityState != null) nbt.setTag("entity_state", this.getEntityState.serializeNBT())
+		nbt.setTag("emulator", this.serializeNBTEmulator)
 
 		nbt
 	}
@@ -55,6 +54,8 @@ class PlayerGalvanize(private val player: EntityPlayer)
 			entityState.deserializeNBT(nbt.getCompoundTag("entity_state"))
 		}
 		this.setEntityState(entityState)
+
+		this.deserializeNBTEmulator(nbt.getCompoundTag("emulator"))
 
 	}
 

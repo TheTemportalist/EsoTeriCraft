@@ -1,15 +1,21 @@
 package temportalist.esotericraft.galvanization.common.item
 
+import java.util
+
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.{EntityList, EntityLivingBase}
 import net.minecraft.item.ItemStack
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand}
 import net.minecraft.world.World
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import temportalist.esotericraft.galvanization.common.Galvanize
+import temportalist.esotericraft.galvanization.common.capability.{HelperGalvanize, IPlayerGalvanize}
 import temportalist.esotericraft.galvanization.common.entity.EntityEmpty
 import temportalist.esotericraft.galvanization.common.item.ItemEggGolem._
 import temportalist.origin.api.common.item.INBTHandler
+
+import scala.collection.JavaConversions
 
 /**
   *
@@ -44,7 +50,7 @@ class ItemEggGolem extends ItemCreative() with INBTHandler {
 	override def onItemUse(stack: ItemStack, playerIn: EntityPlayer, worldIn: World, pos: BlockPos,
 			hand: EnumHand, facing: EnumFacing,
 			hitX: Float, hitY: Float, hitZ: Float): EnumActionResult = {
-		if (stack.getTagCompound.hasKey(ENTITY_ID)) {
+		if (stack.hasTagCompound && stack.getTagCompound.hasKey(ENTITY_ID)) {
 
 			if (!worldIn.isRemote) {
 
@@ -59,6 +65,27 @@ class ItemEggGolem extends ItemCreative() with INBTHandler {
 			EnumActionResult.SUCCESS
 		}
 		else EnumActionResult.PASS
+	}
+
+	@SideOnly(Side.CLIENT) override
+	def addInformation(stack: ItemStack, playerIn: EntityPlayer, tooltip: util.List[String],
+			advanced: Boolean): Unit = {
+		if (stack.hasTagCompound && stack.getTagCompound.hasKey(ENTITY_ID)) {
+			tooltip.add(this.get[String](stack, ENTITY_ID))
+		}
+
+		tooltip.add("")
+
+		HelperGalvanize.get(playerIn) match {
+			case galvanized: IPlayerGalvanize =>
+				for (ability <-
+				     JavaConversions.iterableAsScalaIterable(galvanized.getEntityAbilities)) {
+					tooltip.add(ability.getName)
+				}
+			case _ => // null
+		}
+
+
 	}
 
 }
