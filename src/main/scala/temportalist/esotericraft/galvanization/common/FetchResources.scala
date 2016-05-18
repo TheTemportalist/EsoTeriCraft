@@ -48,7 +48,7 @@ object FetchResources {
 				}
 				catch {
 					case e: Exception =>
-						Galvanize.log("[Abilities] Entity class \'" + entry._1 + "\' not found. Skipping.")
+						//Galvanize.log("[Abilities] Entity class \'" + entry._1 + "\' not found. Skipping.")
 				}
 				if (classKey != null) {
 					if (!classOf[EntityLivingBase].isAssignableFrom(classKey)) {

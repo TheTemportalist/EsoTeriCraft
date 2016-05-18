@@ -1,6 +1,7 @@
 package temportalist.esotericraft.galvanization.common.entity.emulator.ability
 
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTBase
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import temportalist.esotericraft.api.galvanize.IAbility
@@ -41,5 +42,14 @@ abstract class AbilityBase[N <: NBTBase] extends IAbility[N] {
 
 	@SideOnly(Side.CLIENT)
 	override def renderPost(entity: EntityLivingBase): Unit = {}
+
+	// ~~~~~ Other
+
+	def isFlying(entity: EntityLivingBase): Boolean = {
+		entity match {
+			case player: EntityPlayer => player.capabilities.isFlying
+			case _ => false
+		}
+	}
 
 }

@@ -2,6 +2,7 @@ package temportalist.esotericraft.main.common.api
 
 import net.minecraftforge.fml.common.discovery.ASMDataTable
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
+import temportalist.esotericraft.galvanization.common.Galvanize
 
 import scala.collection.{JavaConversions, mutable}
 
@@ -22,6 +23,7 @@ class AnnotationLoader[C, T](private val annotation: Class[C], private val insta
 	final def findInstanceClasses(asmData: ASMDataTable): Map[Class[_ <: T], Map[String, AnyRef]] = {
 		val annotationName = this.annotation.getCanonicalName
 		val dataAnnotatedClasses = JavaConversions.asScalaSet(asmData.getAll(annotationName))
+		Galvanize.log("Found " + dataAnnotatedClasses.size + " entries for " + annotationName)
 		val classes = mutable.Map[Class[_ <: T], Map[String, AnyRef]]()
 		for (dataAnnotatedClass <- dataAnnotatedClasses) {
 			try {

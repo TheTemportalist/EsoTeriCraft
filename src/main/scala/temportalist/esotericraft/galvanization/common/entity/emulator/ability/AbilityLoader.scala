@@ -25,7 +25,10 @@ object AbilityLoader extends AnnotationLoader(classOf[Ability], classOf[IAbility
 			implementingClass: Class[_ <: IAbility[_ <: NBTBase]],
 			annotationInfo: Map[String, AnyRef]): Unit = {
 		val id = annotationInfo.getOrElse("id", "").toString
-		if (id.nonEmpty) Galvanize.MAP_STRING_to_CLASS_ABILITIES.put(id, implementingClass)
+		if (id.nonEmpty) {
+			Galvanize.MAP_STRING_to_CLASS_ABILITIES.put(id, implementingClass)
+			Galvanize.log("Loaded ability with ID " + id)
+		}
 		else {
 			Galvanize.log("ID not found for Ability class \'" + implementingClass.getCanonicalName + "\'. Skipping.")
 		}
