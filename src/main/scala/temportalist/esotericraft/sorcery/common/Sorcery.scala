@@ -2,7 +2,8 @@ package temportalist.esotericraft.sorcery.common
 
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 import net.minecraftforge.fml.common.{Mod, SidedProxy}
-import temportalist.esotericraft.api.init.{IEsoTeriCraft, PluginEsoTeriCraft}
+import temportalist.esotericraft.api.init.IEsoTeriCraft
+import temportalist.esotericraft.api.init.IEsoTeriCraft.PluginEsoTeriCraft
 import temportalist.esotericraft.sorcery.common.capability.HandlerSorceryPlayer
 import temportalist.esotericraft.sorcery.common.network.PacketCast
 import temportalist.origin.api.common.IModDetails
