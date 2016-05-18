@@ -3,6 +3,8 @@ package temportalist.esotericraft.api.galvanize;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTBase;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Created by TheTemportalist on 5/17/2016.
@@ -29,5 +31,11 @@ public interface IAbility<N extends NBTBase> extends INBTSerializable<N> {
 
 	void onRemovalFrom(EntityLivingBase entity);
 
+	boolean hasNBT();
+
 	void deserialize(NBTBase nbt);
+
+	@SideOnly(Side.CLIENT)
+	void renderPost(EntityLivingBase entity);
+
 }

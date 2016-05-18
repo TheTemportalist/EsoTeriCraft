@@ -316,7 +316,7 @@ trait IEntityEmulator {
 							mappingArgs += ","
 					}
 					abilityTag.setString("mappingArguments", mappingArgs)
-					abilityTag.setTag("nbt", ability.serializeNBT())
+					if (ability.hasNBT) abilityTag.setTag("nbt", ability.serializeNBT())
 					abilityTag
 				})
 		}
@@ -335,7 +335,8 @@ trait IEntityEmulator {
 			val mappingArgs = abilityTag.getString("mappingArguments")
 			Galvanize.createAbility(abilityName, mappingArgs, abilityName + "|" + mappingArgs) match {
 				case ability: IAbility[_] =>
-					ability.asInstanceOf[IAbility[_ <: NBTBase]].deserialize(abilityTag.getTag("nbt"))
+					if (ability.hasNBT)
+						ability.asInstanceOf[IAbility[_ <: NBTBase]].deserialize(abilityTag.getTag("nbt"))
 					abilities += ability.asInstanceOf[IAbility[_ <: NBTBase]]
 				case _ =>
 			}

@@ -6,13 +6,15 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent
 import net.minecraftforge.client.event.RenderPlayerEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent.{ClientTickEvent, Phase}
+import net.minecraftforge.fml.common.gameevent.TickEvent.{ClientTickEvent, Phase, RenderTickEvent}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import temportalist.esotericraft.galvanization.common.Galvanize
-import temportalist.esotericraft.galvanization.common.capability.HelperGalvanize
+import temportalist.esotericraft.galvanization.common.capability.{HelperGalvanize, IPlayerGalvanize}
 import temportalist.esotericraft.galvanization.common.entity.emulator.EntityState
 import temportalist.origin.foundation.client.IModClient
 import temportalist.origin.foundation.common.IModPlugin
+
+import scala.collection.JavaConversions
 
 /**
   *
@@ -86,6 +88,26 @@ object Client extends IModClient {
 			case _ =>
 		}
 
+	}
+
+	@SubscribeEvent
+	def renderTick(event: RenderTickEvent): Unit = {
+		val mc = Minecraft.getMinecraft
+		if (mc.theWorld != null) {
+			if (event.phase != Phase.START) {
+				this.renderAbilitiesPost(mc.thePlayer)
+			}
+		}
+	}
+
+	def renderAbilitiesPost(player: EntityPlayerSP): Unit = {
+		HelperGalvanize.get(player) match {
+			case galvanized: IPlayerGalvanize =>
+				for (ability <- JavaConversions.iterableAsScalaIterable(galvanized.getEntityAbilities)) {
+					ability.renderPost(player)
+				}
+			case _ =>
+		}
 	}
 
 	def interpolateRotation(prev: Float, next: Float, partialTicks: Float): Float = {
