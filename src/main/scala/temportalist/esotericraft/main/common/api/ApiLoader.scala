@@ -1,7 +1,8 @@
 package temportalist.esotericraft.main.common.api
 
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
-import temportalist.esotericraft.api.init.{IEsoTeriCraft, PluginEsoTeriCraft}
+import temportalist.esotericraft.api.init.IEsoTeriCraft
+import temportalist.esotericraft.api.init.IEsoTeriCraft.PluginEsoTeriCraft
 
 /**
   *
@@ -9,10 +10,10 @@ import temportalist.esotericraft.api.init.{IEsoTeriCraft, PluginEsoTeriCraft}
   *
   * @author TheTemportalist
   */
-object ApiLoader extends AnnotationLoader(classOf[PluginEsoTeriCraft], classOf[IEsoTeriCraft]) {
+object ApiLoader extends InstanceLoader(classOf[PluginEsoTeriCraft], classOf[IEsoTeriCraft]) {
 
 	def preInit(event: FMLPreInitializationEvent): Unit = {
-		this.loadPlugins(event)
+		this.loadAnnotations(event)
 	}
 
 	def init(event: FMLInitializationEvent): Unit = {

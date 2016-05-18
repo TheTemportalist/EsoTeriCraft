@@ -3,8 +3,7 @@ package temportalist.esotericraft.main.common.api
 import net.minecraftforge.fml.common.discovery.ASMDataTable
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 
-import scala.collection.JavaConversions
-import scala.collection.mutable.ListBuffer
+import scala.collection.{JavaConversions, mutable}
 
 /**
   *
@@ -12,36 +11,39 @@ import scala.collection.mutable.ListBuffer
   *
   * @author TheTemportalist
   */
-class AnnotationLoader[T](private val annotation: Class[_], private val instance: Class[T]) {
+class AnnotationLoader[C, T](private val annotation: Class[C], private val instance: Class[T]) {
 
-	private var plugins: Seq[T] = _
+	private var classInstances: Map[Class[_ <: T], Map[String, AnyRef]] = _
 
-	final def loadPlugins(event: FMLPreInitializationEvent): Unit = {
-		this.plugins = this.getInstances(event.getAsmData)
+	final def loadAnnotations(event: FMLPreInitializationEvent): Unit = {
+		this.classInstances = this.findInstanceClasses(event.getAsmData)
 	}
 
-	final def getPlugins: Seq[T] = this.plugins
-
-	final def getInstances(asmData: ASMDataTable): Seq[T] = {
+	final def findInstanceClasses(asmData: ASMDataTable): Map[Class[_ <: T], Map[String, AnyRef]] = {
 		val annotationName = this.annotation.getCanonicalName
 		val dataAnnotatedClasses = JavaConversions.asScalaSet(asmData.getAll(annotationName))
-		val instances = ListBuffer[T]()
+		val classes = mutable.Map[Class[_ <: T], Map[String, AnyRef]]()
 		for (dataAnnotatedClass <- dataAnnotatedClasses) {
 			try {
 				val annotatedClass = Class.forName(dataAnnotatedClass.getClassName)
-				val instanceClass = annotatedClass.asSubclass(this.instance)
-				val instance = instanceClass.newInstance()
-				instances += instance
-				this.onInstanceCreated(instance)
+				val annotatedClassAsSub = annotatedClass.asSubclass(this.instance)
+				val annotationInfo = JavaConversions.mapAsScalaMap(dataAnnotatedClass.getAnnotationInfo).toMap
+				classes.put(annotatedClassAsSub, annotationInfo)
+				this.onAnnotationClassFound(annotatedClassAsSub, annotationInfo)
 			}
 			catch {
 				case e: Exception =>
 					e.printStackTrace()
 			}
 		}
-		instances
+		classes.toMap
 	}
 
-	def onInstanceCreated(instance: T): Unit = {}
+	def onAnnotationClassFound(implementingClass: Class[_ <: T], annotationInfo: Map[String, AnyRef]): Unit = {}
+
+	final def getClassInstances: Iterable[Class[_ <: T]] = this.classInstances.keys
+
+	final def getAnnotationInfo(clazz: Class[_ <: T]) =
+		this.classInstances.getOrElse(clazz, Map[String, AnyRef]())
 
 }
