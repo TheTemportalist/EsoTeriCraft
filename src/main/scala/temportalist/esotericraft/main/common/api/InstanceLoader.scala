@@ -11,7 +11,7 @@ import scala.collection.mutable.ListBuffer
 class InstanceLoader[C, T](annotation: Class[C], instance: Class[T])
 		extends AnnotationLoader(annotation = annotation, instance = instance) {
 
-	private var instances: ListBuffer[T] = _
+	private var instances: ListBuffer[T] = ListBuffer[T]()
 
 	final def getInstances: Seq[T] = this.instances
 
