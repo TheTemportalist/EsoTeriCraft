@@ -57,7 +57,8 @@ trait IEntityEmulator {
 		else {
 			val self = this.getSelfEntityInstance
 			// Abilities being removed
-			for (ability <- this.abilities) ability.onRemovalFrom(self)
+			if (this.abilities != null)
+				for (ability <- this.abilities) ability.onRemovalFrom(self)
 			this.abilities = Array[IAbility[_ <: NBTBase]]()
 			null
 		}

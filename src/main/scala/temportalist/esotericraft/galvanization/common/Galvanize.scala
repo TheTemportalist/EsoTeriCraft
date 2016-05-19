@@ -1,16 +1,20 @@
-package temportalist.esotericraft.galvanization.common
+package temportalist
+
+package esotericraft
+package galvanization
+package common
 
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.nbt.NBTBase
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 import net.minecraftforge.fml.common.{Mod, SidedProxy}
-import temportalist.esotericraft.api.galvanize.IAbility
-import temportalist.esotericraft.api.init.IEsoTeriCraft
-import temportalist.esotericraft.api.init.IEsoTeriCraft.PluginEsoTeriCraft
-import temportalist.esotericraft.galvanization.common.capability.HandlerPlayerGalvanize
-import temportalist.esotericraft.galvanization.common.entity.emulator.ability.AbilityLoader
-import temportalist.esotericraft.galvanization.common.init.{ModEntities, ModItems}
-import temportalist.esotericraft.galvanization.server.CommandSetPlayerModel
+import api.galvanize.IAbility
+import api.init.IEsoTeriCraft
+import api.init.IEsoTeriCraft.PluginEsoTeriCraft
+import capability.HandlerPlayerGalvanize
+import entity.emulator.ability.AbilityLoader
+import init.{ModEntities, ModItems}
+import server.CommandSetPlayerModel
 import temportalist.origin.foundation.common.modTraits.IHasCommands
 import temportalist.origin.foundation.common.registers.{OptionRegister, Register}
 import temportalist.origin.foundation.common.{IProxy, ModBase}
@@ -28,7 +32,8 @@ import scala.collection.mutable.ListBuffer
 @Mod(modid = Galvanize.MOD_ID, name = Galvanize.MOD_NAME, version = Galvanize.MOD_VERSION,
 	modLanguage = "scala",
 	guiFactory = Galvanize.proxyClient,
-	dependencies = "required-after:Forge;" + "required-after:origin;" + "required-after:esotericraft;"
+	dependencies = "required-after:Forge;" + "required-after:origin;" +
+			"required-after:esotericraft;"
 )
 object Galvanize extends ModBase with IHasCommands {
 
@@ -108,14 +113,16 @@ object Galvanize extends ModBase with IHasCommands {
 	// ~~~~~~~~~~ Entity Abilities ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	val MAP_STRING_to_CLASS_ABILITIES = mutable.Map[String, Class[_ <: IAbility[_ <: NBTBase]]]()
-	val MAP_CLASS_to_ABILITIES = mutable.Map[Class[_ <: EntityLivingBase], Array[IAbility[_ <: NBTBase]]]()
+	val MAP_CLASS_to_ABILITIES = mutable
+			.Map[Class[_ <: EntityLivingBase], Array[IAbility[_ <: NBTBase]]]()
 
 	def getAbilitiesFor(entity: EntityLivingBase): Iterable[IAbility[_ <: NBTBase]] = {
 		val list = ListBuffer[IAbility[_ <: NBTBase]]()
 		var clazz: Class[_ <: EntityLivingBase] = entity.getClass
 		while (clazz != null && clazz != classOf[EntityLivingBase]) {
 			if (MAP_CLASS_to_ABILITIES.contains(clazz)) {
-				val abilities = MAP_CLASS_to_ABILITIES.getOrElse(clazz, Array[IAbility[_ <: NBTBase]]())
+				val abilities = MAP_CLASS_to_ABILITIES
+						.getOrElse(clazz, Array[IAbility[_ <: NBTBase]]())
 				list ++= abilities
 			}
 			clazz = clazz.getSuperclass.asInstanceOf[Class[_ <: EntityLivingBase]]
@@ -131,8 +138,8 @@ object Galvanize extends ModBase with IHasCommands {
 
 		if (argStrings.contains(",")) {
 			args ++= (
-				for (arg <- argStrings.split(",")) yield parseAbilityArgument(arg.trim)
-			)
+					for (arg <- argStrings.split(",")) yield parseAbilityArgument(arg.trim)
+					)
 		}
 		else {
 			args += parseAbilityArgument(argStrings.trim)
@@ -168,32 +175,32 @@ object Galvanize extends ModBase with IHasCommands {
 			Boolean.box(value.equalsIgnoreCase("true"))
 		else if (value.endsWith("F"))
 			Float.box(
-				try { value.substring(0, value.length - 1).toFloat }
-				catch { case e: Exception => 0F }
+				try {value.substring(0, value.length - 1).toFloat}
+				catch {case e: Exception => 0F}
 			)
 		else if (value.endsWith("D"))
 			Double.box(
-				try { value.substring(0, value.length - 1).toDouble }
-				catch { case e: Exception => 0D }
+				try {value.substring(0, value.length - 1).toDouble}
+				catch {case e: Exception => 0D}
 			)
 		else if (value.endsWith("B"))
 			Byte.box(
-				try { value.substring(0, value.length - 1).toByte }
-				catch { case e: Exception => 0.toByte }
+				try {value.substring(0, value.length - 1).toByte}
+				catch {case e: Exception => 0.toByte}
 			)
 		else if (value.endsWith("S"))
 			Short.box(
-				try { value.substring(0, value.length - 1).toShort }
-				catch { case e: Exception => 0.toShort }
+				try {value.substring(0, value.length - 1).toShort}
+				catch {case e: Exception => 0.toShort}
 			)
 		else if (value.endsWith("L"))
 			Long.box(
-				try { value.substring(0, value.length - 1).toLong }
-				catch { case e: Exception => 0.toLong }
+				try {value.substring(0, value.length - 1).toLong}
+				catch {case e: Exception => 0.toLong}
 			)
 		else
-			try { Int.box(value.substring(0, value.length - 1).toInt) }
-			catch { case e: Exception => value }
+			try {Int.box(value.substring(0, value.length - 1).toInt)}
+			catch {case e: Exception => value}
 	}
 
 }

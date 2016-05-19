@@ -1,15 +1,16 @@
 package temportalist.esotericraft.galvanization.common.entity
 
 import io.netty.buffer.ByteBuf
+import net.minecraft.block.state.IBlockState
 import net.minecraft.entity._
 import net.minecraft.entity.ai.attributes.IAttribute
-import net.minecraft.entity.ai.{EntityAILookIdle, EntityAIWatchClosest, _}
-import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.util.math.{BlockPos, MathHelper}
 import net.minecraft.world.World
 import net.minecraftforge.fml.common.network.ByteBufUtils
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData
-import temportalist.esotericraft.galvanization.common.Galvanize
+import temportalist.esotericraft.api.galvanize.ability.IAbilityFly
+import temportalist.esotericraft.galvanization.common.entity.ai.EntityAIFollowPlayer
 import temportalist.esotericraft.galvanization.common.entity.emulator.{EntityState, IEntityEmulator}
 
 /**
@@ -59,6 +60,12 @@ class EntityEmpty(world: World) extends EntityCreature(world)
 	}
 
 	override def initEntityAI(): Unit = {
+		if (this.getEntityState == null) return
+
+		val canFly = this.canFly
+		//this.moveHelper = if (canFly) new EntityMoveHelperFly(this) else new EntityMoveHelper(this)
+
+		this.tasks.addTask(0, new EntityAIFollowPlayer(this, canFly = canFly))
 
 	}
 
@@ -68,8 +75,20 @@ class EntityEmpty(world: World) extends EntityCreature(world)
 			case e: EntityCreature =>
 				e.tasks.taskEntries.clear()
 				e.targetTasks.taskEntries.clear()
+
+				this.tasks.taskEntries.clear()
+				this.targetTasks.taskEntries.clear()
+				this.initEntityAI()
 			case _ =>
 		}
+	}
+
+	private def canFly: Boolean = {
+		if (this.getEntityState != null) {
+			for (ability <- this._getEntityAbilities)
+				if (ability.isInstanceOf[IAbilityFly]) return true
+		}
+		false
 	}
 
 	// ~~~~~ NBT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -150,4 +169,68 @@ class EntityEmpty(world: World) extends EntityCreature(world)
 		}
 	}
 
+	override def fall(distance: Float, damageMultiplier: Float): Unit = {
+		if (!this.canFly) super.fall(distance, damageMultiplier)
+	}
+
+	override def updateFallState(y: Double, onGroundIn: Boolean,
+			state: IBlockState, pos: BlockPos): Unit = {
+		if (!this.canFly) super.updateFallState(y, onGroundIn, state, pos)
+	}
+
+	override def moveEntityWithHeading(strafe: Float, forward: Float): Unit = {
+		if (!this.canFly) {
+			super.moveEntityWithHeading(strafe, forward)
+			return
+		}
+
+		if (this.isInWater) {
+			this.moveRelative(strafe, forward, 0.02F)
+			this.moveEntity(this.motionX, this.motionY, this.motionZ)
+			this.motionX *= 0.800000011920929D
+			this.motionY *= 0.800000011920929D
+			this.motionZ *= 0.800000011920929D
+		}
+		else if (this.isInLava) {
+			this.moveRelative(strafe, forward, 0.02F)
+			this.moveEntity(this.motionX, this.motionY, this.motionZ)
+			this.motionX *= 0.5D
+			this.motionY *= 0.5D
+			this.motionZ *= 0.5D
+		}
+		else {
+			var f: Float = 0.91F
+			if (this.onGround) {
+				f = this.worldObj.getBlockState(new BlockPos(MathHelper.floor_double(this.posX),
+					MathHelper.floor_double(this.getEntityBoundingBox.minY) - 1,
+					MathHelper.floor_double(this.posZ))).getBlock.slipperiness * 0.91F
+			}
+			val f1: Float = 0.16277136F / (f * f * f)
+			this.moveRelative(strafe, forward, if (this.onGround) 0.1F * f1
+			else 0.02F)
+			f = 0.91F
+			if (this.onGround) {
+				f = this.worldObj.getBlockState(new BlockPos(MathHelper.floor_double(this.posX),
+					MathHelper.floor_double(this.getEntityBoundingBox.minY) - 1,
+					MathHelper.floor_double(this.posZ))).getBlock.slipperiness * 0.91F
+			}
+			this.moveEntity(this.motionX, this.motionY, this.motionZ)
+			this.motionX *= f.toDouble
+			this.motionY *= f.toDouble
+			this.motionZ *= f.toDouble
+		}
+
+		this.prevLimbSwingAmount = this.limbSwingAmount
+		val d1: Double = this.posX - this.prevPosX
+		val d0: Double = this.posZ - this.prevPosZ
+		var f2: Float = MathHelper.sqrt_double(d1 * d1 + d0 * d0) * 4.0F
+
+		if (f2 > 1.0F) {
+			f2 = 1.0F
+		}
+
+		this.limbSwingAmount += (f2 - this.limbSwingAmount) * 0.4F
+		this.limbSwing += this.limbSwingAmount
+
+	}
 }
