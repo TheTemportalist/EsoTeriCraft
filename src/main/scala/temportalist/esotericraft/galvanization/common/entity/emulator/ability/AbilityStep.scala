@@ -23,7 +23,7 @@ class AbilityStep extends AbilityBase[NBTTagByte] with IAbilityStep {
 
 	// ~~~~~ Map Parsing
 
-	override def parseMappingArguments(args: Array[AnyRef]): Unit = {
+	override def parseMappingArguments(args: Array[AnyRef], entry: String): Unit = {
 		try {
 			this.stepHeight = args(0).toString.toLowerCase.toFloat
 		}

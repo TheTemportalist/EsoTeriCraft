@@ -29,7 +29,7 @@ class AbilityFly extends AbilityBase[NBTTagByte] with IAbilityFly {
 
 	// ~~~~~ Map Parsing
 
-	override def parseMappingArguments(args: Array[AnyRef]): Unit = {
+	override def parseMappingArguments(args: Array[AnyRef], entry: String): Unit = {
 		try {
 			this.slowdownInWater = args(0).toString.toLowerCase.toBoolean
 		}

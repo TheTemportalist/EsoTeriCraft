@@ -25,7 +25,7 @@ class AbilityFloat extends AbilityBase[NBTTagByte] with IAbilityFloat {
 
 	// ~~~~~ Map Parsing
 
-	override def parseMappingArguments(args: Array[AnyRef]): Unit = {
+	override def parseMappingArguments(args: Array[AnyRef], entry: String): Unit = {
 		try {
 			this.terminalVelocity = args(0).toString.toLowerCase.toDouble
 			this.negateFallDistance = args(1).toString.toLowerCase.toBoolean

@@ -16,7 +16,7 @@ abstract class AbilityBase[N <: NBTBase] extends IAbility[N] {
 
 	// ~~~~~ Map Parsing
 
-	override def parseMappingArguments(args: Array[AnyRef]): Unit = {}
+	override def parseMappingArguments(args: Array[AnyRef], entry: String): Unit = {}
 
 	override def encodeMappingArguments(): Array[String] = Array[String]()
 

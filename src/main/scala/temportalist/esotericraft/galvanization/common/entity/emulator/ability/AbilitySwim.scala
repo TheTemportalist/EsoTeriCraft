@@ -37,7 +37,7 @@ class AbilitySwim extends AbilityBase[NBTTagByte] with IAbilitySwim {
 
 	// ~~~~~ Map Parsing
 
-	override def parseMappingArguments(args: Array[AnyRef]): Unit = {
+	override def parseMappingArguments(args: Array[AnyRef], entry: String): Unit = {
 		try {
 			this.canSurviveOutOfWater = args(0).toString.toLowerCase.toBoolean
 			this.swimSpeed = args(1).toString.toLowerCase.toFloat

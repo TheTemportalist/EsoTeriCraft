@@ -31,7 +31,7 @@ class AbilityFear extends AbilityBase[NBTTagByte] with IAbilityFear {
 
 	// ~~~~~ Map Parsing
 
-	override def parseMappingArguments(args: Array[AnyRef]): Unit = {
+	override def parseMappingArguments(args: Array[AnyRef], entry: String): Unit = {
 		try {
 			this.radius = args(0).toString.toLowerCase.toInt
 			this.runSpeed = args(1).toString.toLowerCase.toDouble
@@ -44,9 +44,12 @@ class AbilityFear extends AbilityBase[NBTTagByte] with IAbilityFear {
 				}
 				catch {
 					case e: Exception =>
+						var arrStr = ""
+						for (i <- args.indices)
+							arrStr += "(" + i + ")[" + args(i) + "]"
 						Galvanize.log("[AbilityFear] Could not parse class with name \'" +
 								args(i).toString +
-								"\'. The class may not be the canonical name.")
+								"\'. The class may not be the canonical name. Args: " + arrStr + " | Entry: " + entry)
 				}
 			}
 			this.classesWhichFear = classesWhichHaveLeFear.toArray

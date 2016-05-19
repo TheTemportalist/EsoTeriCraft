@@ -21,7 +21,7 @@ public interface IAbility<N extends NBTBase> extends INBTSerializable<N> {
 
 	String getName();
 
-	void parseMappingArguments(Object[] args);
+	void parseMappingArguments(Object[] args, String entry);
 
 	String[] encodeMappingArguments();
 

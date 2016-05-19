@@ -146,7 +146,7 @@ object Galvanize extends ModBase with IHasCommands {
 			var ability: IAbility[_ <: NBTBase] = null
 			try {
 				ability = classAbility.getConstructor().newInstance()
-				ability.parseMappingArguments(args.toArray)
+				ability.parseMappingArguments(args.toArray, entry)
 			}
 			catch {
 				case e: Exception =>
@@ -192,10 +192,8 @@ object Galvanize extends ModBase with IHasCommands {
 				catch { case e: Exception => 0.toLong }
 			)
 		else
-			Int.box(
-				try { value.substring(0, value.length - 1).toInt }
-				catch { case e: Exception => 0 }
-			)
+			try { Int.box(value.substring(0, value.length - 1).toInt) }
+			catch { case e: Exception => value }
 	}
 
 }
