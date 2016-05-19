@@ -23,7 +23,6 @@ class AnnotationLoader[C, T](private val annotation: Class[C], private val insta
 	final def findInstanceClasses(asmData: ASMDataTable): Map[Class[_ <: T], Map[String, AnyRef]] = {
 		val annotationName = this.annotation.getName
 		val dataAnnotatedClasses = JavaConversions.asScalaSet(asmData.getAll(annotationName))
-		Galvanize.log("Found " + dataAnnotatedClasses.size + " entries for " + annotationName)
 		val classes = mutable.Map[Class[_ <: T], Map[String, AnyRef]]()
 		for (dataAnnotatedClass <- dataAnnotatedClasses) {
 			try {
