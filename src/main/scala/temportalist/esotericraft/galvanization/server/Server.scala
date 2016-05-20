@@ -3,12 +3,10 @@ package temportalist.esotericraft.galvanization.server
 import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.{Phase, ServerTickEvent}
-import temportalist.esotericraft.api.galvanize.{IAbility, IGalvanize}
 import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.esotericraft.galvanization.common.capability.HelperGalvanize
-import temportalist.esotericraft.main.common.api.ApiLoader
 
-import scala.collection.{JavaConversions, mutable}
+import scala.collection.JavaConversions
 
 /**
   *
