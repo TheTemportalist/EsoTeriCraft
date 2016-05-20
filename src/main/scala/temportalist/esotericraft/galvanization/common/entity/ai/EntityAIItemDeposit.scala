@@ -4,6 +4,7 @@ import net.minecraft.entity.EntityCreature
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumHand
+import temportalist.esotericraft.api.galvanize.ai.AIEmpty
 import temportalist.origin.api.common.lib.Vect
 
 /**
@@ -12,6 +13,7 @@ import temportalist.origin.api.common.lib.Vect
   *
   * @author TheTemportalist
   */
+@AIEmpty(name = "Deposit Items")
 class EntityAIItemDeposit[O <: EntityCreature](
 		private val owner: O,
 		private val inventoryPos: Vect,

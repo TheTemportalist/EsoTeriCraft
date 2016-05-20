@@ -2,7 +2,6 @@ package temportalist.esotericraft.main.common.api
 
 import net.minecraftforge.fml.common.discovery.ASMDataTable
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
-import temportalist.esotericraft.galvanization.common.Galvanize
 
 import scala.collection.{JavaConversions, mutable}
 

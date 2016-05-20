@@ -15,8 +15,6 @@ import net.minecraftforge.common.util.INBTSerializable
 import net.minecraftforge.fml.common.network.ByteBufUtils
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData
 import temportalist.esotericraft.api.galvanize.ability.IAbilityFly
-import temportalist.esotericraft.galvanization.common.Galvanize
-import temportalist.esotericraft.galvanization.common.entity.ai.{EntityAIItemDeposit, EntityAIItemPickUp}
 import temportalist.esotericraft.galvanization.common.entity.emulator.{EntityState, IEntityEmulator}
 import temportalist.origin.api.common.lib.Vect
 
@@ -29,16 +27,10 @@ import temportalist.origin.api.common.lib.Vect
 class EntityEmpty(world: World) extends EntityCreature(world)
 		with IEntityAdditionalSpawnData with IEntityEmulator {
 
-	private var origin: Vect = null
-
 	def this(world: World, entityName: String, origin: Vect) {
 		this(world)
 		this.setPosition(origin.x, origin.y, origin.z)
-
-		this.origin = origin
-
 		this.setEntityState(entityName, this.getEntityWorld)
-
 	}
 
 	override def getSelfEntityInstance: EntityLivingBase = this
@@ -73,15 +65,16 @@ class EntityEmpty(world: World) extends EntityCreature(world)
 
 	override def initEntityAI(): Unit = {
 		if (this.getEntityState == null) return
-		if (this.origin == null) return
 
 		val canFly = this.canFly
 
 		//this.tasks.addTask(0, new EntityAIFollowPlayer(this, canFly = canFly))
+		/*
 		this.tasks.addTask(0, new EntityAIItemPickUp(
 			this, this.origin, 4, 0.5, canFly = canFly
 		))
 		this.tasks.addTask(1, new EntityAIItemDeposit(this, this.origin.getDown(), 1, canFly = canFly))
+		*/
 
 	}
 
@@ -118,9 +111,6 @@ class EntityEmpty(world: World) extends EntityCreature(world)
 
 		nbt.setTag("emulator", this.serializeNBTEmulator)
 
-		if (this.origin != null)
-			nbt.setTag("origin", this.origin.serializeNBT())
-
 	}
 
 	override def readEntityFromNBT(nbt: NBTTagCompound): Unit = {
@@ -136,9 +126,6 @@ class EntityEmpty(world: World) extends EntityCreature(world)
 		}
 
 		this.deserializeNBTEmulator(nbt.getCompoundTag("emulator"))
-
-		if (nbt.hasKey("origin"))
-			this.origin = Vect.readFrom(nbt, "origin")
 
 		this.setEntityState(entityState)
 	}

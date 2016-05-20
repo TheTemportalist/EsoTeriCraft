@@ -4,7 +4,7 @@ import com.google.common.base.Predicate
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.{Entity, EntityCreature}
 import net.minecraft.util.math.AxisAlignedBB
-import temportalist.esotericraft.galvanization.common.Galvanize
+import temportalist.esotericraft.api.galvanize.ai.AIEmpty
 import temportalist.origin.api.common.lib.Vect
 
 import scala.collection.{JavaConversions, mutable}
@@ -15,33 +15,33 @@ import scala.collection.{JavaConversions, mutable}
   *
   * @author TheTemportalist
   */
+@AIEmpty(name = "Pick Up Items")
 class EntityAIItemPickUp[O <: EntityCreature](
 		private val owner: O,
-		private var origin: Vect,
 		private val radiusXZ: Double,
 		private val radiusY: Double,
 		private val speed: Double = 1D,
 		private val canFly: Boolean = false
-) extends EntityAIHelper with IEntityAIInventory {
+) extends EntityAIHelper with IEntityAIInventory with IEntityAIOrigin {
 
 	this.setMutexBits(EnumAIMutex.EVERYTHING_OKAY)
 
 	def getCollectionArea: AxisAlignedBB = {
-		if (this.origin == null) null
+		if (this.getPosition == null) null
 		else {
 			new AxisAlignedBB(
-				this.origin.x - this.radiusXZ,
-				this.origin.y + 0.5 - this.radiusY,
-				this.origin.z - this.radiusXZ,
-				this.origin.x + this.radiusXZ,
-				this.origin.y + 0.5 + this.radiusY,
-				this.origin.z + this.radiusXZ
+				this.getPosition.x - this.radiusXZ,
+				this.getPosition.y + 0.5 - this.radiusY,
+				this.getPosition.z - this.radiusXZ,
+				this.getPosition.x + this.radiusXZ,
+				this.getPosition.y + 0.5 + this.radiusY,
+				this.getPosition.z + this.radiusXZ
 			)
 		}
 	}
 
 	override def shouldExecute(): Boolean = {
-		if (this.origin == null) return false
+		if (this.getPosition == null) return false
 
 		val entities = this.findEntitiesInRange
 		val exec = entities.nonEmpty
@@ -91,7 +91,7 @@ class EntityAIItemPickUp[O <: EntityCreature](
 	}
 
 	final def calculateDistanceToOriginFromEntity(entity: Entity): Double = {
-		(new Vect(entity) - this.origin).length
+		(new Vect(entity) - this.getPosition).length
 	}
 
 	final def pickUpItem(entityItem: EntityItem): Unit = {

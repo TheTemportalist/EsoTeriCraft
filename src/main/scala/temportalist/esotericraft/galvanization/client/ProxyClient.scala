@@ -27,6 +27,9 @@ class ProxyClient extends ProxyCommon with IModGuiFactory with IModelLoader {
 		ModelLoader.setCustomModelResourceLocation(ModItems.golemEgg, 0,
 			new ModelResourceLocation(Galvanize.getModId + ":" + ModItems.golemEgg.getClass.getSimpleName, "inventory")
 		)
+		ModelLoader.setCustomModelResourceLocation(ModItems.aiInfo, 0,
+			new ModelResourceLocation(Galvanize.getModId + ":" + ModItems.aiInfo.getClass.getSimpleName, "inventory")
+		)
 
 		RenderingRegistry.registerEntityRenderingHandler(classOf[EntityEmpty], RenderEmpty)
 

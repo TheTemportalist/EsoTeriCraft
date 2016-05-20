@@ -8,13 +8,14 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.nbt.NBTBase
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 import net.minecraftforge.fml.common.{Mod, SidedProxy}
-import api.galvanize.IAbility
-import api.init.IEsoTeriCraft
-import api.init.IEsoTeriCraft.PluginEsoTeriCraft
-import capability.HandlerPlayerGalvanize
-import entity.emulator.ability.AbilityLoader
-import init.{ModEntities, ModItems}
-import server.CommandSetPlayerModel
+import temportalist.esotericraft.api.galvanize.IAbility
+import temportalist.esotericraft.api.init.IEsoTeriCraft
+import temportalist.esotericraft.api.init.IEsoTeriCraft.PluginEsoTeriCraft
+import temportalist.esotericraft.galvanization.common.capability.HandlerPlayerGalvanize
+import temportalist.esotericraft.galvanization.common.entity.ai.AILoader
+import temportalist.esotericraft.galvanization.common.entity.emulator.ability.AbilityLoader
+import temportalist.esotericraft.galvanization.common.init.{ModEntities, ModItems}
+import temportalist.esotericraft.galvanization.server.CommandSetPlayerModel
 import temportalist.origin.foundation.common.modTraits.IHasCommands
 import temportalist.origin.foundation.common.registers.{OptionRegister, Register}
 import temportalist.origin.foundation.common.{IProxy, ModBase}
@@ -91,6 +92,7 @@ object Galvanize extends ModBase with IHasCommands {
 		HandlerPlayerGalvanize.init(this, "PlayerGalvanize")
 
 		AbilityLoader.preInit(event)
+		AILoader.preInit(event)
 		FetchResources.runMorph()
 		FetchResources.runGalvanize()
 

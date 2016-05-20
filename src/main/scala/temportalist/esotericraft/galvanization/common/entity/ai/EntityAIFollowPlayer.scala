@@ -1,6 +1,7 @@
 package temportalist.esotericraft.galvanization.common.entity.ai
 
 import net.minecraft.entity.{EntityCreature, EntityLivingBase}
+import temportalist.esotericraft.api.galvanize.ai.AIEmpty
 import temportalist.origin.api.common.lib.Vect
 
 /**
@@ -9,6 +10,7 @@ import temportalist.origin.api.common.lib.Vect
   *
   * @author TheTemportalist
   */
+@AIEmpty(name = "Follow Player")
 class EntityAIFollowPlayer(
 		private val owner: EntityCreature,
 		private val speed: Double = 1.2D,
