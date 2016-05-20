@@ -21,7 +21,7 @@ class EntityModel[C <: EntityLivingBase, R <: EntityLivingBase](
 	@SideOnly(Side.CLIENT)
 	def forceRender(entity: EntityLivingBase, x: Double, y: Double, z: Double, yaw: Float, partialTicks: Float): Unit = {
 		if (Minecraft.getMinecraft.getRenderManager.renderEngine != null &&
-				Minecraft.getMinecraft.getRenderManager.livingPlayer != null) {
+				Minecraft.getMinecraft.getRenderManager.renderViewEntity != null) {
 			try {
 				this.renderer.doRender(entity.asInstanceOf[R], x, y, z, yaw, partialTicks)
 			}

@@ -3,7 +3,7 @@ package temportalist.esotericraft.galvanization.common.entity.emulator.ability
 import net.minecraft.entity.ai.RandomPositionGenerator
 import net.minecraft.entity.{EntityCreature, EntityLivingBase}
 import net.minecraft.nbt.NBTTagByte
-import net.minecraft.pathfinding.{PathEntity, PathPoint}
+import net.minecraft.pathfinding.{Path, PathPoint}
 import net.minecraft.util.math.Vec3d
 import temportalist.esotericraft.api.galvanize.IAbility.Ability
 import temportalist.esotericraft.api.galvanize.ability.IAbilityFear
@@ -98,7 +98,7 @@ class AbilityFear extends AbilityBase[NBTTagByte] with IAbilityFear {
 					if (vec3 != null &&
 							!(entity.getDistanceSq(vec3.xCoord, vec3.yCoord, vec3.zCoord) <
 									entity.getDistanceSqToEntity(creature))) {
-						val newPath = new PathEntity(Array[PathPoint](
+						val newPath = new Path(Array[PathPoint](
 							new PathPoint(vec3.xCoord.toInt, vec3.yCoord.toInt, vec3.zCoord.toInt)
 						))
 						creature.getNavigator.setPath(newPath, 1D)

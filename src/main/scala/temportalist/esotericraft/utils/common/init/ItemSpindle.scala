@@ -2,7 +2,8 @@ package temportalist.esotericraft.utils.common.init
 
 import net.minecraft.entity.Entity
 import net.minecraft.entity.monster.EntityMob
-import net.minecraft.entity.player.EntityPlayer.EnumStatus
+import net.minecraft.entity.player.EntityPlayer.SleepResult
+import net.minecraft.entity.player.EntityPlayer.SleepResult._
 import net.minecraft.entity.player.{EntityPlayer, EntityPlayerMP}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
@@ -15,8 +16,8 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.entity.player.{PlayerSleepInBedEvent, SleepingLocationCheckEvent}
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper
 import net.minecraftforge.fml.common.eventhandler.{Event, SubscribeEvent}
-import temportalist.esotericraft.utils.common.Utils
 import temportalist.esotericraft.main.common.util.NBT
+import temportalist.esotericraft.utils.common.Utils
 import temportalist.origin.api.common.IModDetails
 import temportalist.origin.api.common.item.ItemBase
 import temportalist.origin.api.common.lib.Vect
@@ -49,13 +50,13 @@ class ItemSpindle(mod: IModDetails) extends ItemBase(mod) {
 
 		val status = this.canPlayerSleep(world, player, player.getPosition)
 		status match {
-			case EnumStatus.NOT_POSSIBLE_NOW =>
+			case NOT_POSSIBLE_NOW =>
 				this.addChatTranslate(player, "tile.bed.noSleep")
 				return false
-			case EnumStatus.NOT_SAFE =>
+			case NOT_SAFE =>
 				this.addChatTranslate(player, "tile.bed.notSafe")
 				return false
-			case EnumStatus.OK =>
+			case OK =>
 			case _ => return false
 		}
 
@@ -78,34 +79,34 @@ class ItemSpindle(mod: IModDetails) extends ItemBase(mod) {
 			case mp: EntityPlayerMP =>
 				val sleepPacket = new SPacketUseBed(mp, player.getPosition)
 				mp.getServerWorld.getEntityTracker.sendToAllTrackingEntity(mp, sleepPacket)
-				mp.playerNetServerHandler.sendPacket(sleepPacket)
+				mp.connection.sendPacket(sleepPacket)
 			case _ =>
 		}
 
 		true
 	}
 
-	private def canPlayerSleep(world: World, player: EntityPlayer, pos: BlockPos): EnumStatus = {
+	private def canPlayerSleep(world: World, player: EntityPlayer, pos: BlockPos): SleepResult = {
 
 		val event = new PlayerSleepInBedEvent(player, pos)
 		MinecraftForge.EVENT_BUS.post(event)
 		if (event.getResultStatus != null) return event.getResultStatus
 
 		if (!world.isRemote) {
-			if (player.isPlayerSleeping || !player.isEntityAlive) return EnumStatus.OTHER_PROBLEM
-			if (!world.provider.isSurfaceWorld) return EnumStatus.NOT_POSSIBLE_HERE
-			if (world.isDaytime) return EnumStatus.NOT_POSSIBLE_NOW
+			if (player.isPlayerSleeping || !player.isEntityAlive) return OTHER_PROBLEM
+			if (!world.provider.isSurfaceWorld) return NOT_POSSIBLE_HERE
+			if (world.isDaytime) return NOT_POSSIBLE_NOW
 			if (!world.getEntitiesWithinAABB(classOf[EntityMob],new AxisAlignedBB(
 				pos.getX - 8, pos.getY - 5, pos.getZ - 8, pos.getX + 8, pos.getY + 5, pos.getZ + 8)
-			).isEmpty) return EnumStatus.NOT_SAFE
+			).isEmpty) return NOT_SAFE
 
 			if (!this.isNotSuffocatingPosition(world, pos) || !this.isSolidishGround(world, pos.down())) {
 				this.addChatTranslateMod(player, "invalid_ground")
-				return EnumStatus.OTHER_PROBLEM
+				return OTHER_PROBLEM
 			}
 		}
 
-		EnumStatus.OK
+		OK
 	}
 
 	private def addChatTranslate(player: EntityPlayer, key: String): Unit = {
@@ -117,9 +118,9 @@ class ItemSpindle(mod: IModDetails) extends ItemBase(mod) {
 			this.mod.getModId + "." + this.getClass.getSimpleName + "." + key)
 	}
 
-	private def canSleepEvent(world: World, player: EntityPlayer, pos: BlockPos): EnumStatus = {
-		if (!world.provider.isSurfaceWorld) return EnumStatus.NOT_POSSIBLE_HERE
-		if (world.isDaytime) return EnumStatus.NOT_POSSIBLE_NOW
+	private def canSleepEvent(world: World, player: EntityPlayer, pos: BlockPos): SleepResult = {
+		if (!world.provider.isSurfaceWorld) return NOT_POSSIBLE_HERE
+		if (world.isDaytime) return NOT_POSSIBLE_NOW
 
 		val event = new PlayerSleepInBedEvent(player, pos)
 		MinecraftForge.EVENT_BUS.post(event)
@@ -127,9 +128,9 @@ class ItemSpindle(mod: IModDetails) extends ItemBase(mod) {
 
 		if (!world.getEntitiesWithinAABB(classOf[EntityMob],new AxisAlignedBB(
 			pos.getX - 8, pos.getY - 5, pos.getZ - 8, pos.getX + 8, pos.getY + 5, pos.getZ + 8)
-		).isEmpty) return EnumStatus.NOT_SAFE
+		).isEmpty) return NOT_SAFE
 
-		EnumStatus.OK
+		OK
 	}
 
 	private def isNotSuffocatingPosition(world: World, pos: BlockPos): Boolean = {
@@ -168,7 +169,7 @@ class ItemSpindle(mod: IModDetails) extends ItemBase(mod) {
 				case mp: EntityPlayerMP =>
 					val sleepPacket = new SPacketUseBed(mp, pos)
 					mp.getServerWorld.getEntityTracker.sendToAllTrackingEntity(mp, sleepPacket)
-					mp.playerNetServerHandler.sendPacket(sleepPacket)
+					mp.connection.sendPacket(sleepPacket)
 				case _ =>
 			}
 		}
