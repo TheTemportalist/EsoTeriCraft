@@ -119,6 +119,7 @@ trait IEntityEmulator {
 	final def setEntityState(state: EntityState): Unit = {
 		this.entityState = state
 		this.entityModel = null
+		this.constructEntityState(this.getSelfEntityInstance.getEntityWorld)
 	}
 
 	final def clearEntityState(world: World): Unit = {

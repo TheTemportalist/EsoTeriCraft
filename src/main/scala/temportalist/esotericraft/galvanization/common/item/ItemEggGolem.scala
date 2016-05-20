@@ -5,6 +5,7 @@ import java.util
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.{EntityList, EntityLivingBase}
 import net.minecraft.item.ItemStack
+import net.minecraft.util.EnumFacing.Axis
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand}
 import net.minecraft.world.World
@@ -14,6 +15,7 @@ import temportalist.esotericraft.galvanization.common.capability.{HelperGalvaniz
 import temportalist.esotericraft.galvanization.common.entity.EntityEmpty
 import temportalist.esotericraft.galvanization.common.item.ItemEggGolem._
 import temportalist.origin.api.common.item.INBTHandler
+import temportalist.origin.api.common.lib.Vect
 
 import scala.collection.JavaConversions
 
@@ -39,7 +41,7 @@ class ItemEggGolem extends ItemCreative() with INBTHandler {
 			//val ret = this.set(stack, ENTITY_ID, EntityList.getEntityString(target))
 			//Galvanize.log("" + ret)
 
-			Galvanize.log("" + stack.getTagCompound)
+			//Galvanize.log("" + stack.getTagCompound)
 
 			playerIn.setHeldItem(hand, stack)
 			true
@@ -56,8 +58,8 @@ class ItemEggGolem extends ItemCreative() with INBTHandler {
 
 				val entityName = this.get[String](stack, ENTITY_ID)
 
-				val empty = new EntityEmpty(worldIn, entityName = entityName)
-				empty.setPosition(pos.getX + 0.5, pos.getY + 1, pos.getZ + 0.5)
+				val position = new Vect(pos).up() + Vect.CENTER.suppressAxisGet(Axis.Y)
+				val empty = new EntityEmpty(worldIn, entityName, position)
 				val ret = worldIn.spawnEntityInWorld(empty)
 
 			}

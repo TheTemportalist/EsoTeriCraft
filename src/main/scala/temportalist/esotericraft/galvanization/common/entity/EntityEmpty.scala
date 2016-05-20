@@ -4,14 +4,21 @@ import io.netty.buffer.ByteBuf
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity._
 import net.minecraft.entity.ai.attributes.IAttribute
-import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.inventory.{IInventory, ItemStackHelper}
+import net.minecraft.item.ItemStack
+import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
 import net.minecraft.util.math.{BlockPos, MathHelper}
+import net.minecraft.util.text.{ITextComponent, TextComponentString}
 import net.minecraft.world.World
+import net.minecraftforge.common.util.INBTSerializable
 import net.minecraftforge.fml.common.network.ByteBufUtils
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData
 import temportalist.esotericraft.api.galvanize.ability.IAbilityFly
-import temportalist.esotericraft.galvanization.common.entity.ai.EntityAIFollowPlayer
+import temportalist.esotericraft.galvanization.common.Galvanize
+import temportalist.esotericraft.galvanization.common.entity.ai.{EntityAIItemDeposit, EntityAIItemPickUp}
 import temportalist.esotericraft.galvanization.common.entity.emulator.{EntityState, IEntityEmulator}
+import temportalist.origin.api.common.lib.Vect
 
 /**
   *
@@ -22,8 +29,13 @@ import temportalist.esotericraft.galvanization.common.entity.emulator.{EntitySta
 class EntityEmpty(world: World) extends EntityCreature(world)
 		with IEntityAdditionalSpawnData with IEntityEmulator {
 
-	def this(world: World, entityName: String) {
+	private var origin: Vect = null
+
+	def this(world: World, entityName: String, origin: Vect) {
 		this(world)
+		this.setPosition(origin.x, origin.y, origin.z)
+
+		this.origin = origin
 
 		this.setEntityState(entityName, this.getEntityWorld)
 
@@ -61,11 +73,15 @@ class EntityEmpty(world: World) extends EntityCreature(world)
 
 	override def initEntityAI(): Unit = {
 		if (this.getEntityState == null) return
+		if (this.origin == null) return
 
 		val canFly = this.canFly
-		//this.moveHelper = if (canFly) new EntityMoveHelperFly(this) else new EntityMoveHelper(this)
 
-		this.tasks.addTask(0, new EntityAIFollowPlayer(this, canFly = canFly))
+		//this.tasks.addTask(0, new EntityAIFollowPlayer(this, canFly = canFly))
+		this.tasks.addTask(0, new EntityAIItemPickUp(
+			this, this.origin, 4, 0.5, canFly = canFly
+		))
+		this.tasks.addTask(1, new EntityAIItemDeposit(this, this.origin.getDown(), 1, canFly = canFly))
 
 	}
 
@@ -102,6 +118,9 @@ class EntityEmpty(world: World) extends EntityCreature(world)
 
 		nbt.setTag("emulator", this.serializeNBTEmulator)
 
+		if (this.origin != null)
+			nbt.setTag("origin", this.origin.serializeNBT())
+
 	}
 
 	override def readEntityFromNBT(nbt: NBTTagCompound): Unit = {
@@ -115,10 +134,13 @@ class EntityEmpty(world: World) extends EntityCreature(world)
 			entityState = new EntityState
 			entityState.deserializeNBT(nbt.getCompoundTag("entity_state"))
 		}
-		this.setEntityState(entityState)
 
 		this.deserializeNBTEmulator(nbt.getCompoundTag("emulator"))
 
+		if (nbt.hasKey("origin"))
+			this.origin = Vect.readFrom(nbt, "origin")
+
+		this.setEntityState(entityState)
 	}
 
 	override def writeSpawnData(buffer: ByteBuf): Unit = {
@@ -233,4 +255,115 @@ class EntityEmpty(world: World) extends EntityCreature(world)
 		this.limbSwing += this.limbSwingAmount
 
 	}
+
+	// ~~~~~ Inventory
+
+	final def markInventoryDirty(): Unit = {
+
+	}
+
+}
+object EntityEmpty {
+
+	class Inventory(private val owner: EntityEmpty)
+			extends IInventory with INBTSerializable[NBTTagList] {
+
+		// ~~~~~ NBT
+
+		override def markDirty(): Unit = owner.markInventoryDirty()
+
+		override def serializeNBT(): NBTTagList = {
+			val nbt = new NBTTagList
+
+			for (i <- this.main.indices) {
+				if (this.main(i) != null) {
+					val tagSlot = new NBTTagCompound
+					tagSlot.setByte("Slot", i.toByte)
+					this.main(i).writeToNBT(tagSlot)
+					nbt.appendTag(tagSlot)
+				}
+			}
+
+			nbt
+		}
+
+		override def deserializeNBT(nbt: NBTTagList): Unit = {
+			this.main = new Array[ItemStack](this.getSizeInventory)
+			for (i <- 0 until nbt.tagCount()) {
+				val tagSlot = nbt.getCompoundTagAt(i)
+				val slot = tagSlot.getByte("Slot") & 255
+				val stack = ItemStack.loadItemStackFromNBT(tagSlot)
+				this.main(slot) = stack
+			}
+		}
+
+		// ~~~~~ Naming
+
+		override def getName: String = "EntityEmpty Inventory"
+
+		override def getDisplayName: ITextComponent = new TextComponentString(this.getName)
+
+		override def hasCustomName: Boolean = false
+
+		// ~~~~~ Stack Data
+
+		private var main = Array[ItemStack]()
+
+		final def setSize(size: Int): Unit = {
+			val newMain = new Array[ItemStack](size)
+			var j = 0
+			for (i <- this.main.indices)
+				if (this.main(i) != null && j < newMain.length) {
+					newMain(j) = this.main(i).copy()
+					j += 1
+				}
+			this.main = newMain
+		}
+
+		override def getSizeInventory: Int = this.main.length
+
+		override def getInventoryStackLimit: Int = 1
+
+		override def isItemValidForSlot(index: Int, stack: ItemStack): Boolean = true
+
+		override def setInventorySlotContents(index: Int, stack: ItemStack): Unit = {
+			this.main(index) = stack
+		}
+
+		override def getStackInSlot(index: Int): ItemStack = this.main(index)
+
+		override def removeStackFromSlot(index: Int): ItemStack = {
+			if (this.main(index) == null) null
+			else {
+				val stack = this.main(index)
+				this.main(index) = null
+				stack
+			}
+		}
+
+		override def decrStackSize(index: Int, count: Int): ItemStack = {
+			if (this.main(index) != null) ItemStackHelper.getAndSplit(this.main, index, count)
+			else null
+		}
+
+		override def clear(): Unit = {
+			for (i <- this.main.indices) this.main(i) = null
+		}
+
+		// ~~~~~ Other
+
+		override def isUseableByPlayer(player: EntityPlayer): Boolean = false
+
+		override def closeInventory(player: EntityPlayer): Unit = {}
+
+		override def openInventory(player: EntityPlayer): Unit = {}
+
+		override def getFieldCount: Int = 0
+
+		override def getField(id: Int): Int = 0
+
+		override def setField(id: Int, value: Int): Unit = {}
+
+	}
+
 }
