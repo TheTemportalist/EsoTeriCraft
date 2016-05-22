@@ -3,8 +3,10 @@ package temportalist.esotericraft.galvanization.common.entity.ai
 import com.google.common.base.Predicate
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.{Entity, EntityCreature}
+import net.minecraft.item.ItemStack
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.AxisAlignedBB
-import temportalist.esotericraft.api.galvanize.ai.AIEmpty
+import temportalist.esotericraft.api.galvanize.ai.{AIEmpty, EntityAIEmpty}
 import temportalist.origin.api.common.lib.Vect
 
 import scala.collection.{JavaConversions, mutable}
@@ -16,15 +18,30 @@ import scala.collection.{JavaConversions, mutable}
   * @author TheTemportalist
   */
 @AIEmpty(name = "Pick Up Items")
-class EntityAIItemPickUp[O <: EntityCreature](
-		private val owner: O,
-		private val radiusXZ: Double,
-		private val radiusY: Double,
-		private val speed: Double = 1D,
-		private val canFly: Boolean = false
-) extends EntityAIHelper with IEntityAIInventory with IEntityAIOrigin {
+class EntityAIItemPickUp(
+		private val owner: EntityCreature
+) extends EntityAIHelper
+		with IEntityAIInventory
+		with IEntityAIOrigin
+		with EntityAIEmpty
+		with IEntityAIFlyCheck {
+
+	private val radiusXZ: Double = 4
+	private val radiusY: Double = 1
+	private val speed: Double = 1D
 
 	this.setMutexBits(EnumAIMutex.EVERYTHING_OKAY)
+	this.checkCanFly(this.owner)
+
+	override def initWith(infoStack: ItemStack): Unit = {
+
+		if (infoStack.hasTagCompound && infoStack.getTagCompound.hasKey("origin")) {
+			val origin = Vect.readFrom(infoStack.getTagCompound, "origin")
+			val face = EnumFacing.values()(infoStack.getTagCompound.getInteger("face_ordinal"))
+			this.setOrigin(origin, face)
+		}
+
+	}
 
 	def getCollectionArea: AxisAlignedBB = {
 		if (this.getPosition == null) null
@@ -74,7 +91,7 @@ class EntityAIItemPickUp[O <: EntityCreature](
 			this.pickUpItem(closestEntityToOrigin)
 		}
 		else {
-			this.moveEntityTowards(this.owner, closestEntityToOrigin, this.speed, this.canFly)
+			this.moveEntityTowards(this.owner, closestEntityToOrigin, this.speed, this.getCanFly)
 		}
 	}
 

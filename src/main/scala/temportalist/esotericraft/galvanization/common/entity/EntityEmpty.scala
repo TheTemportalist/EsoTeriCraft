@@ -66,7 +66,7 @@ class EntityEmpty(world: World) extends EntityCreature(world)
 	override def initEntityAI(): Unit = {
 		if (this.getEntityState == null) return
 
-		val canFly = this.canFly
+		//val canFly = this.canFly
 
 		//this.tasks.addTask(0, new EntityAIFollowPlayer(this, canFly = canFly))
 		/*
@@ -92,7 +92,7 @@ class EntityEmpty(world: World) extends EntityCreature(world)
 		}
 	}
 
-	private def canFly: Boolean = {
+	final def canFly: Boolean = {
 		if (this.getEntityState != null) {
 			for (ability <- this._getEntityAbilities)
 				if (ability.isInstanceOf[IAbilityFly]) return true

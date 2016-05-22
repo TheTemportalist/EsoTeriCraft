@@ -13,22 +13,21 @@ import scala.collection.{JavaConversions, mutable}
   */
 class AnnotationLoader[C, T](private val annotation: Class[C], private val instance: Class[T]) {
 
-	private var classInstances: Map[Class[_ <: T], Map[String, AnyRef]] = _
+	private val classInstances = mutable.Map[Class[_ <: T], mutable.Map[String, AnyRef]]()
 
 	final def loadAnnotations(event: FMLPreInitializationEvent): Unit = {
-		this.classInstances = this.findInstanceClasses(event.getAsmData)
+		this.findInstanceClasses(event.getAsmData)
 	}
 
-	final def findInstanceClasses(asmData: ASMDataTable): Map[Class[_ <: T], Map[String, AnyRef]] = {
+	final def findInstanceClasses(asmData: ASMDataTable): Unit = {
 		val annotationName = this.annotation.getName
 		val dataAnnotatedClasses = JavaConversions.asScalaSet(asmData.getAll(annotationName))
-		val classes = mutable.Map[Class[_ <: T], Map[String, AnyRef]]()
 		for (dataAnnotatedClass <- dataAnnotatedClasses) {
 			try {
 				val annotatedClass = Class.forName(dataAnnotatedClass.getClassName)
 				val annotatedClassAsSub = annotatedClass.asSubclass(this.instance)
-				val annotationInfo = JavaConversions.mapAsScalaMap(dataAnnotatedClass.getAnnotationInfo).toMap
-				classes.put(annotatedClassAsSub, annotationInfo)
+				val annotationInfo = JavaConversions.mapAsScalaMap(dataAnnotatedClass.getAnnotationInfo)
+				this.classInstances.put(annotatedClassAsSub, annotationInfo)
 				this.onAnnotationClassFound(annotatedClassAsSub, annotationInfo)
 			}
 			catch {
@@ -36,10 +35,9 @@ class AnnotationLoader[C, T](private val annotation: Class[C], private val insta
 					e.printStackTrace()
 			}
 		}
-		classes.toMap
 	}
 
-	def onAnnotationClassFound(implementingClass: Class[_ <: T], annotationInfo: Map[String, AnyRef]): Unit = {}
+	def onAnnotationClassFound[I <: T](implementer: Class[I], info: mutable.Map[String, AnyRef]): Unit = {}
 
 	final def getClassInstances: Iterable[Class[_ <: T]] = this.classInstances.keys
 

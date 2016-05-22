@@ -6,7 +6,7 @@ import net.minecraft.nbt.{NBTTagCompound, NBTTagString}
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import temportalist.esotericraft.galvanization.common.Galvanize
-import temportalist.esotericraft.galvanization.common.entity.emulator.{IEntityEmulator, EntityState}
+import temportalist.esotericraft.galvanization.common.entity.emulator.{EntityState, IEntityEmulator}
 import temportalist.origin.foundation.common.capability.IExtendedEntitySync
 import temportalist.origin.foundation.common.network.NetworkMod
 
@@ -67,6 +67,10 @@ class PlayerGalvanize(private val player: EntityPlayer)
 	override def onTickServer(): Unit = this.onTickServer(this.getWorld)
 
 	override def getSelfEntityInstance: EntityLivingBase = this.player
+
+	override def onEntityStateCleared(world: World): Unit = {
+		this.player.eyeHeight = this.player.getDefaultEyeHeight
+	}
 
 	override protected def syncEntityNameToClient(name: String): Unit = {
 		this.sendNBTToClient(this.player, new NBTTagString(name))

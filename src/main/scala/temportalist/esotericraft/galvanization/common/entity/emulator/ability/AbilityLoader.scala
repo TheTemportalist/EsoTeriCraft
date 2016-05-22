@@ -9,6 +9,8 @@ import temportalist.esotericraft.api.galvanize.IAbility.Ability
 import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.esotericraft.main.common.api.AnnotationLoader
 
+import scala.collection.mutable
+
 /**
   *
   * Created by TheTemportalist on 5/18/2016.
@@ -21,16 +23,15 @@ object AbilityLoader extends AnnotationLoader(classOf[Ability], classOf[IAbility
 		this.loadAnnotations(event)
 	}
 
-	override def onAnnotationClassFound(
-			implementingClass: Class[_ <: IAbility[_ <: NBTBase]],
-			annotationInfo: Map[String, AnyRef]): Unit = {
-		val id = annotationInfo.getOrElse("id", "").toString
+	override def onAnnotationClassFound[I <: IAbility[_ <: NBTBase]](
+			implementer: Class[I], info: mutable.Map[String, AnyRef]): Unit = {
+		val id = info.getOrElse("id", "").toString
 		if (id.nonEmpty) {
-			Galvanize.MAP_STRING_to_CLASS_ABILITIES.put(id, implementingClass)
+			Galvanize.MAP_STRING_to_CLASS_ABILITIES.put(id, implementer)
 			Galvanize.log("Loaded ability with ID " + id)
 		}
 		else {
-			Galvanize.log("ID not found for Ability class \'" + implementingClass.getCanonicalName + "\'. Skipping.")
+			Galvanize.log("ID not found for Ability class \'" + implementer.getCanonicalName + "\'. Skipping.")
 		}
 	}
 

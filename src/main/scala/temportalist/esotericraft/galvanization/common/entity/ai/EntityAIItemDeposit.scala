@@ -3,8 +3,8 @@ package temportalist.esotericraft.galvanization.common.entity.ai
 import net.minecraft.entity.EntityCreature
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
-import net.minecraft.util.EnumHand
-import temportalist.esotericraft.api.galvanize.ai.AIEmpty
+import net.minecraft.util.{EnumFacing, EnumHand}
+import temportalist.esotericraft.api.galvanize.ai.{AIEmpty, EntityAIEmpty}
 import temportalist.origin.api.common.lib.Vect
 
 /**
@@ -14,17 +14,33 @@ import temportalist.origin.api.common.lib.Vect
   * @author TheTemportalist
   */
 @AIEmpty(name = "Deposit Items")
-class EntityAIItemDeposit[O <: EntityCreature](
-		private val owner: O,
-		private val inventoryPos: Vect,
-		private val speed: Double = 1D,
-		private val canFly: Boolean = false
-) extends EntityAIHelper with IEntityAIInventory {
+class EntityAIItemDeposit(
+		private val owner: EntityCreature
+) extends EntityAIHelper
+		with IEntityAIInventory
+		with IEntityAIOrigin
+		with EntityAIEmpty
+		with IEntityAIFlyCheck {
+
+	private val speed: Double = 1D
 
 	this.setMutexBits(EnumAIMutex.EVERYTHING_OKAY)
+	this.checkCanFly(this.owner)
+
+	override def initWith(infoStack: ItemStack): Unit = {
+
+		if (infoStack.hasTagCompound && infoStack.getTagCompound.hasKey("origin")) {
+			val origin = Vect.readFrom(infoStack.getTagCompound, "origin")
+			val face = EnumFacing.values()(infoStack.getTagCompound.getInteger("face_ordinal"))
+			this.setOrigin(origin, face)
+		}
+
+	}
 
 	override def shouldExecute(): Boolean = {
-		this.inventoryPos.getTile(this.owner.getEntityWorld) match {
+		if (this.getOriginPosition == null) return false
+
+		this.getOriginPosition.getTile(this.owner.getEntityWorld) match {
 			case inv: IInventory => // Block at target pos is an inventory
 			case _ =>
 				return false
@@ -47,18 +63,19 @@ class EntityAIItemDeposit[O <: EntityCreature](
 		}
 		if (!hasItem) return
 
-		val ownerDistanceToInventory = (new Vect(this.owner) - this.inventoryPos).length
+		val position = this.getPosition
+		val ownerDistanceToInventory = (new Vect(this.owner) - position).length
 		if (ownerDistanceToInventory > 1.25D)
 			this.moveEntityTowards(this.owner,
-				this.inventoryPos.x, this.inventoryPos.y, this.inventoryPos.z,
-				this.speed, this.canFly)
+				position.x, position.y, position.z,
+				this.speed, this.getCanFly)
 		else {
 			this.depositItems()
 		}
 	}
 
 	final def depositItems(): Unit = {
-		this.inventoryPos.getTile(this.owner.getEntityWorld) match {
+		this.getOriginPosition.getTile(this.owner.getEntityWorld) match {
 			case toInv: IInventory =>
 				var fromStack: ItemStack = null
 				for (hand <- EnumHand.values()) {

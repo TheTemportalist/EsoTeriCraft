@@ -127,7 +127,10 @@ trait IEntityEmulator {
 		this.entityName = null
 		this.entityState = null
 		this.getEntityStateInstance(world)
+		this.onEntityStateCleared(world)
 	}
+
+	def onEntityStateCleared(world: World): Unit = {}
 
 	// ~~~~~~~~~~ Syncing ~~~~~~~~~~
 

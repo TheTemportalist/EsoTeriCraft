@@ -1,5 +1,6 @@
 package temportalist.esotericraft.main.common.api
 
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 /**
@@ -15,10 +16,10 @@ class InstanceLoader[C, T](annotation: Class[C], instance: Class[T])
 
 	final def getInstances: Seq[T] = this.instances
 
-	override def onAnnotationClassFound(
-			implementingClass: Class[_ <: T], annotationInfo: Map[String, AnyRef]): Unit = {
+	override def onAnnotationClassFound[I <: T](implementer: Class[I],
+			info: mutable.Map[String, AnyRef]): Unit = {
 		try {
-			val instance = implementingClass.newInstance()
+			val instance = implementer.newInstance()
 			this.instances += instance
 			this.onInstanceCreated(instance)
 		}
