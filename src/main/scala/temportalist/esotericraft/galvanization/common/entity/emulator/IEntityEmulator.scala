@@ -117,9 +117,12 @@ trait IEntityEmulator {
 	}
 
 	final def setEntityState(state: EntityState): Unit = {
+		this.entityName = state.getName
 		this.entityState = state
-		this.entityModel = null
+		if (this.getSelfEntityInstance.getEntityWorld.isRemote)
+			this.entityModel = null
 		this.constructEntityState(this.getSelfEntityInstance.getEntityWorld)
+		Galvanize.log(this.getEntityName)
 	}
 
 	final def clearEntityState(world: World): Unit = {

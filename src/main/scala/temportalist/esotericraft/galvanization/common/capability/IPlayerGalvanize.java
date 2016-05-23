@@ -12,6 +12,7 @@ import temportalist.esotericraft.galvanization.client.EntityModel;
 import temportalist.esotericraft.galvanization.common.entity.emulator.EntityState;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * Created by TheTemportalist on 5/7/2016.
@@ -24,8 +25,11 @@ public interface IPlayerGalvanize extends INBTSerializable<NBTTagCompound> {
 
 	void onTickServer();
 
+	void setEntityState(EntityState state);
+
 	void setEntityState(String entityName, World world);
 
+	@Deprecated
 	void setEntityStateEntity(EntityLivingBase entity);
 
 	EntityState getEntityState();
@@ -37,5 +41,9 @@ public interface IPlayerGalvanize extends INBTSerializable<NBTTagCompound> {
 	EntityModel<? extends EntityLivingBase, ? extends EntityLivingBase> getEntityModelInstance(World world);
 
 	Iterable<IAbility<? extends NBTBase>> getEntityAbilities();
+
+	void addModelEntity(EntityLivingBase entity);
+
+	List<EntityState> getModelEntities();
 
 }

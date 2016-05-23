@@ -8,6 +8,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.nbt.NBTBase
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 import net.minecraftforge.fml.common.{Mod, SidedProxy}
+import net.minecraftforge.fml.relauncher.Side
 import temportalist.esotericraft.api.galvanize.IAbility
 import temportalist.esotericraft.api.init.IEsoTeriCraft
 import temportalist.esotericraft.api.init.IEsoTeriCraft.PluginEsoTeriCraft
@@ -15,6 +16,7 @@ import temportalist.esotericraft.galvanization.common.capability.HandlerPlayerGa
 import temportalist.esotericraft.galvanization.common.entity.ai.AILoader
 import temportalist.esotericraft.galvanization.common.entity.emulator.ability.AbilityLoader
 import temportalist.esotericraft.galvanization.common.init.{ModEntities, ModItems}
+import temportalist.esotericraft.galvanization.common.network.PacketSetModel
 import temportalist.esotericraft.galvanization.server.CommandSetPlayerModel
 import temportalist.origin.foundation.common.modTraits.IHasCommands
 import temportalist.origin.foundation.common.registers.{OptionRegister, Register}
@@ -90,6 +92,7 @@ object Galvanize extends ModBase with IHasCommands {
 
 		this.registerNetwork()
 		HandlerPlayerGalvanize.init(this, "PlayerGalvanize")
+		this.registerMessage(classOf[PacketSetModel.Handler], classOf[PacketSetModel], Side.SERVER)
 
 		AbilityLoader.preInit(event)
 		AILoader.preInit(event)

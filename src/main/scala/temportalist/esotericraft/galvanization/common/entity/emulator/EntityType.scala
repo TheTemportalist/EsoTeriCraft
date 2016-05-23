@@ -159,4 +159,11 @@ object EntityType {
 		variant
 	}
 
+	@Nonnull
+	def create(nbt: NBTTagCompound): EntityType = {
+		val ret = new EntityType()
+		ret.deserializeNBT(nbt)
+		ret
+	}
+
 }

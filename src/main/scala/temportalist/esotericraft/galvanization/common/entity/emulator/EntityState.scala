@@ -23,6 +23,11 @@ final class EntityState extends Comparable[EntityState] with INBTSerializable[NB
 		this.entityType = entityType
 	}
 
+	def this(nbt: NBTTagCompound) {
+		this()
+		this.deserializeNBT(nbt)
+	}
+
 	def setType(entityType: EntityType): Unit = {
 		this.entityType = entityType
 		this.instance = null

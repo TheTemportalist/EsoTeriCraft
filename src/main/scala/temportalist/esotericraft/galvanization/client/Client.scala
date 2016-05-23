@@ -2,16 +2,24 @@ package temportalist.esotericraft.galvanization.client
 
 import net.minecraft.client.Minecraft
 import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.client.settings.KeyBinding
 import net.minecraft.entity.EntityLivingBase
 import net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent
 import net.minecraftforge.client.event.RenderPlayerEvent
+import net.minecraftforge.client.settings.{KeyConflictContext, KeyModifier}
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.{ClientTickEvent, Phase, RenderTickEvent}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+import org.lwjgl.input.Keyboard
 import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.esotericraft.galvanization.common.capability.{HelperGalvanize, IPlayerGalvanize}
 import temportalist.esotericraft.galvanization.common.entity.emulator.EntityState
-import temportalist.origin.foundation.client.IModClient
+import temportalist.esotericraft.galvanization.common.network.PacketSetModel
+import temportalist.origin.api.client.EnumKeyCategory
+import temportalist.origin.foundation.client.modTraits.IHasKeys
+import temportalist.origin.foundation.client.{IKeyBinder, IModClient}
 import temportalist.origin.foundation.common.IModPlugin
 
 import scala.collection.JavaConversions
@@ -23,15 +31,116 @@ import scala.collection.JavaConversions
   * @author TheTemportalist
   */
 @SideOnly(Side.CLIENT)
-object Client extends IModClient {
+object Client extends IModClient with IHasKeys {
 
 	override def getMod: IModPlugin = Galvanize
+
+	@SideOnly(Side.CLIENT)
+	override def getKeyBinder: IKeyBinder = ModKeys
 
 	/**
 	  * This needs to be called in [[temportalist.origin.foundation.common.IProxy.preInit]]
 	  */
 	override def preInit(): Unit = {
 		super.preInit()
+
+		ModKeys.register()
+		MinecraftForge.EVENT_BUS.register(ModKeys)
+
+		// TODO not registered because must use ticker this.registerOverlay(OverlaySidebarMorph)
+		MinecraftForge.EVENT_BUS.register(OverlaySidebarMorph)
+
+	}
+
+	object ModKeys extends IKeyBinder {
+
+		var sidebarUp: KeyBinding = _
+		var sidebarDown: KeyBinding = _
+		var sidebarLeft: KeyBinding = _
+		var sidebarRight: KeyBinding = _
+
+		override def register(): Unit = {
+			val prefix = "morphSelector"
+			val cate = EnumKeyCategory.GAMEPLAY.getName
+			val cxt = KeyConflictContext.UNIVERSAL
+			val km = KeyModifier.SHIFT
+
+			this.sidebarUp = new KeyBinding(prefix + "Up", Keyboard.KEY_LBRACKET, cate)
+			this.registerKeyBinding(this.sidebarUp)
+			this.sidebarDown = new KeyBinding(prefix + "Down", Keyboard.KEY_RBRACKET, cate)
+			this.registerKeyBinding(this.sidebarDown)
+			this.sidebarLeft = new KeyBinding(prefix + "Left", cxt, km, Keyboard.KEY_LBRACKET, cate)
+			this.registerKeyBinding(this.sidebarLeft)
+			this.sidebarRight = new KeyBinding(prefix + "Right", cxt, km, Keyboard.KEY_RBRACKET, cate)
+			this.registerKeyBinding(this.sidebarRight)
+
+		}
+
+		override def onKeyPressed(keyBinding: KeyBinding): Unit = {
+			val desc = keyBinding.getKeyDescription
+			val isUp = desc == this.sidebarUp.getKeyDescription // -Y
+			val isDown = desc == this.sidebarDown.getKeyDescription // +Y
+			val isLeft = desc == this.sidebarLeft.getKeyDescription // -X
+			val isRight = desc == this.sidebarRight.getKeyDescription // +X
+
+			val overlay = OverlaySidebarMorph
+			if (isUp || isDown) {
+
+				val mc = Minecraft.getMinecraft
+				// skipped https://github.com/iChun/Morph/blob/f741101ce718323f0945c2cd7dc3e21acf8c314a/src/main/java/morph/common/core/EventHandler.java#L708
+				if (!overlay.doShowSelector && mc.currentScreen == null) {
+					overlay.doShowSelector = true
+					overlay.timerSelector = overlay.selectorShowTime - overlay.timerSelector
+					overlay.scrollTimerHori = overlay.scrollTime
+					overlay.selectorSelected = 0
+					overlay.selectorSelectedHori = 0
+
+					// skipped https://github.com/iChun/Morph/blob/f741101ce718323f0945c2cd7dc3e21acf8c314a/src/main/java/morph/common/core/EventHandler.java#L718-L750
+				}
+				else {
+					overlay.selectorSelectedHori = 0
+					overlay.selectorSelectedPrev = overlay.selectorSelected
+					overlay.scrollTimerHori = overlay.scrollTime
+					overlay.scrollTimer = overlay.scrollTime
+
+					HelperGalvanize.get(mc.thePlayer) match {
+						case galvanized: IPlayerGalvanize =>
+							if (isUp) {
+								overlay.selectorSelected -= 1
+								if (overlay.selectorSelected < 0) {
+									overlay.selectorSelected = galvanized.getModelEntities.size() - 1
+								}
+							}
+							else {
+								overlay.selectorSelected += 1
+								if (overlay.selectorSelected >= galvanized.getModelEntities.size())
+									overlay.selectorSelected = 0
+							}
+						case _ =>
+					}
+
+
+
+				}
+
+			}
+			// skipped https://github.com/iChun/Morph/blob/f741101ce718323f0945c2cd7dc3e21acf8c314a/src/main/java/morph/common/core/EventHandler.java#L776-L836
+			// skipped https://github.com/iChun/Morph/blob/f741101ce718323f0945c2cd7dc3e21acf8c314a/src/main/java/morph/common/core/EventHandler.java#L837-L1037
+
+		}
+
+		@SubscribeEvent
+		def onKeyPress(event: KeyInputEvent): Unit = {
+			if (Keyboard.isKeyDown(Keyboard.KEY_RETURN)) {
+				if (OverlaySidebarMorph.doShowSelector) {
+					OverlaySidebarMorph.doShowSelector = false
+
+					val selectedIndex = OverlaySidebarMorph.selectorSelected
+					new PacketSetModel(selectedIndex).sendToServer(Galvanize)
+
+				}
+			}
+		}
 
 	}
 
