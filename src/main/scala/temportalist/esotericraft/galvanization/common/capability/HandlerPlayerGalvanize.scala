@@ -5,8 +5,10 @@ import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EntityDamageSource
 import net.minecraftforge.common.capabilities.{Capability, ICapabilityProvider}
+import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.origin.foundation.common.capability.ExtendedHandler.ExtendedEntity
 import temportalist.origin.foundation.common.network.PacketExtendedSync
 
@@ -67,6 +69,20 @@ object HandlerPlayerGalvanize
 			case galvanized: IPlayerGalvanize => galvanized.addModelEntity(target)
 			case _ =>
 		}
+	}
+
+	@SubscribeEvent
+	def onEntityJoinWorld2(event: EntityJoinWorldEvent): Unit = {
+		if (event.getWorld.isRemote) return
+
+		val entity = event.getEntity
+		if (this.isValid(entity)) {
+			val data = this.get(entity.asInstanceOf[EntityPlayer]).serializeNBT()
+			new PacketExtendedSync(
+				entity.getEntityId, data
+			).sendToDimension(Galvanize, event.getWorld.provider.getDimension)
+		}
+
 	}
 
 }

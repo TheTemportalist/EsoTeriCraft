@@ -13,7 +13,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.{ClientTickEvent, Phase
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.esotericraft.galvanization.common.capability.{HelperGalvanize, IPlayerGalvanize}
-import temportalist.esotericraft.galvanization.common.entity.emulator.EntityState
 import temportalist.origin.api.client.TessRenderer
 import temportalist.origin.foundation.client.gui.IOverlay
 
@@ -36,6 +35,7 @@ object OverlaySidebarMorph extends IOverlay {
 	val scrollTime = 3
 	val selectorShowTime = 10
 	var (scrollTimer, scrollTimerHori) = (0, 0)
+	var playerEvent_RenderingSelected = false
 
 	private val modid = Galvanize.getModId
 	private val rlSelected = new ResourceLocation(modid, "textures/gui/guiSelected.png")
@@ -189,9 +189,9 @@ object OverlaySidebarMorph extends IOverlay {
 						} else 0F
 					prog = MathHelper.clamp_float(prog, 0F, 1F)
 					val scaleMag = 2.5F / entSize
-					this.drawEntityOnScreen(state, instance, 20, height1,
+					this.drawEntityOnScreen(instance, 20, height1,
 						if (entSize > 2.5F) 16F * scaleMag else 16F,
-						2, 2, renderTick, this.selectorSelected == i, true
+						2, 2, renderTick, this.selectorSelected == i, text = true
 					)
 
 				}
@@ -246,7 +246,7 @@ object OverlaySidebarMorph extends IOverlay {
 
 		val reso = new ScaledResolution(mc)
 
-		var gap = (reso.getScaledHeight - (42 * 5)) / 2
+		val gap = (reso.getScaledHeight - (42 * 5)) / 2
 
 		val size = 42
 		val width1 = 0D
@@ -289,21 +289,37 @@ object OverlaySidebarMorph extends IOverlay {
 		GlStateManager.enableBlend()
 		GlStateManager.blendFunc(770, 771)
 
-		var i = 0
-
 		val states = JavaConversions.asScalaBuffer(galvanized.getModelEntities)
+
+		for (i <- 0 until states.length + 1) {
+			if (!(i > this.selectorSelected + maxShowable ||
+					i < this.selectorSelected - maxShowable)) {
+				val height1 = gap + size * (i - this.selectorSelected)
+
+				// Start Draw Bkgd
+				GlStateManager.pushMatrix()
+				if (i == this.selectorSelected) mc.getTextureManager.bindTexture(this.rlSelected)
+				else mc.getTextureManager.bindTexture(this.rlUnselected)
+				this.drawSidebarEntryBackground(width1, height1, size)
+				GlStateManager.popMatrix()
+				// End Draw Bkgd
+
+			}
+		}
+
+		/*
 		for (i <- states.indices) {
 			val state = states(i)
 
 			if (!(i > this.selectorSelected + maxShowable ||
 					i < this.selectorSelected - maxShowable)) {
 
-				val height1 = gap + size * (i - this.selectorSelected)
+				val height1 = gap + size * (i - this.selectorSelected + 1) // +1 for none state
 
 				// Start Draw Bkgd
 				GlStateManager.pushMatrix()
 
-				if (i == this.selectorSelected)
+				if (i + 1 == this.selectorSelected)
 					mc.getTextureManager.bindTexture(this.rlSelected)
 				else mc.getTextureManager.bindTexture(this.rlUnselected)
 
@@ -314,6 +330,7 @@ object OverlaySidebarMorph extends IOverlay {
 			}
 
 		}
+		*/
 
 		GlStateManager.disableBlend()
 
@@ -323,24 +340,59 @@ object OverlaySidebarMorph extends IOverlay {
 
 		// render entities
 
+		for (i <- 0 until states.length + 1) {
+			if (!(i > this.selectorSelected + maxShowable ||
+					i < this.selectorSelected - maxShowable)) {
+				GlStateManager.pushMatrix()
+				val instance = if (i == 0) mc.thePlayer else states(i - 1).getInstance(mc.theWorld)
+				val entSize = Math.max(instance.width, instance.height)
+				val scaleMag = 2.5F / entSize
+
+				if (i == 0) this.playerEvent_RenderingSelected = true
+
+				this.drawEntityOnScreen(instance, 20, gap + (size * (i - this.selectorSelected + 1)),
+					if (entSize > 2.5F) 16F * scaleMag else 16F,
+					2, 2, renderTick, this.selectorSelected == i, text = true
+				)
+
+				if (i == 0) this.playerEvent_RenderingSelected = false
+
+				GlStateManager.popMatrix()
+			}
+		}
+
+		/*
+		if (!(0 > this.selectorSelected + maxShowable ||
+				0 < this.selectorSelected - maxShowable)) {
+			GlStateManager.pushMatrix()
+			val instance = mc.thePlayer
+			val entSize = Math.max(instance.width, instance.height)
+			val scaleMag = 2.5F / entSize
+			this.drawEntityOnScreen(instance, 20, gap + (size * (0 - this.selectorSelected + 1)),
+				if (entSize > 2.5F) 16F * scaleMag else 16F,
+				2, 2, renderTick, this.selectorSelected == 0, text = true
+			)
+			GlStateManager.popMatrix()
+		}
+
 		for (i <- states.indices) {
 			val state = states(i)
 
-			if (!(i > this.selectorSelected + maxShowable ||
-					i < this.selectorSelected - maxShowable)) {
+			if (!(i + 1 > this.selectorSelected + maxShowable ||
+					i + 1 < this.selectorSelected - maxShowable)) {
 
 				// Start Draw Entity
 				GlStateManager.pushMatrix()
 				val instance = state.getInstance(mc.theWorld)
 				val entSize = Math.max(instance.width, instance.height)
 				var prog =
-					if (this.selectorSelected == i) {
+					if (this.selectorSelected == i + 1) {
 						if (!this.doShowSelector) this.scrollTimer - renderTick
 						else (3F - this.scrollTimer + renderTick) / 3F
 					} else 0F
 				prog = MathHelper.clamp_float(prog, 0F, 1F)
 				val scaleMag = 2.5F / entSize
-				this.drawEntityOnScreen(state, instance, 20, gap + (size * (i - this.selectorSelected + 1)),
+				this.drawEntityOnScreen(instance, 20, gap + (size * (i - this.selectorSelected + 2)),
 					if (entSize > 2.5F) 16F * scaleMag else 16F,
 					2, 2, renderTick, this.selectorSelected == i, text = true
 				)
@@ -349,6 +401,7 @@ object OverlaySidebarMorph extends IOverlay {
 
 			}
 		}
+		*/
 
 		GlStateManager.popMatrix()
 
@@ -403,7 +456,7 @@ object OverlaySidebarMorph extends IOverlay {
 
 	}
 
-	def drawEntityOnScreen(state: EntityState, ent: EntityLivingBase,
+	def drawEntityOnScreen(ent: EntityLivingBase,
 			posX: Int, posY: Int, scale: Float,
 			par4: Float, par5: Float, renderTick: Float, selected: Boolean, text: Boolean
 	): Unit = {

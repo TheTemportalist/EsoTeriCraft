@@ -87,6 +87,7 @@ object Client extends IModClient with IHasKeys {
 			if (isUp || isDown) {
 
 				val mc = Minecraft.getMinecraft
+
 				// skipped https://github.com/iChun/Morph/blob/f741101ce718323f0945c2cd7dc3e21acf8c314a/src/main/java/morph/common/core/EventHandler.java#L708
 				if (!overlay.doShowSelector && mc.currentScreen == null) {
 					overlay.doShowSelector = true
@@ -108,12 +109,12 @@ object Client extends IModClient with IHasKeys {
 							if (isUp) {
 								overlay.selectorSelected -= 1
 								if (overlay.selectorSelected < 0) {
-									overlay.selectorSelected = galvanized.getModelEntities.size() - 1
+									overlay.selectorSelected = galvanized.getModelEntities.size() - 1 + 1 // +1 for none state
 								}
 							}
 							else {
 								overlay.selectorSelected += 1
-								if (overlay.selectorSelected >= galvanized.getModelEntities.size())
+								if (overlay.selectorSelected >= galvanized.getModelEntities.size() + 1) // + 1 for none state
 									overlay.selectorSelected = 0
 							}
 						case _ =>
@@ -136,8 +137,15 @@ object Client extends IModClient with IHasKeys {
 					OverlaySidebarMorph.doShowSelector = false
 
 					val selectedIndex = OverlaySidebarMorph.selectorSelected
-					new PacketSetModel(selectedIndex).sendToServer(Galvanize)
+					new PacketSetModel(selectedIndex, 0).sendToServer(Galvanize)
 
+				}
+			}
+			else if (Keyboard.isKeyDown(Keyboard.KEY_BACK) ||
+					Keyboard.isKeyDown(Keyboard.KEY_DELETE)) {
+				if (OverlaySidebarMorph.doShowSelector) {
+					val selectedIndex = OverlaySidebarMorph.selectorSelected
+					new PacketSetModel(selectedIndex, 1).sendToServer(Galvanize)
 				}
 			}
 		}
@@ -177,6 +185,7 @@ object Client extends IModClient with IHasKeys {
 
 	@SubscribeEvent
 	def renderPlayerPre(event: RenderPlayerEvent.Pre): Unit = {
+		if (OverlaySidebarMorph.playerEvent_RenderingSelected) return
 		val player = event.getEntityPlayer
 		val galvanized = HelperGalvanize.get(player)
 

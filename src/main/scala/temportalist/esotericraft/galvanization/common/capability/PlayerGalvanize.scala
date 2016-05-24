@@ -4,7 +4,7 @@ import java.util
 
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.nbt.{NBTTagCompound, NBTTagList, NBTTagString}
+import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import temportalist.esotericraft.galvanization.common.Galvanize
@@ -24,19 +24,19 @@ import scala.collection.mutable.ListBuffer
   */
 class PlayerGalvanize(
 		private val player: EntityPlayer
-) extends IPlayerGalvanize
-		with IExtendedEntitySync[NBTTagCompound, EntityPlayer]
-		with IEntityEmulator {
+) extends IPlayerGalvanize // General interface for API
+		with IExtendedEntitySync[NBTTagCompound, EntityPlayer] // Provides easy syncing
+		with IEntityEmulator // Provides morph body functionality
+{
 
 	// ~~~~~~~~~~ NBT Serializable
 
 	override def serializeNBT(): NBTTagCompound = {
-		Galvanize.log("serialize")
 
 		val nbt = new NBTTagCompound
 
 		if (this.getEntityName != null)
-			nbt.setString("entityName", this.getEntityName)
+			nbt.setString("entity_name", this.getEntityName)
 		if (this.getEntityState != null)
 			nbt.setTag("entity_state", this.getEntityState.serializeNBT())
 		nbt.setTag("emulator", this.serializeNBTEmulator)
@@ -52,49 +52,32 @@ class PlayerGalvanize(
 
 	override def deserializeNBT(nbt: NBTTagCompound): Unit = {
 
-		Galvanize.log("Deserialize " + nbt.toString)
+		if (nbt.hasKey("addModelEntity_entityState"))
+			this.availableEntityStates +=
+					new EntityState(nbt.getCompoundTag("addModelEntity_entityState"))
+		if (nbt.hasKey("removeModelEntity_index"))
+			this.removeModelEntity(nbt.getInteger("removeModelEntity_index"))
 
-		if (nbt.hasKey("main")) {
-			nbt.getTag("main") match {
-				case tagStr: NBTTagString =>
-					this.setEntityState(tagStr.getString, this.getWorld)
-				case tagCom: NBTTagCompound =>
-					if (tagCom.hasKey("addModelEntity_entityState"))
-						this.availableEntityStates +=
-								new EntityState(tagCom.getCompoundTag("addModelEntity_entityState"))
-					else {
-						this.deserializeNBT(tagCom)
-					}
-				case _ =>
-			}
-			return
+		if (nbt.hasKey("entity_name")) {
+			this.setEntityState(nbt.getString("entity_name"), this.getWorld)
 		}
 
-		if (nbt.hasKey("entityName")) {
-			this.setEntityState(nbt.getString("entityName"), this.getWorld)
-		}
-		else this.setEntityName(null)
-
-		var entityState: EntityState = null
 		if (nbt.hasKey("entity_state")) {
+			var entityState: EntityState = null
 			entityState = new EntityState(nbt.getCompoundTag("entity_state"))
+			this.setEntityState(entityState)
 		}
-		this.setEntityState(entityState)
 
-		this.deserializeNBTEmulator(nbt.getCompoundTag("emulator"))
+		if (nbt.hasKey("emulator"))
+			this.deserializeNBTEmulator(nbt.getCompoundTag("emulator"))
 
-		this.availableEntityStates.clear()
-		val tagEntityStates = NBTHelper.getTagList[NBTTagCompound](nbt, "entity_states")
-		for (i <- 0 until tagEntityStates.tagCount()) {
-			this.availableEntityStates += new EntityState(tagEntityStates.getCompoundTagAt(i))
+		if (nbt.hasKey("entity_states")) {
+			this.availableEntityStates.clear()
+			val tagEntityStates = NBTHelper.getTagList[NBTTagCompound](nbt, "entity_states")
+			for (i <- 0 until tagEntityStates.tagCount()) {
+				this.availableEntityStates += new EntityState(tagEntityStates.getCompoundTagAt(i))
+			}
 		}
-		Galvanize.log("Loaded " + this.availableEntityStates.length + " states")
-
-		// TODO
-		/** NOTE
-			Serialize and Deserialize are only EVER called on the server-side
-		    Task: get the data loaded on the server-side to be sent to the client side to be loaded
-		 */
 
 	}
 
@@ -107,7 +90,11 @@ class PlayerGalvanize(
 	override def getSelfEntityInstance: EntityLivingBase = this.player
 
 	override protected def syncEntityNameToClient(name: String): Unit = {
-		this.sendNBTToClient(this.player, new NBTTagString(name))
+		this.sendNBTToClient(this.player, {
+			val ret = new NBTTagCompound
+			ret.setString("entity_name", name)
+			ret
+		})
 	}
 
 	override def onEntityStateCleared(world: World): Unit = {
@@ -141,5 +128,18 @@ class PlayerGalvanize(
 
 	override def getModelEntities: util.List[EntityState] =
 		JavaConversions.seqAsJavaList(this.availableEntityStates)
+
+	override def removeModelEntity(index: Int): Unit = {
+		this.availableEntityStates.remove(index)
+		if (!this.getWorld.isRemote) {
+			///*
+			this.sendNBTToClient(this.player, {
+				val ret = new NBTTagCompound
+				ret.setInteger("removeModelEntity_index", index)
+				ret
+			})
+			//*/
+		}
+	}
 
 }

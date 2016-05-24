@@ -96,16 +96,13 @@ trait IEntityEmulator {
 		if (world != null) {
 			if (!world.isRemote) this.syncEntityNameToClient(this.entityName)
 			else if (this.entityModel != null) this.entityModel = null
-			this.constructEntityState(world)
-		}
-	}
 
-	private final def constructEntityState(world: World): Unit = {
-		EntityList.createEntityByName(this.entityName, world) match {
-			case living: EntityLivingBase =>
-				this.setEntityStateEntity(living)
-				this.onEntityConstructed(this.getEntityStateInstance(world))
-			case _ =>
+			EntityList.createEntityByName(this.entityName, world) match {
+				case living: EntityLivingBase =>
+					this.setEntityStateEntity(living)
+					this.onEntityConstructed(this.getEntityStateInstance(world))
+				case _ =>
+			}
 		}
 	}
 
@@ -119,14 +116,18 @@ trait IEntityEmulator {
 	final def setEntityState(state: EntityState): Unit = {
 		this.entityName = state.getName
 		this.entityState = state
-		if (this.getSelfEntityInstance.getEntityWorld.isRemote)
-			this.entityModel = null
-		this.constructEntityState(this.getSelfEntityInstance.getEntityWorld)
-		Galvanize.log(this.getEntityName)
+		val world = this.getSelfEntityInstance.getEntityWorld
+		if (!world.isRemote) {
+			this.syncEntityNameToClient(this.entityName)
+			this.onEntityConstructed(this.getEntityStateInstance(world))
+		}
+		else this.entityModel = null
+
 	}
 
 	final def clearEntityState(world: World): Unit = {
 		if (!world.isRemote) this.syncEntityNameToClient("")
+		else this.entityModel = null
 		this.entityName = null
 		this.entityState = null
 		this.getEntityStateInstance(world)

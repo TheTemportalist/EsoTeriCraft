@@ -10,7 +10,6 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand}
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
-import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.esotericraft.galvanization.common.capability.{HelperGalvanize, IPlayerGalvanize}
 import temportalist.esotericraft.galvanization.common.entity.EntityEmpty
 import temportalist.esotericraft.galvanization.common.item.ItemEggGolem._
@@ -32,8 +31,6 @@ class ItemEggGolem extends ItemCreative() with INBTHandler {
 	override def itemInteractionForEntity(stack: ItemStack, playerIn: EntityPlayer,
 			target: EntityLivingBase, hand: EnumHand): Boolean = {
 		if (this.canUse(playerIn) && playerIn.isSneaking) {
-
-			Galvanize.log(EntityList.getEntityString(target))
 
 			val tag = this.getTagOrElseSet(stack)
 			tag.setString(ENTITY_ID, EntityList.getEntityString(target))
