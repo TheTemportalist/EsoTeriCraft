@@ -3,7 +3,7 @@ package temportalist.esotericraft.sorcery.common.network
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraftforge.fml.common.network.simpleimpl.{IMessage, IMessageHandler, MessageContext}
-import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import temportalist.esotericraft.api.sorcery.ApiSorcery
 import temportalist.esotericraft.api.sorcery.ApiSorcery.ISorceryPlayer
 import temportalist.origin.foundation.common.network.IPacket
@@ -36,11 +36,14 @@ object PacketCast {
 		def getPlayer(ctx: MessageContext): EntityPlayer = {
 
 			ctx.side match {
-				case Side.CLIENT => Minecraft.getMinecraft.thePlayer
+				case Side.CLIENT => this.getPlayerClient
 				case Side.SERVER => ctx.getServerHandler.playerEntity
 			}
 
 		}
+
+		@SideOnly(Side.CLIENT)
+		def getPlayerClient: EntityPlayer = Minecraft.getMinecraft.thePlayer
 
 	}
 
