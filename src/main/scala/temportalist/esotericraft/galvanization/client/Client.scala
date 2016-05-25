@@ -50,6 +50,8 @@ object Client extends IModClient with IHasKeys {
 		// TODO not registered because must use ticker this.registerOverlay(OverlaySidebarMorph)
 		MinecraftForge.EVENT_BUS.register(OverlaySidebarMorph)
 
+		MinecraftForge.EVENT_BUS.register(ClientTask)
+
 	}
 
 	object ModKeys extends IKeyBinder {

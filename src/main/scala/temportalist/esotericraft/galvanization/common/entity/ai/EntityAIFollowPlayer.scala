@@ -3,6 +3,7 @@ package temportalist.esotericraft.galvanization.common.entity.ai
 import net.minecraft.entity.{EntityCreature, EntityLivingBase}
 import net.minecraft.item.ItemStack
 import temportalist.esotericraft.api.galvanize.ai.{AIEmpty, EntityAIEmpty}
+import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.esotericraft.galvanization.common.entity.EntityEmpty
 import temportalist.origin.api.common.lib.Vect
 
@@ -12,7 +13,7 @@ import temportalist.origin.api.common.lib.Vect
   *
   * @author TheTemportalist
   */
-@AIEmpty(name = "Follow Player")
+@AIEmpty(displayName = "Follow Player", name = "followPlayer", modid = Galvanize.MOD_ID)
 class EntityAIFollowPlayer(
 		private val owner: EntityCreature
 ) extends EntityAIHelper with EntityAIEmpty {

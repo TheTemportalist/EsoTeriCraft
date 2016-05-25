@@ -14,7 +14,7 @@ import net.minecraft.util.{ActionResult, EnumActionResult, EnumFacing, EnumHand}
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import temportalist.esotericraft.api.galvanize.ai.EntityAIEmpty
-import temportalist.esotericraft.galvanization.common.entity.ai.AILoader
+import temportalist.esotericraft.galvanization.common.entity.ai.LoaderAI
 
 import scala.collection.JavaConversions
 
@@ -30,12 +30,12 @@ class ItemAIInfo extends ItemCreative {
 	override def getSubItems(itemIn: Item, tab: CreativeTabs,
 			subItems: util.List[ItemStack]): Unit = {
 		val stack = new ItemStack(itemIn)
-		val classesOfAI = AILoader.getClassInstances
+		val classesOfAI = LoaderAI.getClassInstances
 		for (classAI <- classesOfAI) {
 			subItems.add({
 				val sub = stack.copy()
 				sub.setTagCompound(new NBTTagCompound)
-				val nameAI = AILoader.getAnnotationInfo(classAI).getOrElse("name", null)
+				val nameAI = LoaderAI.getAnnotationInfo(classAI).getOrElse("displayName", null)
 				if (nameAI != null) sub.getTagCompound.setString("ai_name", nameAI.toString)
 				sub.getTagCompound.setString("ai_class", classAI.getName)
 				sub
@@ -122,7 +122,7 @@ class ItemAIInfo extends ItemCreative {
 		if (!stack.hasTagCompound) return pass
 
 		val classNameOfAI = stack.getTagCompound.getString("ai_class")
-		val helper = AILoader.getHelperForAIClass(classNameOfAI)
+		val helper = LoaderAI.getHelperForAIClass(classNameOfAI)
 		if (helper == null) return pass
 
 		helper.onItemRightClick(stack, worldIn, playerIn, hand)
@@ -136,7 +136,7 @@ class ItemAIInfo extends ItemCreative {
 		if (!stack.hasTagCompound) return pass
 
 		val classNameOfAI = stack.getTagCompound.getString("ai_class")
-		val helper = AILoader.getHelperForAIClass(classNameOfAI)
+		val helper = LoaderAI.getHelperForAIClass(classNameOfAI)
 		if (helper == null) return pass
 
 		helper.onItemUse(stack, playerIn, worldIn, pos, hand, facing, hitX, hitY, hitZ)

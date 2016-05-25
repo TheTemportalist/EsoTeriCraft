@@ -5,6 +5,7 @@ import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.util.{EnumFacing, EnumHand}
 import temportalist.esotericraft.api.galvanize.ai.{AIEmpty, EntityAIEmpty}
+import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.origin.api.common.lib.Vect
 
 /**
@@ -13,7 +14,7 @@ import temportalist.origin.api.common.lib.Vect
   *
   * @author TheTemportalist
   */
-@AIEmpty(name = "Deposit Items")
+@AIEmpty(displayName = "Deposit Items", name = "itemDeposit", modid = Galvanize.MOD_ID)
 class EntityAIItemDeposit(
 		private val owner: EntityCreature
 ) extends EntityAIHelper

@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.AxisAlignedBB
 import temportalist.esotericraft.api.galvanize.ai.{AIEmpty, EntityAIEmpty}
+import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.origin.api.common.lib.Vect
 
 import scala.collection.{JavaConversions, mutable}
@@ -17,7 +18,7 @@ import scala.collection.{JavaConversions, mutable}
   *
   * @author TheTemportalist
   */
-@AIEmpty(name = "Pick Up Items")
+@AIEmpty(displayName = "Pick Up Items", name = "itemPickUp", modid = Galvanize.MOD_ID)
 class EntityAIItemPickUp(
 		private val owner: EntityCreature
 ) extends EntityAIHelper

@@ -30,8 +30,8 @@ object CommandETC extends Command {
 
 		/*
 		-1          0       1       2       3
-		esoteric    spell   player  add     name
-		esoteric    spell   player  remove  name
+		esoteric    spell   player  add     displayName
+		esoteric    spell   player  remove  displayName
 
 		 */
 

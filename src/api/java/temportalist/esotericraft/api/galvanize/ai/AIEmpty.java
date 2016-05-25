@@ -7,6 +7,10 @@ package temportalist.esotericraft.api.galvanize.ai;
  */
 public @interface AIEmpty {
 
+	String displayName();
+
 	String name();
+
+	String modid();
 
 }

@@ -13,10 +13,11 @@ import temportalist.esotericraft.api.galvanize.IAbility
 import temportalist.esotericraft.api.init.IEsoTeriCraft
 import temportalist.esotericraft.api.init.IEsoTeriCraft.PluginEsoTeriCraft
 import temportalist.esotericraft.galvanization.common.capability.HandlerPlayerGalvanize
-import temportalist.esotericraft.galvanization.common.entity.ai.AILoader
+import temportalist.esotericraft.galvanization.common.entity.ai.LoaderAI
 import temportalist.esotericraft.galvanization.common.entity.emulator.ability.AbilityLoader
 import temportalist.esotericraft.galvanization.common.init.{ModEntities, ModItems}
-import temportalist.esotericraft.galvanization.common.network.PacketSetModel
+import temportalist.esotericraft.galvanization.common.network.{PacketSetModel, PacketUpdateClientTasks}
+import temportalist.esotericraft.galvanization.common.task.core.ControllerTask
 import temportalist.esotericraft.galvanization.server.CommandSetPlayerModel
 import temportalist.origin.foundation.common.modTraits.IHasCommands
 import temportalist.origin.foundation.common.registers.{OptionRegister, Register}
@@ -65,7 +66,7 @@ object Galvanize extends ModBase with IHasCommands {
 
 	/**
 	  *
-	  * @return A mod's name
+	  * @return A mod's displayName
 	  */
 	override def getModName: String = this.MOD_NAME
 
@@ -93,11 +94,13 @@ object Galvanize extends ModBase with IHasCommands {
 		this.registerNetwork()
 		HandlerPlayerGalvanize.init(this, "PlayerGalvanize")
 		this.registerMessage(classOf[PacketSetModel.Handler], classOf[PacketSetModel], Side.SERVER)
+		this.registerMessage(classOf[PacketUpdateClientTasks.Handler], classOf[PacketUpdateClientTasks], Side.CLIENT)
 
 		AbilityLoader.preInit(event)
-		AILoader.preInit(event)
+		LoaderAI.preInit(event)
 		FetchResources.runMorph()
 		FetchResources.runGalvanize()
+		this.registerHandler(ControllerTask)
 
 	}
 

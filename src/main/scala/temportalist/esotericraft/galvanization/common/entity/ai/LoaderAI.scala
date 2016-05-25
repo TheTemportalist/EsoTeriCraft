@@ -12,11 +12,22 @@ import scala.collection.mutable
   *
   * @author TheTemportalist
   */
-object AILoader extends AnnotationLoader(classOf[AIEmpty], classOf[EntityAIEmpty]) {
+object LoaderAI extends AnnotationLoader(classOf[AIEmpty], classOf[EntityAIEmpty]) {
 
 	def preInit(event: FMLPreInitializationEvent): Unit = {
 		this.loadAnnotations(event)
 		HelperLoader.loadAnnotations(event)
+	}
+
+	private val MAP_NAME_TO_CLASS = mutable.Map[String, Class[_ <: EntityAIEmpty]]()
+
+	override def onAnnotationClassFound[I <: EntityAIEmpty](implementer: Class[I],
+			info: mutable.Map[String, AnyRef]): Unit = {
+		this.MAP_NAME_TO_CLASS(implementer.getName) = implementer
+	}
+
+	def getClassFromName(name: String): Class[_ <: EntityAIEmpty] = {
+		this.MAP_NAME_TO_CLASS.getOrElse(name, null)
 	}
 
 	private object HelperLoader extends InstanceLoader(classOf[AIEmptyHelper], classOf[EntityAIHelperObj]) {
