@@ -23,7 +23,7 @@ import scala.collection.mutable
 object ClientTask {
 
 	private val taskMap = mutable.Map[BlockPos,
-				mutable.Map[EnumFacing, ITask]
+			mutable.Map[EnumFacing, ITask]
 			]()
 
 	def updateTasks(func: Int, task: ITask): Unit = {
@@ -54,14 +54,14 @@ object ClientTask {
 
 	/**
 	  * NOTE: This is HEAVILY based on Azanor's Thaumcraft 1.8.9 version 5.2.4
-	  *     todo thaumcraft.client.lib.RenderEventHandler#drawSeals ln 488
+	  * todo thaumcraft.client.lib.RenderEventHandler#drawSeals ln 488
 	  */
 	@SubscribeEvent
 	def onRenderWorldLast(event: RenderWorldLastEvent): Unit = {
 
 		val mc = Minecraft.getMinecraft
-		val player = mc.getRenderViewEntity
-		if (player == null) return
+		val rendEnt = mc.getRenderViewEntity
+		if (rendEnt == null) return
 		val partialTicks = event.getPartialTicks
 
 		val posToFaceToTask = this.taskMap
@@ -69,48 +69,35 @@ object ClientTask {
 
 		GlStateManager.pushMatrix()
 
-		if (player.isSneaking) GlStateManager.disableDepth()
+		if (rendEnt.isSneaking) GlStateManager.disableDepth()
 		GlStateManager.enableBlend()
 		// GL11.glBlendFunc(770, 771); SRCALPHA -> SRC ONE MINUS
 		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
 		GlStateManager.disableCull()
 
-		val xRenderEntity = player.prevPosX +
-				(player.posX - player.prevPosX) * partialTicks
-		val yRenderEntity = player.prevPosY +
-				(player.posY - player.prevPosY) * partialTicks
-		val zRenderEntity = player.prevPosZ +
-				(player.posZ - player.prevPosZ) * partialTicks
+		val xRenderEntity = rendEnt.prevPosX + (rendEnt.posX - rendEnt.prevPosX) * partialTicks
+		val yRenderEntity = rendEnt.prevPosY + (rendEnt.posY - rendEnt.prevPosY) * partialTicks
+		val zRenderEntity = rendEnt.prevPosZ + (rendEnt.posZ - rendEnt.prevPosZ) * partialTicks
 		GlStateManager.translate(-xRenderEntity, -yRenderEntity, -zRenderEntity)
 
-		for (posEntry <- posToFaceToTask.values) {
-			for (task <- posEntry.values) {
-				val dist = player.getDistanceSqToCenter(task.getPosition)
-				if (dist <= 256D) {
-					val alpha = 1F - (dist / 256).toFloat
-					this.renderTask(task, alpha)
-				}
+		for (faceToTask <- posToFaceToTask.values) for (task <- faceToTask.values) {
+			if (rendEnt.getDistanceSqToCenter(task.getPosition) <= 256D) {
+
+				GlStateManager.pushMatrix()
+				GlStateManager.color(1F, 1F, 1F, 1F)
+				this.translate(task.getPosition, task.getFace, 0.05F, scale = 0.5F)
+				this.renderTexture(task.getIconLocation, 0.1F)
+				GlStateManager.popMatrix()
+
 			}
 		}
 
 		GlStateManager.disableBlend()
 		GlStateManager.enableCull()
-		if (player.isSneaking) GlStateManager.enableDepth()
+		if (rendEnt.isSneaking) GlStateManager.enableDepth()
 
 		GlStateManager.popMatrix()
 
-	}
-
-	// todo thaumcraft.client.lib.RenderEventHandler#renderSeal ln 611
-	def renderTask(task: ITask, alpha: Float): Unit = {
-		GlStateManager.pushMatrix()
-		GlStateManager.color(1F, 1F, 1F, alpha)
-
-		this.translate(task.getPosition, task.getFace, 0.05F, scale = 0.5F)
-		this.renderTexture(task.getIconLocation, 0.1F)
-
-		GlStateManager.color(1F, 1F, 1F, 1F)
-		GlStateManager.popMatrix()
 	}
 
 	// todo thaumcraft.client.lib.RenderEventHandler#translateSeal ln 622
