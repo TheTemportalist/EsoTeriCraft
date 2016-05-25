@@ -70,6 +70,13 @@ final class WorldDataTask(key: String) extends WorldSavedData(key) with INBTCrea
 		else null
 	}
 
+	def getTasks: Iterable[ITask] = {
+		for {
+			faceToListTaskMap <- this.taskObjects.values
+			task <- faceToListTaskMap.values
+		} yield task
+	}
+
 	// ~~~~~ NBT ~~~~~
 
 	override def writeToNBT(tag: NBTTagCompound): NBTTagCompound = {

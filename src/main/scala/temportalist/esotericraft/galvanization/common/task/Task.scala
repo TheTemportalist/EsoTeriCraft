@@ -1,8 +1,8 @@
 package temportalist.esotericraft.galvanization.common.task
 
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraft.world.World
 import temportalist.esotericraft.api.galvanize.ai.EntityAIEmpty
 
@@ -21,13 +21,17 @@ class Task(private val world: World) extends ITask with INBTCreator {
 	private var aiName: String = null
 	private var aiDisplayName: String = null
 	private var aiClass: Class[_ <: EntityAIEmpty] = null
+
 	private var aiInstance: EntityAIEmpty = null
+	private var iconLocation: ResourceLocation = null
 
 	// ~~~~~~~~~~ Getters ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	override def getModID: String = this.aiModID
 
 	override def getName: String = this.aiName
+
+	override def getIconLocation: ResourceLocation = this.iconLocation
 
 	override def getWorld: World = this.world
 
@@ -46,9 +50,16 @@ class Task(private val world: World) extends ITask with INBTCreator {
 			classAI: Class[_ <: EntityAIEmpty]): Unit = {
 		this.aiModID = modid
 		this.aiName = name
+		this.createIconLocation()
 		this.aiDisplayName = displayName
 		this.aiClass = classAI
 		this.createInstanceOfAI()
+	}
+
+	private def createIconLocation(): Unit = {
+		this.iconLocation =
+				if (this.aiModID == null || this.aiName == null) null
+				else new ResourceLocation(this.aiModID, "textures/tasks/" + this.aiName + ".png")
 	}
 
 	private def createInstanceOfAI(): Unit = {
@@ -109,6 +120,7 @@ class Task(private val world: World) extends ITask with INBTCreator {
 			val tagAI = tag.getCompoundTag("ai")
 			if (tagAI.hasKey("modid")) this.aiModID = tagAI.getString("modid")
 			if (tagAI.hasKey("name")) this.aiName = tagAI.getString("name")
+			this.createIconLocation()
 			if (tagAI.hasKey("displayName")) this.aiDisplayName = tagAI.getString("displayName")
 			if (tagAI.hasKey("class"))
 				try {
@@ -116,7 +128,7 @@ class Task(private val world: World) extends ITask with INBTCreator {
 							.asInstanceOf[Class[_ <: EntityAIEmpty]]
 					this.createInstanceOfAI()
 				}
-				catch { case e: Exception => }
+				catch {case e: Exception =>}
 		}
 
 	}

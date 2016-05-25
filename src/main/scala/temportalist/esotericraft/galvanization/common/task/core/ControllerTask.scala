@@ -1,8 +1,10 @@
 package temportalist.esotericraft.galvanization.common.task.core
 
+import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
+import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent
 import temportalist.esotericraft.galvanization.common.Galvanize
@@ -33,7 +35,7 @@ object ControllerTask {
 	def spawnTask(world: World, pos: BlockPos, face: EnumFacing, task: ITask): Boolean = {
 		if (this.getData(world).spawnTask(world, pos, face, task)) {
 			new PacketUpdateClientTasks(
-				true, world, task
+				PacketUpdateClientTasks.SPAWN, task
 			).sendToDimension(Galvanize, world.provider.getDimension)
 			true
 		} else false
@@ -43,11 +45,23 @@ object ControllerTask {
 		this.getData(world).breakTask(world, pos, face) match {
 			case task: ITask =>
 				new PacketUpdateClientTasks(
-					false, world, task
+					PacketUpdateClientTasks.BREAK, task
 				).sendToDimension(Galvanize, world.provider.getDimension)
 				true
 			case _ => // no task broken
 				false
+		}
+	}
+
+	@SubscribeEvent
+	def onJoinWorld(event: EntityJoinWorldEvent): Unit = {
+		if (event.getWorld.isRemote) return
+		event.getEntity match {
+			case player: EntityPlayerMP =>
+				new PacketUpdateClientTasks(
+					this.getData(event.getWorld).getTasks
+				).sendToPlayer(Galvanize, player)
+			case _ =>
 		}
 	}
 
