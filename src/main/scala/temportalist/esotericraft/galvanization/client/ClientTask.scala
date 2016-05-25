@@ -165,23 +165,23 @@ object ClientTask {
 
 		val buf = TessRenderer.getBuffer
 
-		/*
+		///*
 		TessRenderer.startQuads(DefaultVertexFormats.POSITION_TEX_NORMAL)
 		buf.pos(0.0D, 0.0D, 0.0D).tex(uMax, vMax).normal(0, 0, 1).endVertex()
 		buf.pos(1.0D, 0.0D, 0.0D).tex(uMin, vMax).normal(0, 0, 1).endVertex()
 		buf.pos(1.0D, 1.0D, 0.0D).tex(uMin, vMin).normal(0, 0, 1).endVertex()
 		buf.pos(0.0D, 1.0D, 0.0D).tex(uMax, vMin).normal(0, 0, 1).endVertex()
 		TessRenderer.draw()
-		*/
+		//*/
 
-		///*
+		/*
 		TessRenderer.startQuads(DefaultVertexFormats.POSITION_TEX_NORMAL)
 		buf.pos(0.0D, 1.0D, 0.0F - thickness).tex(uMax, vMin).normal(0, 0, -1).endVertex()
 		buf.pos(1.0D, 1.0D, 0.0F - thickness).tex(uMin, vMin).normal(0, 0, -1).endVertex()
 		buf.pos(1.0D, 0.0D, 0.0F - thickness).tex(uMin, vMax).normal(0, 0, -1).endVertex()
 		buf.pos(0.0D, 0.0D, 0.0F - thickness).tex(uMax, vMax).normal(0, 0, -1).endVertex()
 		TessRenderer.draw()
-		//*/
+		*/
 
 		//val w = 1 // icon.getIconWidth
 		//val h = 1 // icon.getIconHeight

@@ -5,7 +5,6 @@ import java.util
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{Item, ItemStack}
-import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{ActionResult, EnumActionResult, EnumFacing, EnumHand}
 import net.minecraft.world.World
@@ -41,11 +40,12 @@ class ItemTask extends ItemCreative {
 
 		if (!worldIn.isRemote) {
 
-			val taskPos = pos.offset(facing)
-			val face = facing.getOpposite
+			val taskPos = pos
+			val face = facing
 
 			if (playerIn.isSneaking) {
-				if (ControllerTask.breakTask(worldIn, taskPos, face)) {
+				if (ControllerTask.breakTask(worldIn, taskPos, face,
+					drop = !playerIn.capabilities.isCreativeMode)) {
 					Galvanize.log("broken")
 					return EnumActionResult.SUCCESS
 				}
@@ -77,17 +77,9 @@ class ItemTask extends ItemCreative {
 	@SideOnly(Side.CLIENT)
 	override def getSubItems(itemIn: Item, tab: CreativeTabs,
 			subItems: util.List[ItemStack]): Unit = {
-		val stack = new ItemStack(itemIn)
 		val classesOf = LoaderAI.getClassInstances
 		for (clazz <- classesOf) {
-			subItems.add({
-				val sub = stack.copy()
-				sub.setTagCompound(new NBTTagCompound)
-				val name = LoaderAI.getAnnotationInfo(clazz).getOrElse("displayName", null)
-				if (name != null) sub.getTagCompound.setString("displayName", name.toString)
-				sub.getTagCompound.setString("className", clazz.getName)
-				sub
-			})
+			subItems.add(ControllerTask.getTaskItemForAIClass(clazz))
 		}
 	}
 

@@ -5,7 +5,7 @@ package temportalist.esotericraft.api.galvanize.ai;
  *
  * @author TheTemportalist
  */
-public @interface AIEmpty {
+public @interface GalvanizeTask {
 
 	String displayName();
 

@@ -1,10 +1,12 @@
 package temportalist.esotericraft.galvanization.common.task
 
+import net.minecraft.block.Block
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraft.world.World
-import temportalist.esotericraft.api.galvanize.ai.EntityAIEmpty
+import temportalist.esotericraft.api.galvanize.ai.IGalvanizeTask
+import temportalist.esotericraft.galvanization.common.task.core.ControllerTask
 
 /**
   *
@@ -12,7 +14,7 @@ import temportalist.esotericraft.api.galvanize.ai.EntityAIEmpty
   *
   * @author TheTemportalist
   */
-class Task(private val world: World) extends ITask with INBTCreator {
+final class Task(private val world: World) extends ITask with INBTCreator {
 
 	private var position: BlockPos = null
 	private var face: EnumFacing = null
@@ -20,9 +22,9 @@ class Task(private val world: World) extends ITask with INBTCreator {
 	private var aiModID: String = null
 	private var aiName: String = null
 	private var aiDisplayName: String = null
-	private var aiClass: Class[_ <: EntityAIEmpty] = null
+	private var aiClass: Class[_ <: IGalvanizeTask] = null
 
-	private var aiInstance: EntityAIEmpty = null
+	private var aiInstance: IGalvanizeTask = null
 	private var iconLocation: ResourceLocation = null
 
 	// ~~~~~~~~~~ Getters ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -39,6 +41,13 @@ class Task(private val world: World) extends ITask with INBTCreator {
 
 	override def getFace: EnumFacing = this.face
 
+	override def getAI: IGalvanizeTask = {
+		if (this.aiInstance == null) this.createInstanceOfAI()
+		this.aiInstance
+	}
+
+	override def isValid: Boolean = ControllerTask.getTaskAt(this.getWorld, this.getPosition, this.getFace) == this
+
 	// ~~~~~~~~~~ Setters ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	override def setPosition(position: BlockPos, face: EnumFacing): Unit = {
@@ -47,7 +56,7 @@ class Task(private val world: World) extends ITask with INBTCreator {
 	}
 
 	override def setInfoAI(modid: String, name: String, displayName: String,
-			classAI: Class[_ <: EntityAIEmpty]): Unit = {
+			classAI: Class[_ <: IGalvanizeTask]): Unit = {
 		this.aiModID = modid
 		this.aiName = name
 		this.createIconLocation()
@@ -65,7 +74,14 @@ class Task(private val world: World) extends ITask with INBTCreator {
 	private def createInstanceOfAI(): Unit = {
 		if (this.aiClass == null) this.aiInstance = null
 		else {
-			// TODO
+			try {
+				this.aiInstance = this.aiClass.getConstructor(
+					classOf[BlockPos], classOf[EnumFacing]
+				).newInstance(this.getPosition, this.getFace)
+			}
+			catch {
+				case e: Exception => e.printStackTrace()
+			}
 		}
 	}
 
@@ -73,11 +89,34 @@ class Task(private val world: World) extends ITask with INBTCreator {
 
 	override def onSpawn(world: World, pos: BlockPos, face: EnumFacing): Unit = {}
 
+	override def onBreak(world: World, pos: BlockPos, face: EnumFacing): Unit = {}
+
+	override def onBroken(doDrop: Boolean): Unit = {
+		if (doDrop) this.dropTaskItem()
+	}
+
+	def dropTaskItem(): Unit = {
+		val world = this.getWorld
+		if (world.isRemote) return
+		Block.spawnAsEntity(world, this.getPosition,
+			ControllerTask.getTaskItemForAIClass(this.aiClass)
+		)
+	}
+
 	override def onUpdateServer(): Unit = {
+
+		this.checkBlockAtPosition()
 
 	}
 
-	override def onBreak(world: World, pos: BlockPos, face: EnumFacing): Unit = {}
+	private def checkBlockAtPosition(): Unit = {
+		val state = this.getWorld.getBlockState(this.getPosition)
+		if (!state.getMaterial.isSolid) this.break()
+	}
+
+	def break(): Unit = {
+		ControllerTask.breakTask(this.getWorld, this.getPosition, this.getFace)
+	}
 
 	// ~~~~~~~~~~ NBT Serialization ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -125,7 +164,7 @@ class Task(private val world: World) extends ITask with INBTCreator {
 			if (tagAI.hasKey("class"))
 				try {
 					this.aiClass = Class.forName(tagAI.getString("class"))
-							.asInstanceOf[Class[_ <: EntityAIEmpty]]
+							.asInstanceOf[Class[_ <: IGalvanizeTask]]
 					this.createInstanceOfAI()
 				}
 				catch {case e: Exception =>}

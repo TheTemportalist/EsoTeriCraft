@@ -1,4 +1,4 @@
-package temportalist.esotericraft.galvanization.common.entity.ai
+package temportalist.esotericraft.galvanization.common.task.ai
 
 import net.minecraft.entity.EntityCreature
 import temportalist.esotericraft.galvanization.common.entity.EntityEmpty
@@ -9,7 +9,7 @@ import temportalist.esotericraft.galvanization.common.entity.EntityEmpty
   *
   * @author TheTemportalist
   */
-trait IEntityAIFlyCheck {
+trait IFlyCheck {
 
 	private var canFly = false
 

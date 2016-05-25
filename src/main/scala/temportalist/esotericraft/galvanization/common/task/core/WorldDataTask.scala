@@ -77,6 +77,13 @@ final class WorldDataTask(key: String) extends WorldSavedData(key) with INBTCrea
 		} yield task
 	}
 
+	def getTaskAt(pos: BlockPos, face: EnumFacing): ITask = {
+		if (this.taskObjects.contains(pos) &&
+				this.taskObjects(pos).contains(face))
+			this.taskObjects(pos)(face)
+		else null
+	}
+
 	// ~~~~~ NBT ~~~~~
 
 	override def writeToNBT(tag: NBTTagCompound): NBTTagCompound = {

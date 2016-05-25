@@ -1,7 +1,7 @@
 {
 	"forge_marker": 1,
 	"defaults": {
-		"model": "esotericgalvanization:item/ItemAIInfo",
+		"model": "esotericgalvanization:item/ItemTaskDebug",
 		"transform": "forge:default-item"
 	},
 	"variants": {

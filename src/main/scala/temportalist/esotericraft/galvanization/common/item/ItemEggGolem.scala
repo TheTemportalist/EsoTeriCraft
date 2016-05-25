@@ -24,7 +24,7 @@ import scala.collection.JavaConversions
   *
   * @author TheTemportalist
   */
-class ItemEggGolem extends ItemCreative() with INBTHandler {
+class ItemEggGolem extends ItemCreative with INBTHandler {
 
 	this.addKey[String](ENTITY_ID)
 

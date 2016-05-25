@@ -1,5 +1,6 @@
 package temportalist.esotericraft.galvanization.common.task
 
+import net.minecraft.item.ItemStack
 import net.minecraft.nbt._
 
 import scala.reflect.runtime.universe._
@@ -27,6 +28,11 @@ trait INBTCreator {
 	)
 
 	final def getCompoundNew: NBTTagCompound = new NBTTagCompound
+
+	final def checkStackNBT(stack: ItemStack): ItemStack = {
+		if (!stack.hasTagCompound) stack.setTagCompound(new NBTTagCompound)
+		stack
+	}
 
 	final def getNBTType[T: TypeTag]: Int = this.nbtTypes(typeOf[T])
 

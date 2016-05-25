@@ -1,13 +1,18 @@
 package temportalist.esotericraft.galvanization.common.task.core
 
 import net.minecraft.entity.player.EntityPlayerMP
+import net.minecraft.item.ItemStack
+import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent
+import temportalist.esotericraft.api.galvanize.ai.IGalvanizeTask
 import temportalist.esotericraft.galvanization.common.Galvanize
+import temportalist.esotericraft.galvanization.common.entity.ai.LoaderAI
+import temportalist.esotericraft.galvanization.common.init.ModItems
 import temportalist.esotericraft.galvanization.common.network.PacketUpdateClientTasks
 import temportalist.esotericraft.galvanization.common.task.ITask
 
@@ -41,9 +46,10 @@ object ControllerTask {
 		} else false
 	}
 
-	def breakTask(world: World, pos: BlockPos, face: EnumFacing): Boolean = {
+	def breakTask(world: World, pos: BlockPos, face: EnumFacing, drop: Boolean = true): Boolean = {
 		this.getData(world).breakTask(world, pos, face) match {
 			case task: ITask =>
+				task.onBroken(drop)
 				new PacketUpdateClientTasks(
 					PacketUpdateClientTasks.BREAK, task
 				).sendToDimension(Galvanize, world.provider.getDimension)
@@ -51,6 +57,19 @@ object ControllerTask {
 			case _ => // no task broken
 				false
 		}
+	}
+
+	def getTaskItemForAIClass(aiClass: Class[_ <: IGalvanizeTask],
+			stack: ItemStack = new ItemStack(ModItems.taskItem)): ItemStack = {
+		stack.setTagCompound(new NBTTagCompound)
+		val name = LoaderAI.getAnnotationInfo(aiClass).getOrElse("displayName", null)
+		if (name != null) stack.getTagCompound.setString("displayName", name.toString)
+		stack.getTagCompound.setString("className", aiClass.getName)
+		stack
+	}
+
+	def getTaskAt(world: World, pos: BlockPos, face: EnumFacing): ITask = {
+		this.getData(world).getTaskAt(pos, face)
 	}
 
 	@SubscribeEvent

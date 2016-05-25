@@ -4,8 +4,7 @@ import net.minecraft.entity.EntityCreature
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.util.{EnumFacing, EnumHand}
-import temportalist.esotericraft.api.galvanize.ai.{AIEmpty, EntityAIEmpty}
-import temportalist.esotericraft.galvanization.common.Galvanize
+import temportalist.esotericraft.galvanization.common.task.ai.{IEntityMover, IFlyCheck}
 import temportalist.origin.api.common.lib.Vect
 
 /**
@@ -14,21 +13,20 @@ import temportalist.origin.api.common.lib.Vect
   *
   * @author TheTemportalist
   */
-@AIEmpty(displayName = "Deposit Items", name = "itemDeposit", modid = Galvanize.MOD_ID)
+//@GalvanizeTask(displayName = "Deposit Items", name = "itemDeposit", modid = Galvanize.MOD_ID)
 class EntityAIItemDeposit(
 		private val owner: EntityCreature
 ) extends EntityAIHelper
 		with IEntityAIInventory
 		with IEntityAIOrigin
-		with EntityAIEmpty
-		with IEntityAIFlyCheck {
+		with IFlyCheck with IEntityMover {
 
 	private val speed: Double = 1D
 
 	this.setMutexBits(EnumAIMutex.EVERYTHING_OKAY)
 	this.checkCanFly(this.owner)
 
-	override def initWith(infoStack: ItemStack): Unit = {
+	def initWith(infoStack: ItemStack): Unit = {
 
 		if (infoStack.hasTagCompound && infoStack.getTagCompound.hasKey("origin")) {
 			val origin = Vect.readFrom(infoStack.getTagCompound, "origin")

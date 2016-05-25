@@ -3,11 +3,13 @@ package temportalist.esotericraft.galvanization.common.entity
 import io.netty.buffer.ByteBuf
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity._
+import net.minecraft.entity.ai.EntityAISwimming
 import net.minecraft.entity.ai.attributes.IAttribute
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.{IInventory, ItemStackHelper}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.{BlockPos, MathHelper}
 import net.minecraft.util.text.{ITextComponent, TextComponentString}
 import net.minecraft.world.World
@@ -16,7 +18,11 @@ import net.minecraftforge.fml.common.network.ByteBufUtils
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData
 import temportalist.esotericraft.api.galvanize.ability.IAbilityFly
 import temportalist.esotericraft.galvanization.common.entity.emulator.{EntityState, IEntityEmulator}
+import temportalist.esotericraft.galvanization.common.task.INBTCreator
 import temportalist.origin.api.common.lib.Vect
+
+import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 /**
   *
@@ -25,7 +31,7 @@ import temportalist.origin.api.common.lib.Vect
   * @author TheTemportalist
   */
 class EntityEmpty(world: World) extends EntityCreature(world)
-		with IEntityAdditionalSpawnData with IEntityEmulator {
+		with IEntityAdditionalSpawnData with IEntityEmulator with INBTCreator {
 
 	def this(world: World, entityName: String, origin: Vect) {
 		this(world)
@@ -66,15 +72,8 @@ class EntityEmpty(world: World) extends EntityCreature(world)
 	override def initEntityAI(): Unit = {
 		if (this.getEntityState == null) return
 
-		//val canFly = this.canFly
-
-		//this.tasks.addTask(0, new EntityAIFollowPlayer(this, canFly = canFly))
-		/*
-		this.tasks.addTask(0, new EntityAIItemPickUp(
-			this, this.origin, 4, 0.5, canFly = canFly
-		))
-		this.tasks.addTask(1, new EntityAIItemDeposit(this, this.origin.getDown(), 1, canFly = canFly))
-		*/
+		this.tasks.addTask(0, new EntityAISwimming(this))
+		this.tasks.addTask(1, new EntityAITaskUpdater(this))
 
 	}
 
@@ -100,6 +99,34 @@ class EntityEmpty(world: World) extends EntityCreature(world)
 		false
 	}
 
+	// ~~~~~ Tasks ~~~~~
+
+	private val taskPositions = mutable.Map[BlockPos, ListBuffer[EnumFacing]]()
+
+	def addTask(pos: BlockPos, face: EnumFacing): Boolean = {
+		if (!this.taskPositions.contains(pos))
+			this.taskPositions(pos) = ListBuffer[EnumFacing]()
+		if (!this.taskPositions(pos).contains(face)) {
+			this.taskPositions(pos) += face
+			true
+		} else false
+	}
+
+	def removeTask(pos: BlockPos, face: EnumFacing): Boolean = {
+		if (this.taskPositions.contains(pos) && this.taskPositions(pos).contains(face)) {
+			val i = this.taskPositions(pos).indexOf(face)
+			this.taskPositions(pos).remove(i)
+			if (this.taskPositions(pos).isEmpty) this.taskPositions.remove(pos)
+			true
+		} else false
+	}
+
+	def getTaskPositionsAsSeq: Seq[(BlockPos, EnumFacing)] = {
+		val ret = ListBuffer[(BlockPos, EnumFacing)]()
+		for (entry <- this.taskPositions) for (face <- entry._2) ret += ((entry._1, face))
+		ret
+	}
+
 	// ~~~~~ NBT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	override def writeEntityToNBT(nbt: NBTTagCompound): Unit = {
@@ -110,6 +137,16 @@ class EntityEmpty(world: World) extends EntityCreature(world)
 			nbt.setTag("entity_state", this.getEntityState.serializeNBT())
 
 		nbt.setTag("emulator", this.serializeNBTEmulator)
+
+		val tagTasks = new NBTTagList
+		for (posFace <- this.getTaskPositionsAsSeq) {
+			val tag = new NBTTagCompound
+			tag.setTag("pos", new Vect(posFace._1).serializeNBT())
+			tag.setInteger("face", posFace._2.ordinal())
+			tagTasks.appendTag(tag)
+		}
+		if (!tagTasks.hasNoTags)
+			nbt.setTag("tasks", tagTasks)
 
 	}
 
@@ -128,6 +165,17 @@ class EntityEmpty(world: World) extends EntityCreature(world)
 		this.deserializeNBTEmulator(nbt.getCompoundTag("emulator"))
 
 		this.setEntityState(entityState)
+
+		if (nbt.hasKey("tasks")) {
+			val tagTasks = this.getTagList[NBTTagCompound](nbt, "tasks")
+			this.taskPositions.clear()
+			for (tag <- this.getTagListAsIterable[NBTTagCompound](tagTasks)) {
+				val pos = Vect.readFrom(tag, "pos").toBlockPos
+				val face = EnumFacing.values()(tag.getInteger("face"))
+				this.addTask(pos, face)
+			}
+		}
+
 	}
 
 	override def writeSpawnData(buffer: ByteBuf): Unit = {

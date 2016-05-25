@@ -3,17 +3,14 @@ package temportalist.esotericraft.galvanization.common.item
 import java.util
 
 import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.entity.ai.EntityAIBase
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.entity.{EntityCreature, EntityLivingBase}
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.{ActionResult, EnumActionResult, EnumFacing, EnumHand}
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
-import temportalist.esotericraft.api.galvanize.ai.EntityAIEmpty
 import temportalist.esotericraft.galvanization.common.entity.ai.LoaderAI
 
 import scala.collection.JavaConversions
@@ -64,6 +61,7 @@ class ItemAIInfo extends ItemCreative {
 
 		if (!stack.hasTagCompound) return false
 
+		/*
 		target match {
 			case creature: EntityCreature =>
 
@@ -99,7 +97,7 @@ class ItemAIInfo extends ItemCreative {
 					val ai = classOfAI.getConstructor(classOf[EntityCreature]).newInstance(creature)
 
 					if (ai != null) {
-						ai.asInstanceOf[EntityAIEmpty].initWith(stack)
+						//ai.asInstanceOf[IGalvanizeTask].initWith(stack)
 						creature.tasks.addTask(priority, ai)
 						return true
 					}
@@ -111,6 +109,7 @@ class ItemAIInfo extends ItemCreative {
 
 			case _ => return super.itemInteractionForEntity(stack, playerIn, target, hand)
 		}
+		*/
 
 		false
 	}

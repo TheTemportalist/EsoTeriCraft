@@ -6,8 +6,7 @@ import net.minecraft.entity.{Entity, EntityCreature}
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.AxisAlignedBB
-import temportalist.esotericraft.api.galvanize.ai.{AIEmpty, EntityAIEmpty}
-import temportalist.esotericraft.galvanization.common.Galvanize
+import temportalist.esotericraft.galvanization.common.task.ai.{IEntityMover, IFlyCheck}
 import temportalist.origin.api.common.lib.Vect
 
 import scala.collection.{JavaConversions, mutable}
@@ -18,14 +17,13 @@ import scala.collection.{JavaConversions, mutable}
   *
   * @author TheTemportalist
   */
-@AIEmpty(displayName = "Pick Up Items", name = "itemPickUp", modid = Galvanize.MOD_ID)
+//@GalvanizeTask(displayName = "Pick Up Items", name = "itemPickUp", modid = Galvanize.MOD_ID)
 class EntityAIItemPickUp(
 		private val owner: EntityCreature
 ) extends EntityAIHelper
 		with IEntityAIInventory
 		with IEntityAIOrigin
-		with EntityAIEmpty
-		with IEntityAIFlyCheck {
+		with IFlyCheck with IEntityMover {
 
 	private val radiusXZ: Double = 4
 	private val radiusY: Double = 1
@@ -34,7 +32,7 @@ class EntityAIItemPickUp(
 	this.setMutexBits(EnumAIMutex.EVERYTHING_OKAY)
 	this.checkCanFly(this.owner)
 
-	override def initWith(infoStack: ItemStack): Unit = {
+	def initWith(infoStack: ItemStack): Unit = {
 
 		if (infoStack.hasTagCompound && infoStack.getTagCompound.hasKey("origin")) {
 			val origin = Vect.readFrom(infoStack.getTagCompound, "origin")

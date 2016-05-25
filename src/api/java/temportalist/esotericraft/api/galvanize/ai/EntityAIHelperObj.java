@@ -16,7 +16,7 @@ import net.minecraft.world.World;
  */
 public interface EntityAIHelperObj {
 
-	Class<? extends EntityAIEmpty> getClassAI();
+	Class<? extends IGalvanizeTask> getClassAI();
 
 	ActionResult<ItemStack> onItemRightClick(
 			ItemStack itemStack, World world, EntityPlayer player, EnumHand hand

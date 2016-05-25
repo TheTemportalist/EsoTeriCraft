@@ -1,6 +1,7 @@
 package temportalist.esotericraft.galvanization.common.item
 
 import temportalist.esotericraft.galvanization.common.Galvanize
+import temportalist.esotericraft.galvanization.common.init.ModItems
 import temportalist.origin.api.common.item.ItemBase
 
 /**
@@ -10,4 +11,6 @@ import temportalist.origin.api.common.item.ItemBase
   * @author TheTemportalist
   */
 class ItemGalvanize(itemMetaRange: Range = Range.apply(0, 1))
-		extends ItemBase(Galvanize, itemMetaRange = itemMetaRange) { }
+		extends ItemBase(Galvanize, itemMetaRange = itemMetaRange) {
+	ModItems.registerObject(this)
+}

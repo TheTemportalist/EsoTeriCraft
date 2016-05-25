@@ -6,7 +6,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
-import temportalist.esotericraft.api.galvanize.ai.EntityAIEmpty;
+import temportalist.esotericraft.api.galvanize.ai.IGalvanizeTask;
 
 /**
  * Created by TheTemportalist on 5/24/2016.
@@ -35,6 +35,12 @@ public interface ITask extends INBTSerializable<NBTTagCompound> {
 
 	void onBreak(World world, BlockPos pos, EnumFacing face);
 
-	void setInfoAI(String modid, String name, String displayName, Class<? extends EntityAIEmpty> classAI);
+	void onBroken(boolean doDrop);
+
+	void setInfoAI(String modid, String name, String displayName, Class<? extends IGalvanizeTask> classAI);
+
+	IGalvanizeTask getAI();
+
+	boolean isValid();
 
 }
