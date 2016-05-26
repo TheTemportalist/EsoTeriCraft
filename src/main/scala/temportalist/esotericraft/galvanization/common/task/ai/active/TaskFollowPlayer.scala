@@ -1,13 +1,12 @@
 package temportalist.esotericraft.galvanization.common.task.ai.active
 
-import net.minecraft.entity.{EntityCreature, EntityLivingBase}
+import net.minecraft.entity.EntityCreature
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import temportalist.esotericraft.api.galvanize.ai.{EnumTaskType, GalvanizeTask}
 import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.esotericraft.galvanization.common.task.ai.core.TaskBase
-import temportalist.esotericraft.galvanization.common.task.ai.interfaces.ITaskBoundingBoxMixin
-import temportalist.origin.api.common.lib.Vect
+import temportalist.esotericraft.galvanization.common.task.ai.interfaces.{ITargetEntity, ITaskBoundingBoxMixin}
 
 /**
   *
@@ -21,13 +20,10 @@ import temportalist.origin.api.common.lib.Vect
 )
 class TaskFollowPlayer(
 		pos: BlockPos, face: EnumFacing
-) extends TaskBase(pos, face) with ITaskBoundingBoxMixin {
+) extends TaskBase(pos, face) with ITaskBoundingBoxMixin with ITargetEntity {
 
 	private val speed: Double = 1.2D
 	private val radius: Double = 16D
-
-	private var followingEntity: EntityLivingBase = null
-	private var followingPos: Vect = null
 
 	// ~~~~~ Task Info ~~~~~
 
@@ -45,40 +41,32 @@ class TaskFollowPlayer(
 	// ~~~~~ AI ~~~~~
 
 	override def shouldExecute(entity: EntityCreature): Boolean = {
-		this.followingEntity = entity.getEntityWorld
-				.getClosestPlayerToEntity(entity, this.radius)
-		this.followingEntity != null &&
-				this.followingEntity.getEntityBoundingBox.intersectsWith(this.getBoundingBox)
-	}
-
-	override def startExecuting(entity: EntityCreature): Unit = {
-		super.startExecuting(entity)
-		if (this.followingEntity != null)
-			this.followingPos = new Vect(this.followingEntity)
+		this.setTarget(entity.getEntityWorld.getClosestPlayerToEntity(entity, this.radius))
+		this.getTarget != null &&
+				this.getTarget.getEntityBoundingBox.intersectsWith(this.getBoundingBox)
 	}
 
 	override def updateTask(entity: EntityCreature): Unit = {
 
 		entity.getLookHelper.setLookPositionWithEntity(
-			this.followingEntity, entity.getHorizontalFaceSpeed + 20,
+			this.getTarget, entity.getHorizontalFaceSpeed + 20,
 			entity.getVerticalFaceSpeed
 		)
 
-		if (entity.getDistanceSqToEntity(this.followingEntity) < 6.25D) {
+		if (entity.getDistanceSqToEntity(this.getTarget) < 6.25D) {
 			// proximity to player
 			if (!this.getCanFly) {
 				entity.getNavigator.clearPathEntity()
 			}
 		}
 		else {
-			this.moveEntityTowards(entity, this.followingEntity, this.speed, this.getCanFly)
+			this.moveEntityTowards(entity, this.getTarget, this.speed, this.getCanFly)
 		}
 
 	}
 
 	override def resetTask(entity: EntityCreature): Unit = {
-		this.followingEntity = null
-		this.followingPos = null
+		this.setTarget(null)
 		entity.getNavigator.clearPathEntity()
 	}
 
