@@ -1,6 +1,6 @@
 
 item.esotericgalvanization:ItemEggGolem.name=Golem Egg
-item.esotericgalvanization:ItemAIInfo.name=Info Mapping
+item.esotericgalvanization:ItemTask.name=Task
 
 esotericgalvanization.commands.setModel.usage=/setModel <namePlayer> <nameEntity>
 esotericgalvanization.commands.setModel.usage.invalidPlayer=Invalid player name

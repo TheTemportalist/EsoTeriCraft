@@ -62,7 +62,6 @@ class TaskHarvestTree(
 	}
 
 }
-
 object TaskHarvestTree {
 
 	/**
@@ -125,7 +124,7 @@ object TaskHarvestTree {
 							this.blocksToBreak += posNeighbor
 					}
 
-					this.breakBlock(pos, stateIn = state)
+					breakBlock(this.world, pos, this.player, stateIn = state)
 					blocksRemainingInTick -= 1
 				}
 
@@ -133,110 +132,110 @@ object TaskHarvestTree {
 
 		}
 
-		def breakBlock(pos: BlockPos, stateIn: IBlockState = null): Unit = {
-			val state = if (stateIn == null) this.world.getBlockState(pos) else stateIn
-			val block = state.getBlock
+	}
 
-			if (!ForgeHooks.canHarvestBlock(block, this.player, this.world, pos))
-				return
+	def breakBlock(world: World, pos: BlockPos, player: EntityPlayer, stateIn: IBlockState = null): Unit = {
+		val state = if (stateIn == null) world.getBlockState(pos) else stateIn
+		val block = state.getBlock
 
-			if (this.player.capabilities.isCreativeMode) {
-				block.onBlockHarvested(this.world, pos, state, this.player)
-				if (block.removedByPlayer(state, this.world, pos, this.player, false))
-					block.onBlockDestroyedByPlayer(this.world, pos, state)
-				if (!this.world.isRemote)
-					this.player.asInstanceOf[EntityPlayerMP].connection.sendPacket(
-						new SPacketBlockChange(this.world, pos))
-				return
+		if (!ForgeHooks.canHarvestBlock(block, player, world, pos))
+			return
+
+		if (player.capabilities.isCreativeMode) {
+			block.onBlockHarvested(world, pos, state, player)
+			if (block.removedByPlayer(state, world, pos, player, false))
+				block.onBlockDestroyedByPlayer(world, pos, state)
+			if (!world.isRemote)
+				player.asInstanceOf[EntityPlayerMP].connection.sendPacket(
+					new SPacketBlockChange(world, pos))
+			return
+		}
+
+		if (!world.isRemote) {
+			player match {
+				case playerMP: EntityPlayerMP =>
+					val xp = onBlockBreakEvent(world,
+						playerMP.interactionManager.getGameType, playerMP, pos)
+					if (xp == -1) return
+
+					block.onBlockHarvested(world, pos, state, player)
+					if (block.removedByPlayer(state, world, pos, player, true)) {
+						block.onBlockDestroyedByPlayer(world, pos, state)
+						block.harvestBlock(world, player, pos, state,
+							world.getTileEntity(pos), null)
+						block.dropXpOnBlockBreak(world, pos, xp)
+					}
+
+					if (playerMP.connection != null)
+						playerMP.connection.sendPacket(new SPacketBlockChange(world, pos))
+				case _ =>
+			}
+		}
+		else {
+			world.playEvent(2001, pos, Block.getStateId(state))
+			if (block.removedByPlayer(state, world, pos, player, true)) {
+				block.onBlockDestroyedByPlayer(world, pos, state)
 			}
 
-			if (!this.world.isRemote) {
-				this.player match {
-					case playerMP: EntityPlayerMP =>
-						val xp = this.onBlockBreakEvent(this.world,
-							playerMP.interactionManager.getGameType, playerMP, pos)
-						if (xp == -1) return
-
-						block.onBlockHarvested(this.world, pos, state, this.player)
-						if (block.removedByPlayer(state, this.world, pos, this.player, true)) {
-							block.onBlockDestroyedByPlayer(this.world, pos, state)
-							block.harvestBlock(this.world, this.player, pos, state,
-								world.getTileEntity(pos), null)
-							block.dropXpOnBlockBreak(this.world, pos, xp)
-						}
-
-						if (playerMP.connection != null)
-							playerMP.connection.sendPacket(new SPacketBlockChange(this.world, pos))
-					case _ =>
-				}
-			}
-			else {
-				this.world.playEvent(2001, pos, Block.getStateId(state))
-				if (block.removedByPlayer(state, this.world, pos, this.player, true)) {
-					block.onBlockDestroyedByPlayer(this.world, pos, state)
-				}
-
-				this.sendUpdateDiggingPacket(pos)
-
-			}
+			sendUpdateDiggingPacket(pos)
 
 		}
 
-		def onBlockBreakEvent(world: World, gameType: GameType, playerMP: EntityPlayerMP,
-				pos: BlockPos): Int = {
-			//ForgeHooks.onBlockBreakEvent(world, gameType, playerMP, pos)
-			var preCancelEvent = false
-			if (gameType.isCreative && player.getHeldItemMainhand != null &&
-					player.getHeldItemMainhand.getItem.isInstanceOf[ItemSword]) {
+	}
+
+	def onBlockBreakEvent(world: World, gameType: GameType, playerMP: EntityPlayerMP,
+			pos: BlockPos): Int = {
+		//ForgeHooks.onBlockBreakEvent(world, gameType, playerMP, pos)
+		var preCancelEvent = false
+		if (gameType.isCreative && playerMP.getHeldItemMainhand != null &&
+				playerMP.getHeldItemMainhand.getItem.isInstanceOf[ItemSword]) {
+			preCancelEvent = true
+		}
+
+		if (gameType.isAdventure) {
+			if (gameType == GameType.SPECTATOR)
 				preCancelEvent = true
-			}
-
-			if (gameType.isAdventure) {
-				if (gameType == GameType.SPECTATOR)
+			if (!playerMP.isAllowEdit) {
+				val stack = playerMP.getHeldItemMainhand
+				if (stack == null || !stack.canDestroy(world.getBlockState(pos).getBlock))
 					preCancelEvent = true
-				if (!playerMP.isAllowEdit) {
-					val stack = player.getHeldItemMainhand
-					if (stack == null || !stack.canDestroy(world.getBlockState(pos).getBlock))
-						preCancelEvent = true
-				}
 			}
-
-			if (world.getTileEntity(pos) == null && playerMP.connection != null) {
-				val packet = new SPacketBlockChange(world, pos)
-				packet.blockState = Blocks.AIR.getDefaultState
-				playerMP.connection.sendPacket(packet)
-			}
-
-			val state = world.getBlockState(pos)
-			val event = new BlockEvent.BreakEvent(world, pos, state, playerMP)
-			event.setCanceled(preCancelEvent)
-			MinecraftForge.EVENT_BUS.post(event)
-
-			if (event.isCanceled) {
-				if (playerMP.connection != null)
-					playerMP.connection.sendPacket(new SPacketBlockChange(world, pos))
-
-				val tile = world.getTileEntity(pos)
-				if (tile != null && playerMP.connection != null) {
-					val pkt = tile.getUpdatePacket
-					if (pkt != null)
-						playerMP.connection.sendPacket(pkt)
-				}
-
-			}
-
-			if (event.isCanceled) -1 else event.getExpToDrop
 		}
 
-		@SideOnly(Side.CLIENT)
-		def sendUpdateDiggingPacket(pos: BlockPos): Unit = {
-			Minecraft.getMinecraft.getConnection.sendPacket(
-				new CPacketPlayerDigging(CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
-					pos, Minecraft.getMinecraft.objectMouseOver.sideHit
-				)
+		if (world.getTileEntity(pos) == null && playerMP.connection != null) {
+			val packet = new SPacketBlockChange(world, pos)
+			packet.blockState = Blocks.AIR.getDefaultState
+			playerMP.connection.sendPacket(packet)
+		}
+
+		val state = world.getBlockState(pos)
+		val event = new BlockEvent.BreakEvent(world, pos, state, playerMP)
+		event.setCanceled(preCancelEvent)
+		MinecraftForge.EVENT_BUS.post(event)
+
+		if (event.isCanceled) {
+			if (playerMP.connection != null)
+				playerMP.connection.sendPacket(new SPacketBlockChange(world, pos))
+
+			val tile = world.getTileEntity(pos)
+			if (tile != null && playerMP.connection != null) {
+				val pkt = tile.getUpdatePacket
+				if (pkt != null)
+					playerMP.connection.sendPacket(pkt)
+			}
+
+		}
+
+		if (event.isCanceled) -1 else event.getExpToDrop
+	}
+
+	@SideOnly(Side.CLIENT)
+	def sendUpdateDiggingPacket(pos: BlockPos): Unit = {
+		Minecraft.getMinecraft.getConnection.sendPacket(
+			new CPacketPlayerDigging(CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
+				pos, Minecraft.getMinecraft.objectMouseOver.sideHit
 			)
-		}
-
+		)
 	}
 
 }
