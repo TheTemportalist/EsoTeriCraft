@@ -1,7 +1,7 @@
 package temportalist.esotericraft.galvanization.common.task.ai.world
 
 import net.minecraft.block.state.IBlockState
-import net.minecraft.block.{BlockCrops, BlockReed}
+import net.minecraft.block.{BlockCrops, BlockMelon, BlockPumpkin, BlockReed}
 import net.minecraft.entity.EntityCreature
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, EnumHand}
@@ -29,6 +29,8 @@ class TaskHarvestCrops(
 		state.getBlock match {
 			case crop: BlockCrops => crop.isMaxAge(state)
 			case reed: BlockReed => world.getBlockState(pos.up()).getBlock.isInstanceOf[BlockReed]
+			case melon: BlockMelon => true
+			case pumpking: BlockPumpkin => true
 			case _ => false
 		}
 	}
