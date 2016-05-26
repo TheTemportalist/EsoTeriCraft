@@ -1,12 +1,9 @@
-package temportalist.esotericraft.galvanization.common.entity.ai
+package temportalist.esotericraft.galvanization.common.task.ai.interfaces
 
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumHand
-import temportalist.esotericraft.galvanization.common.Galvanize
-
-import scala.util.control.Breaks._
 
 /**
   *
@@ -14,7 +11,7 @@ import scala.util.control.Breaks._
   *
   * @author TheTemportalist
   */
-trait IEntityAIInventory {
+trait ITaskInventory {
 
 	final def transferStackTo(fromStack: ItemStack, toInv: IInventory): ItemStack = {
 		if (fromStack == null) return null

@@ -13,10 +13,10 @@ import temportalist.esotericraft.api.galvanize.IAbility
 import temportalist.esotericraft.api.init.IEsoTeriCraft
 import temportalist.esotericraft.api.init.IEsoTeriCraft.PluginEsoTeriCraft
 import temportalist.esotericraft.galvanization.common.capability.HandlerPlayerGalvanize
-import temportalist.esotericraft.galvanization.common.entity.ai.LoaderAI
 import temportalist.esotericraft.galvanization.common.entity.emulator.ability.AbilityLoader
 import temportalist.esotericraft.galvanization.common.init.{ModEntities, ModItems}
 import temportalist.esotericraft.galvanization.common.network.{PacketSetModel, PacketUpdateClientTasks}
+import temportalist.esotericraft.galvanization.common.task.ai.core.LoaderTask
 import temportalist.esotericraft.galvanization.common.task.core.ControllerTask
 import temportalist.esotericraft.galvanization.server.CommandSetPlayerModel
 import temportalist.origin.foundation.common.modTraits.IHasCommands
@@ -97,7 +97,7 @@ object Galvanize extends ModBase with IHasCommands {
 		this.registerMessage(classOf[PacketUpdateClientTasks.Handler], classOf[PacketUpdateClientTasks], Side.CLIENT)
 
 		AbilityLoader.preInit(event)
-		LoaderAI.preInit(event)
+		LoaderTask.preInit(event)
 		FetchResources.runMorph()
 		FetchResources.runGalvanize()
 		this.registerHandler(ControllerTask)

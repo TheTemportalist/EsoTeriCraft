@@ -1,6 +1,7 @@
-package temportalist.esotericraft.galvanization.common.task.ai
+package temportalist.esotericraft.galvanization.common.task.ai.interfaces
 
 import net.minecraft.entity.EntityCreature
+import temportalist.esotericraft.api.galvanize.ai.IGalvanizeTask
 import temportalist.esotericraft.galvanization.common.entity.EntityEmpty
 
 /**
@@ -9,7 +10,7 @@ import temportalist.esotericraft.galvanization.common.entity.EntityEmpty
   *
   * @author TheTemportalist
   */
-trait IFlyCheck {
+trait ITaskFlyCheck extends IGalvanizeTask {
 
 	private var canFly = false
 

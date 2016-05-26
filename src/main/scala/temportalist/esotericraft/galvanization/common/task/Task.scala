@@ -5,7 +5,7 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraft.world.World
-import temportalist.esotericraft.api.galvanize.ai.IGalvanizeTask
+import temportalist.esotericraft.api.galvanize.ai.{IGalvanizeTask, ITaskBoundingBox}
 import temportalist.esotericraft.galvanization.common.task.core.ControllerTask
 
 /**
@@ -78,6 +78,10 @@ final class Task(private val world: World) extends ITask with INBTCreator {
 				this.aiInstance = this.aiClass.getConstructor(
 					classOf[BlockPos], classOf[EnumFacing]
 				).newInstance(this.getPosition, this.getFace)
+				this.aiInstance match {
+					case bb: ITaskBoundingBox => bb.updateBoundingBox()
+					case _ =>
+				}
 			}
 			catch {
 				case e: Exception => e.printStackTrace()

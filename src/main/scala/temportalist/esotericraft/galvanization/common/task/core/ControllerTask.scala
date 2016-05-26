@@ -11,10 +11,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent
 import temportalist.esotericraft.api.galvanize.ai.IGalvanizeTask
 import temportalist.esotericraft.galvanization.common.Galvanize
-import temportalist.esotericraft.galvanization.common.entity.ai.LoaderAI
 import temportalist.esotericraft.galvanization.common.init.ModItems
 import temportalist.esotericraft.galvanization.common.network.PacketUpdateClientTasks
 import temportalist.esotericraft.galvanization.common.task.ITask
+import temportalist.esotericraft.galvanization.common.task.ai.core.LoaderTask
 
 /**
   *
@@ -62,7 +62,7 @@ object ControllerTask {
 	def getTaskItemForAIClass(aiClass: Class[_ <: IGalvanizeTask],
 			stack: ItemStack = new ItemStack(ModItems.taskItem)): ItemStack = {
 		stack.setTagCompound(new NBTTagCompound)
-		val name = LoaderAI.getAnnotationInfo(aiClass).getOrElse("displayName", null)
+		val name = LoaderTask.getAnnotationInfo(aiClass).getOrElse("displayName", null)
 		if (name != null) stack.getTagCompound.setString("displayName", name.toString)
 		stack.getTagCompound.setString("className", aiClass.getName)
 		stack

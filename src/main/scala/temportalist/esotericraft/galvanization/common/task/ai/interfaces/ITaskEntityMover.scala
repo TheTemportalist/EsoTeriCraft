@@ -1,4 +1,4 @@
-package temportalist.esotericraft.galvanization.common.task.ai
+package temportalist.esotericraft.galvanization.common.task.ai.interfaces
 
 import net.minecraft.entity.{Entity, EntityCreature}
 import net.minecraft.util.math.Vec3d
@@ -9,7 +9,7 @@ import net.minecraft.util.math.Vec3d
   *
   * @author TheTemportalist
   */
-trait IEntityMover {
+trait ITaskEntityMover {
 
 	def moveEntityTowards(entity: EntityCreature, target: Entity, speed: Double, canFly: Boolean) {
 		if (canFly)

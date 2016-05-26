@@ -1,7 +1,6 @@
 package temportalist.esotericraft.api.galvanize.ai;
 
 import net.minecraft.entity.EntityCreature;
-import net.minecraft.util.math.AxisAlignedBB;
 
 /**
  * Created by TheTemportalist on 5/22/2016.
@@ -10,7 +9,7 @@ import net.minecraft.util.math.AxisAlignedBB;
  */
 public interface IGalvanizeTask {
 
-	AxisAlignedBB constructBoundingBox();
+	EnumTaskType getTaskType();
 
 	boolean shouldExecute(EntityCreature entity);
 

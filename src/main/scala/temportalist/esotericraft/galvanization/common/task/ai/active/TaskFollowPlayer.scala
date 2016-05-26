@@ -1,10 +1,12 @@
-package temportalist.esotericraft.galvanization.common.task.ai
+package temportalist.esotericraft.galvanization.common.task.ai.active
 
 import net.minecraft.entity.{EntityCreature, EntityLivingBase}
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
-import temportalist.esotericraft.api.galvanize.ai.{GalvanizeTask, IGalvanizeTask}
+import temportalist.esotericraft.api.galvanize.ai.{EnumTaskType, GalvanizeTask}
 import temportalist.esotericraft.galvanization.common.Galvanize
+import temportalist.esotericraft.galvanization.common.task.ai.core.TaskBase
+import temportalist.esotericraft.galvanization.common.task.ai.interfaces.ITaskBoundingBoxMixin
 import temportalist.origin.api.common.lib.Vect
 
 /**
@@ -18,34 +20,39 @@ import temportalist.origin.api.common.lib.Vect
 	displayName = "Follow Player"
 )
 class TaskFollowPlayer(
-		private val pos: BlockPos, private val face: EnumFacing
-) extends IGalvanizeTask with IFlyCheck with IEntityMover {
+		pos: BlockPos, face: EnumFacing
+) extends TaskBase(pos, face) with ITaskBoundingBoxMixin {
 
 	private val speed: Double = 1.2D
 	private val radius: Double = 16D
-	private var boundingBox: AxisAlignedBB = null
 
 	private var followingEntity: EntityLivingBase = null
 	private var followingPos: Vect = null
 
-	this.boundingBox = this.constructBoundingBox()
+	// ~~~~~ Task Info ~~~~~
 
-	override def constructBoundingBox(): AxisAlignedBB = {
+	override def getTaskType: EnumTaskType = EnumTaskType.MOVEMENT_ACTIVE
+
+	// ~~~~~ Bounding Box ~~~~~
+
+	override def createBoundingBox: AxisAlignedBB = {
 		new AxisAlignedBB(
 			pos.getX - 8, pos.getY + 0, pos.getZ - 8,
 			pos.getX + 8, pos.getY + 5, pos.getZ + 8
 		)
 	}
 
+	// ~~~~~ AI ~~~~~
+
 	override def shouldExecute(entity: EntityCreature): Boolean = {
 		this.followingEntity = entity.getEntityWorld
 				.getClosestPlayerToEntity(entity, this.radius)
 		this.followingEntity != null &&
-				this.followingEntity.getEntityBoundingBox.intersectsWith(this.boundingBox)
+				this.followingEntity.getEntityBoundingBox.intersectsWith(this.getBoundingBox)
 	}
 
 	override def startExecuting(entity: EntityCreature): Unit = {
-		this.checkCanFly(entity)
+		super.startExecuting(entity)
 		if (this.followingEntity != null)
 			this.followingPos = new Vect(this.followingEntity)
 	}
@@ -74,5 +81,7 @@ class TaskFollowPlayer(
 		this.followingPos = null
 		entity.getNavigator.clearPathEntity()
 	}
+
+	// ~~~~~ End ~~~~~
 
 }
