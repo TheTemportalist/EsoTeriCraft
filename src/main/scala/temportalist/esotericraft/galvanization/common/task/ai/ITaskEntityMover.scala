@@ -9,7 +9,7 @@ import net.minecraft.util.math.Vec3d
   *
   * @author TheTemportalist
   */
-trait IEntityMover {
+trait ITaskEntityMover {
 
 	def moveEntityTowards(entity: EntityCreature, target: Entity, speed: Double, canFly: Boolean) {
 		if (canFly)

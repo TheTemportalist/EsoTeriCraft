@@ -10,8 +10,8 @@ import net.minecraft.util.{ActionResult, EnumActionResult, EnumFacing, EnumHand}
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import temportalist.esotericraft.galvanization.common.Galvanize
-import temportalist.esotericraft.galvanization.common.entity.ai.LoaderAI
 import temportalist.esotericraft.galvanization.common.task.Task
+import temportalist.esotericraft.galvanization.common.task.ai.LoaderTask
 import temportalist.esotericraft.galvanization.common.task.core.ControllerTask
 
 import scala.collection.JavaConversions
@@ -43,30 +43,22 @@ class ItemTask extends ItemCreative {
 			val taskPos = pos
 			val face = facing
 
-			if (playerIn.isSneaking) {
-				if (ControllerTask.breakTask(worldIn, taskPos, face,
-					drop = !playerIn.capabilities.isCreativeMode)) {
-					Galvanize.log("broken")
-					return EnumActionResult.SUCCESS
-				}
-			}
-			else {
-				val className = stack.getTagCompound.getString("className")
-				val displayName = stack.getTagCompound.getString("displayName")
-				val classAI = LoaderAI.getClassFromName(className)
-				val info = LoaderAI.getAnnotationInfo(classAI)
-				val registryName = info.getOrElse("name", null)
-				val aiModID = info.getOrElse("modid", null)
-				if (registryName == null || aiModID == null) return EnumActionResult.FAIL
+			val className = stack.getTagCompound.getString("className")
+			val displayName = stack.getTagCompound.getString("displayName")
+			val classAI = LoaderTask.getClassFromName(className)
+			val info = LoaderTask.getAnnotationInfo(classAI)
+			val registryName = info.getOrElse("name", null)
+			val aiModID = info.getOrElse("modid", null)
+			if (registryName == null || aiModID == null) return EnumActionResult.FAIL
 
-				val task = new Task(worldIn)
-				task.setPosition(taskPos, face)
-				task.setInfoAI(aiModID.toString, registryName.toString, displayName, classAI)
-				if (ControllerTask.spawnTask(worldIn, taskPos, face, task)) {
-					Galvanize.log("placed")
-					return EnumActionResult.SUCCESS
-				}
+			val task = new Task(worldIn)
+			task.setPosition(taskPos, face)
+			task.setInfoAI(aiModID.toString, registryName.toString, displayName, classAI)
+			if (ControllerTask.spawnTask(worldIn, taskPos, face, task)) {
+				Galvanize.log("placed")
+				return EnumActionResult.SUCCESS
 			}
+
 		}
 
 		default
@@ -77,7 +69,7 @@ class ItemTask extends ItemCreative {
 	@SideOnly(Side.CLIENT)
 	override def getSubItems(itemIn: Item, tab: CreativeTabs,
 			subItems: util.List[ItemStack]): Unit = {
-		val classesOf = LoaderAI.getClassInstances
+		val classesOf = LoaderTask.getClassInstances
 		for (clazz <- classesOf) {
 			subItems.add(ControllerTask.getTaskItemForAIClass(clazz))
 		}

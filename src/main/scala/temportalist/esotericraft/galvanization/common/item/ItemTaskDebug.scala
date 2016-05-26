@@ -1,4 +1,5 @@
 package temportalist.esotericraft.galvanization.common.item
+
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
@@ -19,23 +20,35 @@ import temportalist.origin.api.common.lib.Vect
   */
 class ItemTaskDebug extends ItemCreative with INBTCreator {
 
-	override def onItemUse(stack: ItemStack, playerIn: EntityPlayer, worldIn: World, pos: BlockPos,
-			hand: EnumHand, facing: EnumFacing,
-			hitX: Float, hitY: Float, hitZ: Float): EnumActionResult = {
-		val default = super.onItemUse(stack, playerIn, worldIn, pos, hand, facing, hitX, hitY, hitZ)
+	override def onItemUseFirst(stack: ItemStack,
+			playerIn: EntityPlayer,
+			worldIn: World, pos: BlockPos,
+			facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float,
+			hand: EnumHand): EnumActionResult = {
+		val default = super
+				.onItemUseFirst(stack, playerIn, worldIn, pos, facing, hitX, hitY, hitZ, hand)
 
-		ControllerTask.getTaskAt(worldIn, pos, facing) match {
-			case task: ITask =>
-				this.checkStackNBT(stack)
-				stack.getTagCompound.setTag("task", {
-					val tag = this.getCompoundNew
-					tag.setTag("pos", new Vect(pos).serializeNBT())
-					tag.setInteger("face", facing.ordinal())
-					tag
-				})
-				Galvanize.log("Set task " + pos.toString + " " + facing)
+		if (playerIn.isSneaking) {
+			if (ControllerTask.breakTask(worldIn, pos, facing,
+				drop = !playerIn.capabilities.isCreativeMode)) {
+				Galvanize.log("broken")
 				return EnumActionResult.SUCCESS
-			case _ =>
+			}
+		}
+		else {
+			ControllerTask.getTaskAt(worldIn, pos, facing) match {
+				case task: ITask =>
+					this.checkStackNBT(stack)
+					stack.getTagCompound.setTag("task", {
+						val tag = this.getCompoundNew
+						tag.setTag("pos", new Vect(pos).serializeNBT())
+						tag.setInteger("face", facing.ordinal())
+						tag
+					})
+					Galvanize.log("Set task " + pos.toString + " " + facing)
+					return EnumActionResult.SUCCESS
+				case _ =>
+			}
 		}
 
 		default

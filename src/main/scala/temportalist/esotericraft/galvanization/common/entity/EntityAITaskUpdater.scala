@@ -1,10 +1,11 @@
 package temportalist.esotericraft.galvanization.common.entity
 
+import java.util
+
+import net.minecraft.entity.ai.EntityAIBase
 import net.minecraft.world.World
-import temportalist.esotericraft.api.galvanize.ai.IGalvanizeTask
-import temportalist.esotericraft.galvanization.common.entity.ai.EntityAIHelper
+import temportalist.esotericraft.api.galvanize.ai.{EnumTaskType, IGalvanizeTask}
 import temportalist.esotericraft.galvanization.common.task.ITask
-import temportalist.esotericraft.galvanization.common.task.ai.{IEntityMover, IFlyCheck}
 import temportalist.esotericraft.galvanization.common.task.core.ControllerTask
 
 /**
@@ -15,10 +16,9 @@ import temportalist.esotericraft.galvanization.common.task.core.ControllerTask
   */
 class EntityAITaskUpdater(
 		private val owner: EntityEmpty
-) extends EntityAIHelper with IEntityMover with IFlyCheck {
+) extends EntityAIBase {
 
-	private var currentTask: ITask = null
-	private var currentAI: IGalvanizeTask = null
+	private val currentTasks = new util.EnumMap[EnumTaskType, ITask](classOf[EnumTaskType])
 
 	def getWorld: World = this.owner.getEntityWorld
 
@@ -26,39 +26,58 @@ class EntityAITaskUpdater(
 
 	override def updateTask(): Unit = {
 
-		if (this.currentAI == null) {
-			this.findNextTask()
-			if (this.currentAI != null) this.currentAI.startExecuting(this.owner)
+		var currentTask: ITask = null
+		var currentTaskType: EnumTaskType = null
+		var lowestPriorityNumber = -1
+		for (taskType <- EnumTaskType.values()) {
+
+			if (!this.currentTasks.containsKey(taskType)) {
+				this.findNextTask(taskType) match {
+					case task: ITask =>
+						this.currentTasks.put(taskType, task)
+						task.getAI.startExecuting(this.owner)
+					case _ => // null
+				}
+			}
+
+			if (this.currentTasks.containsKey(taskType)) {
+				val priority = this.currentTasks.get(taskType).getAI.getTaskType.ordinal()
+				if (lowestPriorityNumber < 0 || priority < lowestPriorityNumber) {
+					if (!this.currentTasks.get(taskType).isValid)
+						this.currentTasks.remove(taskType)
+					else {
+						lowestPriorityNumber = priority
+						currentTask = this.currentTasks.get(taskType)
+						currentTaskType = taskType
+					}
+				}
+			}
+
 		}
 
-		if (this.currentTask != null && !this.currentTask.isValid) {
-			this.currentTask = null
-			this.currentAI = null
-		}
+		if (currentTask == null) return
 
-		if (this.currentAI == null) return
+		val currentAI = currentTask.getAI
 
-		this.currentAI.updateTask(this.owner)
+		currentAI.updateTask(this.owner)
 
-		if (!this.currentAI.shouldExecute(this.owner)) {
-			this.currentAI.resetTask(this.owner)
-			this.currentAI = null
+		if (!currentAI.shouldExecute(this.owner)) {
+			currentAI.resetTask(this.owner)
+			this.currentTasks.remove(currentTaskType)
 		}
 
 	}
 
-	def findNextTask(): Unit = {
+	def findNextTask(taskType: EnumTaskType): ITask = {
 		val taskPositions = this.owner.getTaskPositionsAsSeq
 		for (posFace <- taskPositions) {
 			ControllerTask.getTaskAt(this.getWorld, posFace._1, posFace._2) match {
 				case task: ITask =>
 					task.getAI match {
 						case aiTask: IGalvanizeTask =>
-							val shouldExec = aiTask.shouldExecute(this.owner)
-							if (shouldExec) {
-								this.currentTask = task
-								this.currentAI = aiTask
-								return
+							if (aiTask.getTaskType == taskType) {
+								if (aiTask.shouldExecute(this.owner))
+									return task
 							}
 						case _ => // null
 					}
@@ -66,6 +85,7 @@ class EntityAITaskUpdater(
 					this.owner.removeTask(posFace._1, posFace._2)
 			}
 		}
+		null
 	}
 
 }
