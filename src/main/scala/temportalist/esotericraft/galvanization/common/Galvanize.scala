@@ -16,7 +16,7 @@ import temportalist.esotericraft.galvanization.common.capability.HandlerPlayerGa
 import temportalist.esotericraft.galvanization.common.entity.emulator.ability.AbilityLoader
 import temportalist.esotericraft.galvanization.common.init.{ModEntities, ModItems}
 import temportalist.esotericraft.galvanization.common.network.{PacketSetModel, PacketUpdateClientTasks}
-import temportalist.esotericraft.galvanization.common.task.ai.LoaderTask
+import temportalist.esotericraft.galvanization.common.task.ai.core.LoaderTask
 import temportalist.esotericraft.galvanization.common.task.core.ControllerTask
 import temportalist.esotericraft.galvanization.server.CommandSetPlayerModel
 import temportalist.origin.foundation.common.modTraits.IHasCommands

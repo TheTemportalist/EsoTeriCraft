@@ -1,4 +1,4 @@
-package temportalist.esotericraft.galvanization.common.task.ai
+package temportalist.esotericraft.galvanization.common.task.ai.world
 
 import com.google.common.base.Predicate
 import net.minecraft.entity.item.EntityItem
@@ -7,6 +7,8 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import temportalist.esotericraft.api.galvanize.ai.{EnumTaskType, GalvanizeTask}
 import temportalist.esotericraft.galvanization.common.Galvanize
+import temportalist.esotericraft.galvanization.common.task.ai.core.TaskBase
+import temportalist.esotericraft.galvanization.common.task.ai.interfaces.{ITaskBoundingBoxMixin, ITaskInventory}
 import temportalist.origin.api.common.lib.Vect
 
 import scala.collection.{JavaConversions, mutable}

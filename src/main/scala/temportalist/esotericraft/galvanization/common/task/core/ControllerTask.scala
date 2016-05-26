@@ -14,7 +14,7 @@ import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.esotericraft.galvanization.common.init.ModItems
 import temportalist.esotericraft.galvanization.common.network.PacketUpdateClientTasks
 import temportalist.esotericraft.galvanization.common.task.ITask
-import temportalist.esotericraft.galvanization.common.task.ai.LoaderTask
+import temportalist.esotericraft.galvanization.common.task.ai.core.LoaderTask
 
 /**
   *

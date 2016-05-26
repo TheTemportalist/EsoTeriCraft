@@ -1,4 +1,4 @@
-package temportalist.esotericraft.galvanization.common.task.ai
+package temportalist.esotericraft.galvanization.common.task.ai.interfaces
 
 import net.minecraft.util.math.AxisAlignedBB
 import temportalist.esotericraft.api.galvanize.ai.ITaskBoundingBox

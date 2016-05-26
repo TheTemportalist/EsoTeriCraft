@@ -1,4 +1,4 @@
-package temportalist.esotericraft.galvanization.common.task.ai
+package temportalist.esotericraft.galvanization.common.task.ai.interfaces
 
 import net.minecraft.entity.EntityCreature
 import temportalist.esotericraft.api.galvanize.ai.IGalvanizeTask

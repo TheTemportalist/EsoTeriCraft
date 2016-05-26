@@ -1,10 +1,12 @@
-package temportalist.esotericraft.galvanization.common.task.ai
+package temportalist.esotericraft.galvanization.common.task.ai.active
 
 import net.minecraft.entity.{EntityCreature, EntityLivingBase}
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import temportalist.esotericraft.api.galvanize.ai.{EnumTaskType, GalvanizeTask}
 import temportalist.esotericraft.galvanization.common.Galvanize
+import temportalist.esotericraft.galvanization.common.task.ai.core.TaskBase
+import temportalist.esotericraft.galvanization.common.task.ai.interfaces.ITaskBoundingBoxMixin
 import temportalist.origin.api.common.lib.Vect
 
 /**

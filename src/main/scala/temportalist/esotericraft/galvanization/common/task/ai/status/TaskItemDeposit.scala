@@ -1,4 +1,4 @@
-package temportalist.esotericraft.galvanization.common.task.ai
+package temportalist.esotericraft.galvanization.common.task.ai.status
 
 import net.minecraft.entity.EntityCreature
 import net.minecraft.inventory.IInventory
@@ -7,6 +7,8 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, EnumHand}
 import temportalist.esotericraft.api.galvanize.ai.{EnumTaskType, GalvanizeTask}
 import temportalist.esotericraft.galvanization.common.Galvanize
+import temportalist.esotericraft.galvanization.common.task.ai.core.TaskBase
+import temportalist.esotericraft.galvanization.common.task.ai.interfaces.ITaskInventory
 import temportalist.origin.api.common.lib.Vect
 
 /**

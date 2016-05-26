@@ -11,7 +11,7 @@ import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.esotericraft.galvanization.common.task.Task
-import temportalist.esotericraft.galvanization.common.task.ai.LoaderTask
+import temportalist.esotericraft.galvanization.common.task.ai.core.LoaderTask
 import temportalist.esotericraft.galvanization.common.task.core.ControllerTask
 
 import scala.collection.JavaConversions

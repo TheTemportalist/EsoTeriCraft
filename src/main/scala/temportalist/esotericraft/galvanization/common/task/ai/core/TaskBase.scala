@@ -1,9 +1,10 @@
-package temportalist.esotericraft.galvanization.common.task.ai
+package temportalist.esotericraft.galvanization.common.task.ai.core
 
 import net.minecraft.entity.EntityCreature
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import temportalist.esotericraft.api.galvanize.ai.IGalvanizeTask
+import temportalist.esotericraft.galvanization.common.task.ai.interfaces.{ITaskEntityMover, ITaskFlyCheck}
 
 /**
   *

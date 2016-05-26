@@ -1,4 +1,4 @@
-package temportalist.esotericraft.galvanization.common.task.ai
+package temportalist.esotericraft.galvanization.common.task.ai.core
 
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import temportalist.esotericraft.api.galvanize.ai.{GalvanizeTask, IGalvanizeTask}
