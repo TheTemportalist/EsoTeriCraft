@@ -7,6 +7,7 @@ import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import net.minecraft.util.{DamageSource, EnumFacing}
 import temportalist.esotericraft.api.galvanize.ai.{EnumTaskType, GalvanizeTask}
 import temportalist.esotericraft.galvanization.common.Galvanize
+import temportalist.esotericraft.galvanization.common.entity.emulator.IEntityEmulator
 import temportalist.esotericraft.galvanization.common.task.ai.core.TaskBase
 import temportalist.esotericraft.galvanization.common.task.ai.interfaces.{ITargetEntity, ITaskBoundingBoxMixin}
 import temportalist.origin.api.common.lib.Vect
@@ -69,23 +70,22 @@ class TaskAttack(
 
 	override def updateTask(entity: EntityCreature): Unit = {
 
+		if (entity.getAITarget != null) this.setTarget(entity.getAITarget)
+
 		if (this.getTarget != null) {
 			if (!this.getTarget.getEntityBoundingBox.intersectsWith(this.getBoundingBox))
 				this.setTarget(null)
 		}
 
 		if (this.getTarget == null) {
-			if (entity.getAITarget != null) this.setTarget(entity.getAITarget)
-		}
-
-		if (this.getTarget == null) {
 			var target: EntityLivingBase = null
 			var leastDistanceToOriginSq = -1D
-			for (entity <- this.getNearbyEntities(entity)) {
-				val distanceSq = (this.posVect - new Vect(entity)).magnitude
+			for (targetEnt <- this.getNearbyEntities(entity)) {
+				// val distanceSq = (this.posVect - new Vect(targetEnt)).magnitude
+				val distanceSq = (new Vect(targetEnt) - new Vect(targetEnt)).magnitude
 				if (leastDistanceToOriginSq < 0 || distanceSq < leastDistanceToOriginSq) {
 					leastDistanceToOriginSq = distanceSq
-					target = entity
+					target = targetEnt
 				}
 			}
 			this.setTarget(target)
@@ -94,10 +94,16 @@ class TaskAttack(
 		if (this.getTarget == null) return
 
 		val distToTarget = entity.getDistanceToEntity(this.getTarget)
-		if (distToTarget <= 1.5) {
-			this.getTarget.attackEntityFrom(
-				DamageSource.causeMobDamage(entity), 5F
-			)
+		val reqDist = 3.5D
+		if (distToTarget <= reqDist) {
+			entity match {
+				case emulator: IEntityEmulator =>
+					emulator.attackEntity(this.getTarget)
+				case _ =>
+					this.getTarget.attackEntityFrom(
+						DamageSource.causeMobDamage(entity), 5F
+					)
+			}
 			if (this.getTarget.isDead) this.setTarget(null)
 		}
 		else {

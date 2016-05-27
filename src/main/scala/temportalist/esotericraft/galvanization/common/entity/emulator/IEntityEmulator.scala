@@ -6,11 +6,11 @@ import net.minecraft.client.Minecraft
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.entity.monster.EntitySlime
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.entity.{EntityList, EntityLivingBase}
+import net.minecraft.entity.{EntityList, EntityLivingBase, IRangedAttackMob}
 import net.minecraft.inventory.EntityEquipmentSlot
 import net.minecraft.nbt.{NBTBase, NBTTagCompound}
-import net.minecraft.util.EnumHand
 import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.{DamageSource, EnumHand}
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import temportalist.esotericraft.api.galvanize.IAbility
@@ -352,6 +352,17 @@ trait IEntityEmulator {
 		}
 		this.abilities = abilities.toArray.asInstanceOf[Array[IAbility[_ <: NBTBase]]]
 
+	}
+
+	// ~~~~~~~~~~ Other ~~~~~~~~~~
+
+	def attackEntity(target: EntityLivingBase): Unit = {
+		val world = this.getSelfEntityInstance.getEntityWorld
+		this.getEntityStateInstance(world) match {
+			case ranged: IRangedAttackMob => ranged.attackEntityWithRangedAttack(target, 1F)
+			case _ =>
+				target.attackEntityFrom(DamageSource.causeMobDamage(this.getSelfEntityInstance), 1F)
+		}
 	}
 
 }
