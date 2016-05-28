@@ -73,7 +73,6 @@ class TaskItemCollect(
 	}
 
 	override def updateTask(entity: EntityCreature): Unit = {
-
 		val entityList = this.findEntitiesInRange(entity)
 
 		var smallestDistanceToOrigin = -1D

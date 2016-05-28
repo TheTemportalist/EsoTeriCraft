@@ -75,6 +75,7 @@ class EntityAITaskUpdater(
 				case task: ITask =>
 					task.getAI match {
 						case aiTask: IGalvanizeTask =>
+							//Galvanize.log("" + aiTask.getClass.getSimpleName + " " + taskType)
 							if (aiTask.getTaskType == taskType) {
 								if (aiTask.shouldExecute(this.owner))
 									return task

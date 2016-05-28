@@ -40,6 +40,8 @@ class TaskItemDeposit(
 			case _ => return false
 		}
 
+		//Galvanize.log("should?")
+
 		// Check if there is SOMETHING being held
 		for (hand <- EnumHand.values())
 			if (entity.getHeldItem(hand) != null) {

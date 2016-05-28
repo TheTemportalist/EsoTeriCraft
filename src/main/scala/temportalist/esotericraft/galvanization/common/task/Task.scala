@@ -43,6 +43,7 @@ final class Task(private val world: World) extends ITask with INBTCreator {
 
 	override def getAI: IGalvanizeTask = {
 		if (this.aiInstance == null) this.createInstanceOfAI()
+		//Galvanize.log("" + this.aiInstance)
 		this.aiInstance
 	}
 

@@ -41,6 +41,13 @@ import scala.collection.mutable.ListBuffer
 )
 object Galvanize extends ModBase with IHasCommands {
 
+	/*
+		TODO Tasks:
+		Mining
+		Emulation of attacks
+		Item contains other items and emulates their actions
+	 */
+
 	private var plugin: Plugin = _
 
 	@PluginEsoTeriCraft

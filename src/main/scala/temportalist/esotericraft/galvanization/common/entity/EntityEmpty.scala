@@ -194,6 +194,7 @@ class EntityEmpty(world: World) extends EntityCreature(world)
 			val mX = target.motionX
 			val mY = target.motionY
 			val mZ = target.motionZ
+			this.swingArm(EnumHand.MAIN_HAND)
 			val flag5 = target.attackEntityFrom(DamageSource.causeMobDamage(this), f)
 
 			if (flag5) {
