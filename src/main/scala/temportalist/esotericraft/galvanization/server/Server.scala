@@ -4,7 +4,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.{Phase, ServerTickEvent}
 import temportalist.esotericraft.galvanization.common.Galvanize
-import temportalist.esotericraft.galvanization.common.capability.HelperGalvanize
+import temportalist.esotericraft.galvanization.common.capability.{HelperGalvanize, IPlayerGalvanize}
 
 import scala.collection.JavaConversions
 
@@ -28,7 +28,11 @@ object Server {
 			val mc = FMLCommonHandler.instance().getMinecraftServerInstance
 			val players = JavaConversions.asScalaBuffer(mc.getPlayerList.getPlayerList)
 			for (player <- players) {
-				HelperGalvanize.get(player).onTickServer()
+				HelperGalvanize.get(player) match {
+					case galvanized: IPlayerGalvanize =>
+						galvanized.onTickServer()
+					case _ =>
+				}
 			}
 		}
 	}

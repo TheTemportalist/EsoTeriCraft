@@ -16,7 +16,6 @@ import org.lwjgl.input.Keyboard
 import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.esotericraft.galvanization.common.capability.{HelperGalvanize, IPlayerGalvanize}
 import temportalist.esotericraft.galvanization.common.entity.emulator.EntityState
-import temportalist.esotericraft.galvanization.common.network.PacketSetModel
 import temportalist.origin.api.client.EnumKeyCategory
 import temportalist.origin.foundation.client.modTraits.IHasKeys
 import temportalist.origin.foundation.client.{IKeyBinder, IModClient}
@@ -73,7 +72,8 @@ object Client extends IModClient with IHasKeys {
 			this.registerKeyBinding(this.sidebarDown)
 			this.sidebarLeft = new KeyBinding(prefix + "Left", cxt, km, Keyboard.KEY_LBRACKET, cate)
 			this.registerKeyBinding(this.sidebarLeft)
-			this.sidebarRight = new KeyBinding(prefix + "Right", cxt, km, Keyboard.KEY_RBRACKET, cate)
+			this.sidebarRight = new KeyBinding(prefix + "Right", cxt, km, Keyboard.KEY_RBRACKET,
+				cate)
 			this.registerKeyBinding(this.sidebarRight)
 
 		}
@@ -111,18 +111,18 @@ object Client extends IModClient with IHasKeys {
 							if (isUp) {
 								overlay.selectorSelected -= 1
 								if (overlay.selectorSelected < 0) {
-									overlay.selectorSelected = galvanized.getModelEntities.size() - 1 + 1 // +1 for none state
+									overlay.selectorSelected = galvanized.getModelEntities.size() -
+											1 + 1 // +1 for none state
 								}
 							}
 							else {
 								overlay.selectorSelected += 1
-								if (overlay.selectorSelected >= galvanized.getModelEntities.size() + 1) // + 1 for none state
+								if (overlay.selectorSelected >= galvanized.getModelEntities.size() +
+										1) // + 1 for none state
 									overlay.selectorSelected = 0
 							}
 						case _ =>
 					}
-
-
 
 				}
 
@@ -139,7 +139,7 @@ object Client extends IModClient with IHasKeys {
 					OverlaySidebarMorph.doShowSelector = false
 
 					val selectedIndex = OverlaySidebarMorph.selectorSelected
-					new PacketSetModel(selectedIndex, 0).sendToServer(Galvanize)
+					// TODO new PacketSetModel(selectedIndex, 0).sendToServer(Galvanize)
 
 				}
 			}
@@ -147,7 +147,7 @@ object Client extends IModClient with IHasKeys {
 					Keyboard.isKeyDown(Keyboard.KEY_DELETE)) {
 				if (OverlaySidebarMorph.doShowSelector) {
 					val selectedIndex = OverlaySidebarMorph.selectorSelected
-					new PacketSetModel(selectedIndex, 1).sendToServer(Galvanize)
+					// TODO new PacketSetModel(selectedIndex, 1).sendToServer(Galvanize)
 				}
 			}
 		}
@@ -164,7 +164,11 @@ object Client extends IModClient with IHasKeys {
 				if (!mc.isGamePaused) {
 					mc.thePlayer match {
 						case player: EntityPlayerSP =>
-							HelperGalvanize.get(player).onTickClient()
+							HelperGalvanize.get(player) match {
+								case galvanized: IPlayerGalvanize =>
+									galvanized.onTickClient()
+								case _ =>
+							}
 						case _ =>
 					}
 				}
@@ -189,22 +193,28 @@ object Client extends IModClient with IHasKeys {
 	def renderPlayerPre(event: RenderPlayerEvent.Pre): Unit = {
 		if (OverlaySidebarMorph.playerEvent_RenderingSelected) return
 		val player = event.getEntityPlayer
-		val galvanized = HelperGalvanize.get(player)
 
-		galvanized.getEntityState match {
-			case entityState: EntityState =>
-				event.setCanceled(true)
+		HelperGalvanize.get(player) match {
+			case galvanized: IPlayerGalvanize =>
+				galvanized.getEntityState match {
+					case entityState: EntityState =>
+						event.setCanceled(true)
 
-				val instance: EntityLivingBase = entityState.getInstance(player.getEntityWorld)
-				val entityModel: EntityModel[_, _] =
-					galvanized.getEntityModelInstance(player.getEntityWorld)
+						val instance: EntityLivingBase =
+							entityState.getInstance(player.getEntityWorld)
+						val entityModel: EntityModel[_, _] =
+							galvanized.getEntityModelInstance(player.getEntityWorld)
 
-				val yaw = this.interpolateRotation(player.prevRotationYaw, player.rotationYaw, event.getPartialRenderTick)
+						val yaw = this.interpolateRotation(
+							player.prevRotationYaw, player.rotationYaw, event.getPartialRenderTick)
 
-				if (entityModel != null) {
-					entityModel.forceRender(instance, event.getX, event.getY, event.getZ, yaw, event.getPartialRenderTick)
+						if (entityModel != null) {
+							entityModel.forceRender(instance,
+								event.getX, event.getY, event.getZ, yaw, event.getPartialRenderTick)
+						}
+
+					case _ =>
 				}
-
 			case _ =>
 		}
 
@@ -223,7 +233,8 @@ object Client extends IModClient with IHasKeys {
 	def renderAbilitiesPost(player: EntityPlayerSP): Unit = {
 		HelperGalvanize.get(player) match {
 			case galvanized: IPlayerGalvanize =>
-				for (ability <- JavaConversions.iterableAsScalaIterable(galvanized.getEntityAbilities)) {
+				for (ability <- JavaConversions
+						.iterableAsScalaIterable(galvanized.getEntityAbilities)) {
 					ability.renderPost(player)
 				}
 			case _ =>

@@ -12,10 +12,9 @@ import net.minecraftforge.fml.relauncher.Side
 import temportalist.esotericraft.api.galvanize.IAbility
 import temportalist.esotericraft.api.init.IEsoTeriCraft
 import temportalist.esotericraft.api.init.IEsoTeriCraft.PluginEsoTeriCraft
-import temportalist.esotericraft.galvanization.common.capability.HandlerPlayerGalvanize
 import temportalist.esotericraft.galvanization.common.entity.emulator.ability.AbilityLoader
 import temportalist.esotericraft.galvanization.common.init.{ModEntities, ModItems}
-import temportalist.esotericraft.galvanization.common.network.{PacketSetModel, PacketUpdateClientTasks}
+import temportalist.esotericraft.galvanization.common.network.PacketUpdateClientTasks
 import temportalist.esotericraft.galvanization.common.task.ai.core.LoaderTask
 import temportalist.esotericraft.galvanization.common.task.core.ControllerTask
 import temportalist.esotericraft.galvanization.server.CommandSetPlayerModel
@@ -33,12 +32,14 @@ import scala.collection.mutable.ListBuffer
   *
   * @author TheTemportalist
   */
+///*
 @Mod(modid = Galvanize.MOD_ID, name = Galvanize.MOD_NAME, version = Galvanize.MOD_VERSION,
 	modLanguage = "scala",
 	guiFactory = Galvanize.proxyClient,
 	dependencies = "required-after:Forge;" + "required-after:origin;" +
 			"required-after:esotericraft;"
 )
+//*/
 object Galvanize extends ModBase with IHasCommands {
 
 	/*
@@ -99,15 +100,17 @@ object Galvanize extends ModBase with IHasCommands {
 		super.preInitialize(event)
 
 		this.registerNetwork()
-		HandlerPlayerGalvanize.init(this, "PlayerGalvanize")
-		this.registerMessage(classOf[PacketSetModel.Handler], classOf[PacketSetModel], Side.SERVER)
+		// TODO HandlerPlayerGalvanize.init(this, "PlayerGalvanize")
+		// TODO this.registerMessage(classOf[PacketSetModel.Handler], classOf[PacketSetModel], Side.SERVER)
 		this.registerMessage(classOf[PacketUpdateClientTasks.Handler], classOf[PacketUpdateClientTasks], Side.CLIENT)
 
+		///* tODO
 		AbilityLoader.preInit(event)
 		LoaderTask.preInit(event)
 		FetchResources.runMorph()
 		FetchResources.runGalvanize()
 		this.registerHandler(ControllerTask)
+		//*/
 
 	}
 

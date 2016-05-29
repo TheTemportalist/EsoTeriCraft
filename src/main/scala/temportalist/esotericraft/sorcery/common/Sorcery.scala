@@ -16,11 +16,13 @@ import temportalist.origin.foundation.common.{IProxy, ModBase}
   *
   * @author TheTemportalist
   */
+/*
 @Mod(modid = Sorcery.MOD_ID, name = Sorcery.MOD_NAME, version = Sorcery.MOD_VERSION,
 	modLanguage = "scala",
 	guiFactory = Sorcery.proxyClient,
 	dependencies = "required-after:Forge;" + "required-after:origin;" + "required-after:esotericraft;"
 )
+*/
 object Sorcery extends ModBase {
 
 	private var plugin: Plugin = _

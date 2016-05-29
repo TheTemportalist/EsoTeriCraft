@@ -1,12 +1,11 @@
 package temportalist.esotericraft.galvanization.common.network
 
 import net.minecraft.client.Minecraft
-import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
+import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.fml.common.network.simpleimpl.{IMessage, IMessageHandler, MessageContext}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import temportalist.esotericraft.galvanization.client.ClientTask
 import temportalist.esotericraft.galvanization.common.task.{ITask, Task}
-import temportalist.origin.api.common.utility.NBTHelper
 import temportalist.origin.foundation.common.network.IPacket
 
 import scala.collection.mutable.ListBuffer
@@ -22,19 +21,16 @@ class PacketUpdateClientTasks extends IPacket {
 	def this(func: Int, task: ITask) {
 		this()
 		this.add(func)
+		this.add(1)
 		this.add(task.serializeNBT())
 	}
 
 	def this(tasks: Iterable[ITask]) {
 		this()
 		this.add(PacketUpdateClientTasks.LOAD)
-		this.add({
-			val tag = new NBTTagCompound
-			val list = new NBTTagList
-			for (task <- tasks) list.appendTag(task.serializeNBT())
-			tag.setTag("Packet_taskList", list)
-			tag
-		})
+		this.add(tasks.size)
+		for (task <- tasks)
+			this.add(task.serializeNBT())
 	}
 
 	override def getReceivableSide: Side = Side.CLIENT
@@ -50,27 +46,29 @@ object PacketUpdateClientTasks {
 		override def onMessage(message: PacketUpdateClientTasks,
 				ctx: MessageContext): IMessage = {
 			val func = message.get[Int]
-			val taskNBT = message.get[NBTTagCompound]
-			updateClientTasks(func, taskNBT)
+			val quantity = message.get[Int]
+			val taskNBTs = ListBuffer[NBTTagCompound]()
+			for (i <- 0 until quantity)
+				taskNBTs += message.get[NBTTagCompound]
+			if (quantity > 0) updateClientTasks(func, taskNBTs:_*)
 			null
 		}
 	}
 
 	@SideOnly(Side.CLIENT)
-	def updateClientTasks(func: Int, taskNBT: NBTTagCompound): Unit = {
-		if (taskNBT.hasKey("Packet_taskList")) {
+	def updateClientTasks(func: Int, taskNBTs: NBTTagCompound*): Unit = {
+		if (taskNBTs.size > 1) {
 			val tasks = ListBuffer[ITask]()
-			val taskNBTList = NBTHelper.getTagList[NBTTagCompound](taskNBT, "Packet_taskList")
-			for (i <- 0 until taskNBTList.tagCount()) {
+			for (taskNBT <- taskNBTs) {
 				val task = new Task(Minecraft.getMinecraft.theWorld)
-				task.deserializeNBT(taskNBTList.getCompoundTagAt(i))
+				task.deserializeNBT(taskNBTs(0))
 				tasks += task
 			}
-			ClientTask.updateTasks(tasks:_*)
+			ClientTask.updateTasks(tasks: _*)
 		}
 		else {
 			val task = new Task(Minecraft.getMinecraft.theWorld)
-			task.deserializeNBT(taskNBT)
+			task.deserializeNBT(taskNBTs(0))
 			ClientTask.updateTasks(func, task)
 		}
 	}

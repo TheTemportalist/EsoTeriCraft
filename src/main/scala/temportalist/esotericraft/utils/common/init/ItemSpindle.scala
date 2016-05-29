@@ -7,7 +7,6 @@ import net.minecraft.entity.player.EntityPlayer.SleepResult._
 import net.minecraft.entity.player.{EntityPlayer, EntityPlayerMP}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.network.play.server.SPacketUseBed
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import net.minecraft.util.text.TextComponentTranslation
 import net.minecraft.util.{ActionResult, EnumHand}
@@ -48,6 +47,8 @@ class ItemSpindle(mod: IModDetails) extends ItemBase(mod) {
 
 	private def putToSleep(world: World, player: EntityPlayer, stackSpindle: ItemStack): Boolean = {
 
+		if (!player.isInstanceOf[EntityPlayerMP]) return false
+
 		val status = this.canPlayerSleep(world, player, player.getPosition)
 		status match {
 			case NOT_POSSIBLE_NOW =>
@@ -77,9 +78,11 @@ class ItemSpindle(mod: IModDetails) extends ItemBase(mod) {
 
 		player match {
 			case mp: EntityPlayerMP =>
+				/*
 				val sleepPacket = new SPacketUseBed(mp, player.getPosition)
-				//mp.getServerWorld.getEntityTracker.sendToAllTrackingEntity(mp, sleepPacket)
+				mp.getServerWorld.getEntityTracker.sendToAllTrackingEntity(mp, sleepPacket)
 				mp.connection.sendPacket(sleepPacket)
+				*/
 			case _ =>
 		}
 

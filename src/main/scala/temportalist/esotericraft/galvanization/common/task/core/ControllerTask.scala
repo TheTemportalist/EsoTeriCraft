@@ -9,6 +9,7 @@ import net.minecraft.world.World
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint
 import temportalist.esotericraft.api.galvanize.ai.IGalvanizeTask
 import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.esotericraft.galvanization.common.init.ModItems
@@ -38,21 +39,28 @@ object ControllerTask {
 	}
 
 	def spawnTask(world: World, pos: BlockPos, face: EnumFacing, task: ITask): Boolean = {
-		if (this.getData(world).spawnTask(world, pos, face, task)) {
+		if (!world.isRemote && this.getData(world).spawnTask(world, pos, face, task)) {
+			///* TODO
 			new PacketUpdateClientTasks(
 				PacketUpdateClientTasks.SPAWN, task
-			).sendToDimension(Galvanize, world.provider.getDimension)
+			).sendToAllAround(Galvanize,
+				new TargetPoint(world.provider.getDimension, pos.getX, pos.getY, pos.getZ, 128)
+			)
+			//*/
 			true
 		} else false
 	}
 
 	def breakTask(world: World, pos: BlockPos, face: EnumFacing, drop: Boolean = true): Boolean = {
+		if (world.isRemote) return false
 		this.getData(world).breakTask(world, pos, face) match {
 			case task: ITask =>
 				task.onBroken(drop)
+				/* TODO
 				new PacketUpdateClientTasks(
 					PacketUpdateClientTasks.BREAK, task
 				).sendToDimension(Galvanize, world.provider.getDimension)
+				*/
 				true
 			case _ => // no task broken
 				false
@@ -77,9 +85,12 @@ object ControllerTask {
 		if (event.getWorld.isRemote) return
 		event.getEntity match {
 			case player: EntityPlayerMP =>
-				new PacketUpdateClientTasks(
-					this.getData(event.getWorld).getTasks
-				).sendToPlayer(Galvanize, player)
+				val tasks = this.getData(event.getWorld).getTasks
+				if (tasks.nonEmpty) {
+					///* TODO
+					new PacketUpdateClientTasks(tasks).sendToPlayer(Galvanize, player)
+					//*/
+				}
 			case _ =>
 		}
 	}

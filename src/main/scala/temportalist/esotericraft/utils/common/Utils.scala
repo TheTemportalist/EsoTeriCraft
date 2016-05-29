@@ -15,11 +15,13 @@ import temportalist.origin.foundation.common.{IProxy, ModBase}
   *
   * @author TheTemportalist
   */
+/*
 @Mod(modid = Utils.MOD_ID, name = Utils.MOD_NAME, version = Utils.MOD_VERSION,
 	modLanguage = "scala",
 	guiFactory = Utils.proxyClient,
 	dependencies = "required-after:Forge;" + "required-after:origin;" + "required-after:esotericraft;"
 )
+*/
 object Utils extends ModBase {
 
 	private var plugin: Plugin = _
