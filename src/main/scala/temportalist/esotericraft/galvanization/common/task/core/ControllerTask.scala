@@ -40,15 +40,14 @@ object ControllerTask {
 
 	def spawnTask(world: World, pos: BlockPos, face: EnumFacing, task: ITask): Boolean = {
 		if (!world.isRemote && this.getData(world).spawnTask(world, pos, face, task)) {
-			///* TODO
 			new PacketUpdateClientTasks(
 				PacketUpdateClientTasks.SPAWN, task
 			).sendToAllAround(Galvanize,
 				new TargetPoint(world.provider.getDimension, pos.getX, pos.getY, pos.getZ, 128)
 			)
-			//*/
 			true
-		} else false
+		}
+		else false
 	}
 
 	def breakTask(world: World, pos: BlockPos, face: EnumFacing, drop: Boolean = true): Boolean = {
@@ -56,11 +55,11 @@ object ControllerTask {
 		this.getData(world).breakTask(world, pos, face) match {
 			case task: ITask =>
 				task.onBroken(drop)
-				/* TODO
 				new PacketUpdateClientTasks(
 					PacketUpdateClientTasks.BREAK, task
-				).sendToDimension(Galvanize, world.provider.getDimension)
-				*/
+				).sendToAllAround(Galvanize,
+					new TargetPoint(world.provider.getDimension, pos.getX, pos.getY, pos.getZ, 128)
+				)
 				true
 			case _ => // no task broken
 				false
@@ -87,8 +86,9 @@ object ControllerTask {
 			case player: EntityPlayerMP =>
 				val tasks = this.getData(event.getWorld).getTasks
 				if (tasks.nonEmpty) {
-					///* TODO
-					new PacketUpdateClientTasks(tasks).sendToPlayer(Galvanize, player)
+					for (task <- tasks)
+					///* TODO make packet more efficient
+					new PacketUpdateClientTasks(PacketUpdateClientTasks.LOAD, task).sendToPlayer(Galvanize, player)
 					//*/
 				}
 			case _ =>

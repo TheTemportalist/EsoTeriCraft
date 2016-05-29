@@ -16,6 +16,7 @@ import org.lwjgl.input.Keyboard
 import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.esotericraft.galvanization.common.capability.{HelperGalvanize, IPlayerGalvanize}
 import temportalist.esotericraft.galvanization.common.entity.emulator.EntityState
+import temportalist.esotericraft.galvanization.common.network.PacketSetModel
 import temportalist.origin.api.client.EnumKeyCategory
 import temportalist.origin.foundation.client.modTraits.IHasKeys
 import temportalist.origin.foundation.client.{IKeyBinder, IModClient}
@@ -139,7 +140,7 @@ object Client extends IModClient with IHasKeys {
 					OverlaySidebarMorph.doShowSelector = false
 
 					val selectedIndex = OverlaySidebarMorph.selectorSelected
-					// TODO new PacketSetModel(selectedIndex, 0).sendToServer(Galvanize)
+					new PacketSetModel(selectedIndex, 0).sendToServer(Galvanize)
 
 				}
 			}
@@ -147,7 +148,7 @@ object Client extends IModClient with IHasKeys {
 					Keyboard.isKeyDown(Keyboard.KEY_DELETE)) {
 				if (OverlaySidebarMorph.doShowSelector) {
 					val selectedIndex = OverlaySidebarMorph.selectorSelected
-					// TODO new PacketSetModel(selectedIndex, 1).sendToServer(Galvanize)
+					new PacketSetModel(selectedIndex, 1).sendToServer(Galvanize)
 				}
 			}
 		}

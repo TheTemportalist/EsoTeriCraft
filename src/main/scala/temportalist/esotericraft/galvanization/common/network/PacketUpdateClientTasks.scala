@@ -5,10 +5,9 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.fml.common.network.simpleimpl.{IMessage, IMessageHandler, MessageContext}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import temportalist.esotericraft.galvanization.client.ClientTask
+import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.esotericraft.galvanization.common.task.{ITask, Task}
 import temportalist.origin.foundation.common.network.IPacket
-
-import scala.collection.mutable.ListBuffer
 
 /**
   *
@@ -21,16 +20,8 @@ class PacketUpdateClientTasks extends IPacket {
 	def this(func: Int, task: ITask) {
 		this()
 		this.add(func)
-		this.add(1)
 		this.add(task.serializeNBT())
-	}
-
-	def this(tasks: Iterable[ITask]) {
-		this()
-		this.add(PacketUpdateClientTasks.LOAD)
-		this.add(tasks.size)
-		for (task <- tasks)
-			this.add(task.serializeNBT())
+		Galvanize.log("Constructed")
 	}
 
 	override def getReceivableSide: Side = Side.CLIENT
@@ -46,17 +37,19 @@ object PacketUpdateClientTasks {
 		override def onMessage(message: PacketUpdateClientTasks,
 				ctx: MessageContext): IMessage = {
 			val func = message.get[Int]
-			val quantity = message.get[Int]
-			val taskNBTs = ListBuffer[NBTTagCompound]()
-			for (i <- 0 until quantity)
-				taskNBTs += message.get[NBTTagCompound]
-			if (quantity > 0) updateClientTasks(func, taskNBTs:_*)
+			val nbt = message.get[NBTTagCompound]
+			updateClientTasks(func, nbt)
+			Galvanize.log("Loaded")
 			null
 		}
 	}
 
 	@SideOnly(Side.CLIENT)
-	def updateClientTasks(func: Int, taskNBTs: NBTTagCompound*): Unit = {
+	def updateClientTasks(func: Int, taskNBT: NBTTagCompound): Unit = {
+		val task = new Task(Minecraft.getMinecraft.theWorld)
+		task.deserializeNBT(taskNBT)
+		ClientTask.updateTasks(func, task)
+		/*
 		if (taskNBTs.size > 1) {
 			val tasks = ListBuffer[ITask]()
 			for (taskNBT <- taskNBTs) {
@@ -67,10 +60,9 @@ object PacketUpdateClientTasks {
 			ClientTask.updateTasks(tasks: _*)
 		}
 		else {
-			val task = new Task(Minecraft.getMinecraft.theWorld)
-			task.deserializeNBT(taskNBTs(0))
-			ClientTask.updateTasks(func, task)
+
 		}
+		*/
 	}
 
 
