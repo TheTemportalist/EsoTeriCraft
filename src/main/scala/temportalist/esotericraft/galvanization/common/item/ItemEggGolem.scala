@@ -24,13 +24,13 @@ import scala.collection.JavaConversions
   *
   * @author TheTemportalist
   */
-class ItemEggGolem extends ItemCreative with INBTHandler {
+class ItemEggGolem extends ItemGalvanize with INBTHandler {
 
 	this.addKey[String](ENTITY_ID)
 
 	override def itemInteractionForEntity(stack: ItemStack, playerIn: EntityPlayer,
 			target: EntityLivingBase, hand: EnumHand): Boolean = {
-		if (this.canUse(playerIn) && playerIn.isSneaking) {
+		if (playerIn.isSneaking) {
 
 			val tag = this.getTagOrElseSet(stack)
 			tag.setString(ENTITY_ID, EntityList.getEntityString(target))

@@ -18,7 +18,7 @@ import temportalist.origin.api.common.lib.Vect
   *
   * @author TheTemportalist
   */
-class ItemTaskDebug extends ItemCreative with INBTCreator {
+class ItemTaskDebug extends ItemGalvanize with INBTCreator {
 
 	override def onItemUseFirst(stack: ItemStack,
 			playerIn: EntityPlayer,

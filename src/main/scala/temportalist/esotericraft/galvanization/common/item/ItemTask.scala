@@ -9,7 +9,6 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{ActionResult, EnumActionResult, EnumFacing, EnumHand}
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
-import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.esotericraft.galvanization.common.task.Task
 import temportalist.esotericraft.galvanization.common.task.ai.core.LoaderTask
 import temportalist.esotericraft.galvanization.common.task.core.ControllerTask
@@ -22,7 +21,7 @@ import scala.collection.JavaConversions
   *
   * @author TheTemportalist
   */
-class ItemTask extends ItemCreative {
+class ItemTask extends ItemGalvanize {
 
 	// ~~~~~~~~~~ World interactions
 
@@ -31,11 +30,12 @@ class ItemTask extends ItemCreative {
 		super.onItemRightClick(itemStackIn, worldIn, playerIn, hand)
 	}
 
-	override def onItemUse(stack: ItemStack, playerIn: EntityPlayer, worldIn: World, pos: BlockPos,
+	override def onItemUse(stackIn: ItemStack, playerIn: EntityPlayer, worldIn: World, pos: BlockPos,
 			hand: EnumHand, facing: EnumFacing,
 			hitX: Float, hitY: Float, hitZ: Float): EnumActionResult = {
-		val default = super.onItemUse(stack, playerIn, worldIn, pos, hand, facing, hitX, hitY, hitZ)
+		val default = super.onItemUse(stackIn, playerIn, worldIn, pos, hand, facing, hitX, hitY, hitZ)
 
+		var stack = stackIn
 		if (!stack.hasTagCompound) return default
 
 		if (!worldIn.isRemote) {
@@ -55,7 +55,10 @@ class ItemTask extends ItemCreative {
 			task.setPosition(taskPos, face)
 			task.setInfoAI(aiModID.toString, registryName.toString, displayName, classAI)
 			if (ControllerTask.spawnTask(worldIn, taskPos, face, task)) {
-				Galvanize.log("placed")
+				//Galvanize.log("placed")
+				stack.stackSize -= 1
+				if (stack.stackSize <= 0) stack = null
+				playerIn.setHeldItem(hand, stack)
 				return EnumActionResult.SUCCESS
 			}
 
@@ -71,7 +74,7 @@ class ItemTask extends ItemCreative {
 			subItems: util.List[ItemStack]): Unit = {
 		val classesOf = LoaderTask.getClassInstances
 		for (clazz <- classesOf) {
-			subItems.add(ControllerTask.getTaskItemForAIClass(clazz))
+			subItems.add(ControllerTask.getNewItemStackForAIClass(clazz))
 		}
 	}
 
