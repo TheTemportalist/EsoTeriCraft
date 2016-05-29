@@ -44,30 +44,29 @@ object ModItems extends ItemRegister {
 			Char.box('e'), Items.EGG
 		)
 
-		val taskStack = new ItemStack(this.taskItem)
 		GameRegistry.addShapelessRecipe(
-			ControllerTask.getTaskItemForAIClass(classOf[TaskAttack], taskStack),
-			Items.IRON_SWORD, Items.MAP
+			ControllerTask.getNewItemStackForAIClass(classOf[TaskAttack]),
+			Items.IRON_SWORD, Items.PAPER
 		)
 		GameRegistry.addShapelessRecipe(
-			ControllerTask.getTaskItemForAIClass(classOf[TaskFollowPlayer], taskStack),
-			Items.MAP, Items.ROTTEN_FLESH
+			ControllerTask.getNewItemStackForAIClass(classOf[TaskFollowPlayer]),
+			Items.PAPER, Items.ROTTEN_FLESH
 		)
 		GameRegistry.addShapelessRecipe(
-			ControllerTask.getTaskItemForAIClass(classOf[TaskItemDeposit], taskStack),
-			Items.MAP, Blocks.CHEST
+			ControllerTask.getNewItemStackForAIClass(classOf[TaskItemDeposit]),
+			Items.PAPER, Blocks.CHEST
 		)
 		GameRegistry.addShapelessRecipe(
-			ControllerTask.getTaskItemForAIClass(classOf[TaskHarvestCrops], taskStack),
-			Items.MAP, Items.WHEAT_SEEDS
+			ControllerTask.getNewItemStackForAIClass(classOf[TaskHarvestCrops]),
+			Items.PAPER, Items.WHEAT_SEEDS
 		)
 		GameRegistry.addShapelessRecipe(
-			ControllerTask.getTaskItemForAIClass(classOf[TaskHarvestTree], taskStack),
-			Items.MAP, Items.STONE_AXE
+			ControllerTask.getNewItemStackForAIClass(classOf[TaskHarvestTree]),
+			Items.PAPER, Items.STONE_AXE
 		)
 		GameRegistry.addShapelessRecipe(
-			ControllerTask.getTaskItemForAIClass(classOf[TaskItemCollect], taskStack),
-			Items.MAP, Items.STICK
+			ControllerTask.getNewItemStackForAIClass(classOf[TaskItemCollect]),
+			Items.PAPER, Items.STICK
 		)
 
 		GameRegistry.addShapelessRecipe(new ItemStack(this.debugTask),
