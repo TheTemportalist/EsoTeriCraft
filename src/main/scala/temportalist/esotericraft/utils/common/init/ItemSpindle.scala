@@ -78,7 +78,7 @@ class ItemSpindle(mod: IModDetails) extends ItemBase(mod) {
 		player match {
 			case mp: EntityPlayerMP =>
 				val sleepPacket = new SPacketUseBed(mp, player.getPosition)
-				mp.getServerWorld.getEntityTracker.sendToAllTrackingEntity(mp, sleepPacket)
+				//mp.getServerWorld.getEntityTracker.sendToAllTrackingEntity(mp, sleepPacket)
 				mp.connection.sendPacket(sleepPacket)
 			case _ =>
 		}
@@ -148,32 +148,6 @@ class ItemSpindle(mod: IModDetails) extends ItemBase(mod) {
 				dist._1 >= 0.5 &&  dist._2 >= 0.5 && dist._3 >= 0.5
 			case _ => false
 		}
-	}
-
-	private def makeSleep(world: World, player: EntityPlayer, pos: BlockPos): Unit = {
-
-		//ObfuscationReflectionHelper.setPrivateValue(classOf[EntityPlayer], player, true, "sleeping", "field_71083_bS")
-		ObfuscationReflectionHelper.setPrivateValue(classOf[EntityPlayer], player, true, 23)
-
-		//ObfuscationReflectionHelper.setPrivateValue(classOf[EntityPlayer], player, 0, "sleepTimer", "field_71076_b")
-		ObfuscationReflectionHelper.setPrivateValue(classOf[EntityPlayer], player, 0, 25)
-
-		player.playerLocation = pos
-
-		player.motionX = 0
-		player.motionY = 0
-		player.motionZ = 0
-		if (!world.isRemote) {
-			world.updateAllPlayersSleepingFlag()
-			player match {
-				case mp: EntityPlayerMP =>
-					val sleepPacket = new SPacketUseBed(mp, pos)
-					mp.getServerWorld.getEntityTracker.sendToAllTrackingEntity(mp, sleepPacket)
-					mp.connection.sendPacket(sleepPacket)
-				case _ =>
-			}
-		}
-
 	}
 
 	override def onUpdate(itemStack: ItemStack, world: World, entity: Entity, itemSlot: Int,
