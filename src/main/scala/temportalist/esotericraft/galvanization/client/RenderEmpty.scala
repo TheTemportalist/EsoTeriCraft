@@ -4,6 +4,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.entity.{Render, RenderManager}
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.client.registry.IRenderFactory
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import temportalist.esotericraft.galvanization.common.entity.EntityEmpty
 
 /**
@@ -12,6 +13,7 @@ import temportalist.esotericraft.galvanization.common.entity.EntityEmpty
   *
   * @author TheTemportalist
   */
+@SideOnly(Side.CLIENT)
 class RenderEmpty(manager: RenderManager) extends Render[EntityEmpty](manager) {
 
 	override def getEntityTexture(entity: EntityEmpty): ResourceLocation = null
@@ -31,6 +33,7 @@ class RenderEmpty(manager: RenderManager) extends Render[EntityEmpty](manager) {
 	}
 
 }
+@SideOnly(Side.CLIENT)
 object RenderEmpty extends IRenderFactory[EntityEmpty] {
 	override def createRenderFor(manager: RenderManager): Render[_ >: EntityEmpty] = {
 		new RenderEmpty(manager)

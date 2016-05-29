@@ -7,6 +7,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.opengl.GL11
 import temportalist.esotericraft.galvanization.common.network.PacketUpdateClientTasks
 import temportalist.esotericraft.galvanization.common.task.ITask
@@ -20,6 +21,7 @@ import scala.collection.mutable
   *
   * @author TheTemportalist
   */
+@SideOnly(Side.CLIENT)
 object ClientTask {
 
 	private val taskMap = mutable.Map[BlockPos,

@@ -5,7 +5,7 @@ import javax.annotation.Nullable
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.entity.{Render, RenderLivingBase}
 import net.minecraft.entity.EntityLivingBase
-import temportalist.esotericraft.galvanization.common.Galvanize
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.{JavaConversions, mutable}
 
@@ -15,6 +15,7 @@ import scala.collection.{JavaConversions, mutable}
   *
   * @author TheTemportalist
   */
+@SideOnly(Side.CLIENT)
 object ModelHandler {
 
 	private val entityModels = mutable.Map[Class[_], EntityModel[_ <: EntityLivingBase, _ <: EntityLivingBase]]()

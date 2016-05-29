@@ -12,6 +12,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
   *
   * @author TheTemportalist
   */
+@SideOnly(Side.CLIENT)
 class EntityModel[C <: EntityLivingBase, R <: EntityLivingBase](
 		private val entClass: Class[C],
 		private val renderer: Render[R],
