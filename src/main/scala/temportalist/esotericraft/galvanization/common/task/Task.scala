@@ -104,7 +104,7 @@ final class Task(private val world: World) extends ITask with INBTCreator {
 		val world = this.getWorld
 		if (world.isRemote) return
 		Block.spawnAsEntity(world, this.getPosition,
-			ControllerTask.getTaskItemForAIClass(this.aiClass)
+			ControllerTask.getNewItemStackForAIClass(this.aiClass)
 		)
 	}
 

@@ -28,8 +28,8 @@ class TaskItemCollect(
 ) extends TaskBase(pos, face) with ITaskBoundingBoxMixin with ITaskInventory {
 
 	private val speed: Double = 1D
-	private val radiusXZ: Double = 4
-	private val radiusY: Double = 1
+	private val radiusXZ: Double = 4.5
+	private val radiusY: Double = 0.5
 
 	// ~~~~~ Task Info ~~~~~
 
@@ -38,13 +38,14 @@ class TaskItemCollect(
 	// ~~~~~ Bounding Box ~~~~~
 
 	override def createBoundingBox: AxisAlignedBB = {
+		val center = new Vect(this.pos) + Vect.CENTER
 		new AxisAlignedBB(
-			pos.getX - this.radiusXZ,
-			pos.getY + 0.5 - this.radiusY,
-			pos.getZ - this.radiusXZ,
-			pos.getX + this.radiusXZ,
-			pos.getY + 0.5 + this.radiusY,
-			pos.getZ + this.radiusXZ
+			center.x - this.radiusXZ,
+			center.y - this.radiusY,
+			center.z - this.radiusXZ,
+			center.x + this.radiusXZ,
+			center.y + this.radiusY,
+			center.z + this.radiusXZ
 		)
 	}
 
@@ -52,8 +53,7 @@ class TaskItemCollect(
 
 	override def shouldExecute(entity: EntityCreature): Boolean = {
 		val entities = this.findEntitiesInRange(entity)
-		val exec = entities.nonEmpty
-		exec
+		entities.nonEmpty
 	}
 
 	final def findEntitiesInRange(entity: EntityCreature): mutable.Buffer[Entity] = {
@@ -73,6 +73,7 @@ class TaskItemCollect(
 	}
 
 	override def updateTask(entity: EntityCreature): Unit = {
+
 		val entityList = this.findEntitiesInRange(entity)
 
 		var smallestDistanceToOrigin = -1D

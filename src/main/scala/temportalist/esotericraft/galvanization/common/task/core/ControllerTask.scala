@@ -66,7 +66,7 @@ object ControllerTask {
 		}
 	}
 
-	def getTaskItemForAIClass(aiClass: Class[_ <: IGalvanizeTask],
+	def getNewItemStackForAIClass(aiClass: Class[_ <: IGalvanizeTask],
 			stack: ItemStack = new ItemStack(ModItems.taskItem)): ItemStack = {
 		stack.setTagCompound(new NBTTagCompound)
 		val name = LoaderTask.getAnnotationInfo(aiClass).getOrElse("displayName", null)
