@@ -5,7 +5,6 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.fml.common.network.simpleimpl.{IMessage, IMessageHandler, MessageContext}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import temportalist.esotericraft.galvanization.client.ClientTask
-import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.esotericraft.galvanization.common.task.{ITask, Task}
 import temportalist.origin.foundation.common.network.IPacket
 
@@ -21,7 +20,7 @@ class PacketUpdateClientTasks extends IPacket {
 		this()
 		this.add(func)
 		this.add(task.serializeNBT())
-		Galvanize.log("Constructed")
+		//Galvanize.log("Constructed")
 	}
 
 	override def getReceivableSide: Side = Side.CLIENT
@@ -39,7 +38,7 @@ object PacketUpdateClientTasks {
 			val func = message.get[Int]
 			val nbt = message.get[NBTTagCompound]
 			updateClientTasks(func, nbt)
-			Galvanize.log("Loaded")
+			//Galvanize.log("Loaded")
 			null
 		}
 	}

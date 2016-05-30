@@ -3,6 +3,7 @@ package temportalist.esotericraft.main.common.api
 import net.minecraftforge.fml.common.discovery.ASMDataTable
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 
+import scala.collection.mutable.ListBuffer
 import scala.collection.{JavaConversions, mutable}
 
 /**
@@ -14,6 +15,7 @@ import scala.collection.{JavaConversions, mutable}
 class AnnotationLoader[C, T](private val annotation: Class[C], private val instance: Class[T]) {
 
 	private val classInstances = mutable.Map[Class[_ <: T], mutable.Map[String, AnyRef]]()
+	private var mapKeys = ListBuffer[Class[_ <: T]]()
 
 	final def loadAnnotations(event: FMLPreInitializationEvent): Unit = {
 		this.findInstanceClasses(event.getAsmData)
@@ -35,11 +37,13 @@ class AnnotationLoader[C, T](private val annotation: Class[C], private val insta
 					e.printStackTrace()
 			}
 		}
+		this.mapKeys ++= this.classInstances.keySet
+		this.mapKeys = this.mapKeys.sortWith(_.getSimpleName < _.getSimpleName)
 	}
 
 	def onAnnotationClassFound[I <: T](implementer: Class[I], info: mutable.Map[String, AnyRef]): Unit = {}
 
-	final def getClassInstances: Iterable[Class[_ <: T]] = this.classInstances.keys
+	final def getClassInstances: Iterable[Class[_ <: T]] = this.mapKeys
 
 	final def getAnnotationInfo(clazz: Class[_ <: T]) =
 		this.classInstances.getOrElse(clazz, Map[String, AnyRef]())

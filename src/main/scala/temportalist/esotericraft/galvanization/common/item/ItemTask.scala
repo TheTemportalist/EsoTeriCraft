@@ -2,18 +2,21 @@ package temportalist.esotericraft.galvanization.common.item
 
 import java.util
 
+import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{Item, ItemStack}
+import net.minecraft.util._
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.{ActionResult, EnumActionResult, EnumFacing, EnumHand}
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.esotericraft.galvanization.common.task.Task
 import temportalist.esotericraft.galvanization.common.task.ai.core.LoaderTask
 import temportalist.esotericraft.galvanization.common.task.core.ControllerTask
 
 import scala.collection.JavaConversions
+import scala.collection.mutable.ListBuffer
 
 /**
   *
@@ -45,20 +48,22 @@ class ItemTask extends ItemGalvanize {
 
 			val className = stack.getTagCompound.getString("className")
 			val displayName = stack.getTagCompound.getString("displayName")
+			val registryName = stack.getTagCompound.getString("name")
 			val classAI = LoaderTask.getClassFromName(className)
 			val info = LoaderTask.getAnnotationInfo(classAI)
-			val registryName = info.getOrElse("name", null)
 			val aiModID = info.getOrElse("modid", null)
 			if (registryName == null || aiModID == null) return EnumActionResult.FAIL
 
 			val task = new Task(worldIn)
 			task.setPosition(taskPos, face)
-			task.setInfoAI(aiModID.toString, registryName.toString, displayName, classAI)
+			task.setInfoAI(aiModID.toString, registryName, displayName, classAI)
 			if (ControllerTask.spawnTask(worldIn, taskPos, face, task)) {
 				//Galvanize.log("placed")
-				stack.stackSize -= 1
-				if (stack.stackSize <= 0) stack = null
-				playerIn.setHeldItem(hand, stack)
+				if (!playerIn.capabilities.isCreativeMode) {
+					stack.stackSize -= 1
+					if (stack.stackSize <= 0) stack = null
+					playerIn.setHeldItem(hand, stack)
+				}
 				return EnumActionResult.SUCCESS
 			}
 
@@ -94,6 +99,32 @@ class ItemTask extends ItemGalvanize {
 			}
 		}
 
+	}
+
+	def getPossibleModelLocations: Seq[ResourceLocation] = {
+		val locations = ListBuffer[ResourceLocation]()
+		locations += new ModelResourceLocation(this.getRegistryName.toString, "inventory")
+
+		val classesOf = LoaderTask.getClassInstances
+		for (classOf <- classesOf) {
+			val info = LoaderTask.getAnnotationInfo(classOf)
+			val modid = info.getOrElse("modid", null).asInstanceOf[String]
+			val nameVariant = info.getOrElse("name", null).asInstanceOf[String]
+			if (modid != null && nameVariant != null) {
+				locations += new ModelResourceLocation(modid + ":" + this.name, "task=" + nameVariant)
+			}
+		}
+
+		locations
+	}
+
+	@SideOnly(Side.CLIENT)
+	def getModelLocation(stack: ItemStack): ModelResourceLocation = {
+		new ModelResourceLocation(Galvanize.getModId + ":" + this.name,
+			//if (stack.hasTagCompound) "task=" + stack.getTagCompound.getString("name")
+			//else
+			"inventory"
+		)
 	}
 
 }

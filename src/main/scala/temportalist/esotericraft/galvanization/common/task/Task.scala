@@ -69,7 +69,7 @@ final class Task(private val world: World) extends ITask with INBTCreator {
 	private def createIconLocation(): Unit = {
 		this.iconLocation =
 				if (this.aiModID == null || this.aiName == null) null
-				else new ResourceLocation(this.aiModID, "textures/tasks/" + this.aiName + ".png")
+				else new ResourceLocation(this.aiModID, "textures/items/tasks/" + this.aiName + ".png")
 	}
 
 	private def createInstanceOfAI(): Unit = {

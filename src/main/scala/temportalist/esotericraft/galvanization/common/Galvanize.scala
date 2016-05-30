@@ -100,6 +100,8 @@ object Galvanize extends ModBase with IHasCommands {
 
 	@Mod.EventHandler
 	def preInit(event: FMLPreInitializationEvent): Unit = {
+		AbilityLoader.preInit(event)
+		LoaderTask.preInit(event)
 		super.preInitialize(event)
 
 		this.registerNetwork()
@@ -107,8 +109,6 @@ object Galvanize extends ModBase with IHasCommands {
 		this.registerMessage(classOf[PacketSetModel.Handler], classOf[PacketSetModel], Side.SERVER)
 		this.registerMessage(classOf[PacketUpdateClientTasks.Handler], classOf[PacketUpdateClientTasks], Side.CLIENT)
 
-		AbilityLoader.preInit(event)
-		LoaderTask.preInit(event)
 		FetchResources.runMorph()
 		FetchResources.runGalvanize()
 		this.registerHandler(ControllerTask)

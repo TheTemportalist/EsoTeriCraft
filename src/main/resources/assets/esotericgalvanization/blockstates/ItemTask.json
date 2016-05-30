@@ -1,10 +1,38 @@
 {
 	"forge_marker": 1,
 	"defaults": {
-		"model": "esotericgalvanization:item/ItemTask",
+		"model": "builtin/generated",
+		"textures": {
+			"layer0": "esotericgalvanization:items/tasks/blank"
+		},
 		"transform": "forge:default-item"
 	},
 	"variants": {
-		"inventory": [{}]
+		"inventory": [{}],
+
+		"task:": {
+			"attack": {
+				"textures": { "layer0": "esotericgalvanization:items/tasks/attack" }
+			},
+			"followplayer": {
+				"textures": { "layer0": "esotericgalvanization:items/tasks/followPlayer" }
+			},
+			"harvestcrop": {
+				"textures": { "layer0": "esotericgalvanization:items/tasks/harvestCrop" }
+			},
+			"harvesttree": {
+				"textures": { "layer0": "esotericgalvanization:items/tasks/harvestTree" }
+			},
+			"itemcollect": {
+				"textures": { "layer0": "esotericgalvanization:items/tasks/itemCollect" }
+			},
+			"itemdeposit": {
+				"textures": { "layer0": "esotericgalvanization:items/tasks/itemDeposit" }
+			},
+			"mine": {
+				"textures": { "layer0": "esotericgalvanization:items/tasks/blank" }
+			}
+		}
+
 	}
 }

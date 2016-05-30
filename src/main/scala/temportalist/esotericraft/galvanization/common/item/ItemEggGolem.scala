@@ -24,7 +24,7 @@ import scala.collection.JavaConversions
   *
   * @author TheTemportalist
   */
-class ItemEggGolem extends ItemGalvanize with INBTHandler {
+class ItemEggGolem extends ItemGalvanizeRendering with INBTHandler {
 
 	this.addKey[String](ENTITY_ID)
 

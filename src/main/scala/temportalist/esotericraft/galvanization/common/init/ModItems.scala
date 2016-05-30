@@ -20,7 +20,7 @@ import temportalist.origin.foundation.common.registers.ItemRegister
 object ModItems extends ItemRegister {
 
 	var golemEgg: Item = null
-	var taskItem: Item = null
+	var taskItem: ItemTask = null
 	var debugTask: Item = null
 
 	override def register(): Unit = {
