@@ -15,7 +15,7 @@ import temportalist.esotericraft.api.init.IEsoTeriCraft.PluginEsoTeriCraft
 import temportalist.esotericraft.galvanization.common.capability.HandlerPlayerGalvanize
 import temportalist.esotericraft.galvanization.common.entity.emulator.ability.AbilityLoader
 import temportalist.esotericraft.galvanization.common.init.{ModEntities, ModItems}
-import temportalist.esotericraft.galvanization.common.network.{PacketSetModel, PacketUpdateClientTasks}
+import temportalist.esotericraft.galvanization.common.network.{PacketSetModel, PacketUpdateClientModels, PacketUpdateClientTasks}
 import temportalist.esotericraft.galvanization.common.task.ai.core.LoaderTask
 import temportalist.esotericraft.galvanization.common.task.core.ControllerTask
 import temportalist.esotericraft.galvanization.server.CommandSetPlayerModel
@@ -108,6 +108,7 @@ object Galvanize extends ModBase with IHasCommands {
 		HandlerPlayerGalvanize.init(this, "PlayerGalvanize")
 		this.registerMessage(classOf[PacketSetModel.Handler], classOf[PacketSetModel], Side.SERVER)
 		this.registerMessage(classOf[PacketUpdateClientTasks.Handler], classOf[PacketUpdateClientTasks], Side.CLIENT)
+		this.registerMessage(classOf[PacketUpdateClientModels.Handler], classOf[PacketUpdateClientModels], Side.CLIENT)
 
 		FetchResources.runMorph()
 		FetchResources.runGalvanize()
@@ -132,8 +133,8 @@ object Galvanize extends ModBase with IHasCommands {
 	// ~~~~~~~~~~ Entity Abilities ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	val MAP_STRING_to_CLASS_ABILITIES = mutable.Map[String, Class[_ <: IAbility[_ <: NBTBase]]]()
-	val MAP_CLASS_to_ABILITIES = mutable
-			.Map[Class[_ <: EntityLivingBase], Array[IAbility[_ <: NBTBase]]]()
+	val MAP_CLASS_to_ABILITIES =
+		mutable.Map[Class[_ <: EntityLivingBase], Array[IAbility[_ <: NBTBase]]]()
 
 	def getAbilitiesFor(entity: EntityLivingBase): Iterable[IAbility[_ <: NBTBase]] = {
 		val list = ListBuffer[IAbility[_ <: NBTBase]]()
