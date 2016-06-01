@@ -5,6 +5,7 @@ import javax.annotation.Nullable
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.entity.monster.EntitySlime
+import net.minecraft.entity.passive.EntityBat
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.{EntityList, EntityLivingBase, IRangedAttackMob}
 import net.minecraft.inventory.EntityEquipmentSlot
@@ -217,6 +218,11 @@ trait IEntityEmulator {
 		ent.isSwingInProgress = self.isSwingInProgress
 		ent.swingProgress = self.swingProgress
 		ent.swingProgressInt = self.swingProgressInt
+
+		ent match {
+			case bat: EntityBat => bat.setIsBatHanging(false)
+			case _ =>
+		}
 
 		val prevOnGround: Boolean = ent.onGround
 		ent.onGround = self.onGround
