@@ -1,0 +1,15 @@
+
+curseforge {
+    if (project.hasProperty("tempCurseAPI"))
+        apiKey = tempCurseAPI
+    project {
+        id = curseID
+        releaseType = curseBuildType
+        changelog = ''
+        addGameVersion version_minecraft
+        addArtifact sourcesJar
+        relations {
+            requiredLibrary 'origin'
+        }
+    }
+}

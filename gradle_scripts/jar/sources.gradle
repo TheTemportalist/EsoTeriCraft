@@ -1,0 +1,8 @@
+
+task sourcesJar(type: Jar) {
+	from sourceSets.api.scala;
+	from sourceSets.main.scala;
+	classifier = 'sources'
+}
+
+tasks.build.dependsOn sourcesJar

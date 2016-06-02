@@ -1,0 +1,5 @@
+
+sourceSets {
+	main.compileClasspath += api.compileClasspath;
+	main.compileClasspath += api.output;
+}

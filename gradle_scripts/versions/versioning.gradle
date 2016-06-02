@@ -1,0 +1,30 @@
+
+def getBuildNumber() {
+	if (System.getenv("BUILD_NUMBER") != null) return "${System.getenv("BUILD_NUMBER")}"
+	else if (project.hasProperty("bambooBuildNumber")) return project.bambooBuildNumber
+	else return getDate()
+}
+
+def getDate() {
+	def date = new Date()
+	def formattedDate = date.format('MM-dd-yyyy_HH-mm-ss')
+	return formattedDate
+}
+
+def createVersion() {
+	def branch = ""
+	def proc = "git rev-parse --abbrev-ref HEAD".execute()
+	proc.in.eachLine { line -> branch = line }
+	proc.err.eachLine { line -> println line }
+	proc.waitFor()
+	println("Building on branch " + branch)
+	def version = "${version_major}.${version_minor}.${version_patch}"
+	if (project.hasProperty("build_type")) {
+		if (build_type == "dev") version += "." + getBuildNumber()
+	} else if (!branch.startsWith("master"))
+		version += "." + getBuildNumber()
+	println("Bulding with version " + version)
+	return version
+}
+
+version = createVersion()
