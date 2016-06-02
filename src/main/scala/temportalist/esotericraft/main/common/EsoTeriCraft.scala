@@ -1,4 +1,7 @@
-package temportalist.esotericraft.main.common
+package temportalist
+package esotericraft
+package main
+package common
 
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 import net.minecraftforge.fml.common.{Mod, SidedProxy}
@@ -62,18 +65,35 @@ object EsoTeriCraft extends ModBase with IHasCommands {
 	def preInit(event: FMLPreInitializationEvent): Unit = {
 		super.preInitialize(event)
 		ApiLoader.preInit(event)
+
+		utils.common.Utils.preInit(event)
+		emulation.common.Emulation.preInit(event)
+		transmorigification.common.Transform.preInit(event)
+		sorcery.common.Sorcery.preInit(event)
+
 	}
 
 	@Mod.EventHandler
 	def init(event: FMLInitializationEvent): Unit = {
 		super.initialize(event)
 		ApiLoader.init(event)
+
+		utils.common.Utils.init(event)
+		emulation.common.Emulation.init(event)
+		transmorigification.common.Transform.init(event)
+		sorcery.common.Sorcery.init(event)
 	}
 
 	@Mod.EventHandler
 	def postInit(event: FMLPostInitializationEvent): Unit = {
 		super.postInitialize(event)
 		ApiLoader.postInit(event)
+
+		utils.common.Utils.postInit(event)
+		emulation.common.Emulation.postInit(event)
+		transmorigification.common.Transform.postInit(event)
+		sorcery.common.Sorcery.postInit(event)
+
 	}
 
 	override def getCommands: Seq[ICommand] = Seq(CommandETC)

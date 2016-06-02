@@ -1,4 +1,6 @@
-package temportalist.esotericraft.main.client
+package temportalist
+package esotericraft
+package main.client
 
 import java.util
 
@@ -19,6 +21,7 @@ import temportalist.origin.foundation.client.IModelLoader
 class ProxyClient extends ProxyCommon with IModGuiFactory with IModelLoader {
 
 	override def preInit(): Unit = {
+		super.preInit()
 
 		OBJLoader.INSTANCE.addDomain(EsoTeriCraft.getModId)
 		ModelLoader.setCustomModelResourceLocation(ModBlocks.crystal.getItemBlock, 0,
@@ -26,6 +29,12 @@ class ProxyClient extends ProxyCommon with IModGuiFactory with IModelLoader {
 
 		this.registerModel(ModBlocks.pillar.getItemBlock, 0 until 1, EsoTeriCraft,
 			ModBlocks.pillar.getClass.getSimpleName, "normal")
+
+
+
+		emulation.client.Client.preInit()
+		transmorigification.client.Client.preInit()
+		sorcery.client.Client.preInit()
 
 	}
 

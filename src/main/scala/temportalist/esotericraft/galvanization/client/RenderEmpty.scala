@@ -5,6 +5,7 @@ import net.minecraft.client.renderer.entity.{Render, RenderManager}
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.client.registry.IRenderFactory
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+import temportalist.esotericraft.emulation.client.EntityModel
 import temportalist.esotericraft.galvanization.common.entity.EntityEmpty
 
 /**

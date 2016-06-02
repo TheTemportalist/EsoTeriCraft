@@ -4,12 +4,11 @@ import net.minecraft.client.settings.KeyBinding
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.input.Keyboard
+import temportalist.esotericraft.api.init.IPluginClient
 import temportalist.esotericraft.sorcery.common.Sorcery
 import temportalist.esotericraft.sorcery.common.network.PacketCast
 import temportalist.origin.api.client.{EnumKeyCategory, Rendering}
-import temportalist.origin.foundation.client.modTraits.IHasKeys
-import temportalist.origin.foundation.client.{IKeyBinder, IModClient}
-import temportalist.origin.foundation.common.IModPlugin
+import temportalist.origin.foundation.client.IKeyBinder
 
 /**
   *
@@ -18,23 +17,15 @@ import temportalist.origin.foundation.common.IModPlugin
   * @author TheTemportalist
   */
 @SideOnly(Side.CLIENT)
-object Client extends IModClient with IHasKeys {
+object Client extends IPluginClient {
 
-	override def getMod: IModPlugin = Sorcery
-
-	/**
-	  * This needs to be called in [[temportalist.origin.foundation.common.IProxy.preInit]]
-	  */
 	override def preInit(): Unit = {
-		super.preInit()
 
 		ModKeys.register()
 
 	}
 
-	@SideOnly(Side.CLIENT)
-	override def getKeyBinder: IKeyBinder = ModKeys
-
+	// TODO this will no longer work, need to implement key pressed manually because no mod IModClient
 	object ModKeys extends IKeyBinder {
 
 		var cast: KeyBinding = _

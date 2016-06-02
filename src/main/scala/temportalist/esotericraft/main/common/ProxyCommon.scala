@@ -1,4 +1,6 @@
-package temportalist.esotericraft.main.common
+package temportalist
+package esotericraft
+package main.common
 
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.tileentity.TileEntity
@@ -9,6 +11,12 @@ import temportalist.origin.foundation.common.IProxy
   * Created by TheTemportalist on 12/31/2015.
   */
 class ProxyCommon extends IProxy {
+
+	override def preInit(): Unit = {
+
+		transmorigification.server.Server.preInit()
+
+	}
 
 	override def register(): Unit = {}
 

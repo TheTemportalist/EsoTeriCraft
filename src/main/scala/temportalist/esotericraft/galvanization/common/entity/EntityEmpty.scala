@@ -19,8 +19,8 @@ import net.minecraft.world.{World, WorldServer}
 import net.minecraftforge.common.util.INBTSerializable
 import net.minecraftforge.fml.common.network.ByteBufUtils
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData
-import temportalist.esotericraft.api.galvanize.ability.IAbilityFly
-import temportalist.esotericraft.galvanization.common.entity.emulator.{EntityState, IEntityEmulator}
+import temportalist.esotericraft.api.emulation.ability.IAbilityFly
+import temportalist.esotericraft.emulation.common.{EntityState, IEntityEmulator}
 import temportalist.esotericraft.galvanization.common.task.INBTCreator
 import temportalist.origin.api.common.lib.Vect
 

@@ -1,14 +1,13 @@
 package temportalist.esotericraft.sorcery.common
 
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
-import net.minecraftforge.fml.common.{Mod, SidedProxy}
 import temportalist.esotericraft.api.init.IEsoTeriCraft
 import temportalist.esotericraft.api.init.IEsoTeriCraft.PluginEsoTeriCraft
 import temportalist.esotericraft.sorcery.common.capability.HandlerSorceryPlayer
 import temportalist.esotericraft.sorcery.common.network.PacketCast
 import temportalist.origin.api.common.IModDetails
-import temportalist.origin.foundation.common.registers.{OptionRegister, Register}
-import temportalist.origin.foundation.common.{IProxy, ModBase}
+import temportalist.origin.foundation.common.IModPlugin
+import temportalist.origin.foundation.common.registers.OptionRegister
 
 /**
   *
@@ -16,14 +15,7 @@ import temportalist.origin.foundation.common.{IProxy, ModBase}
   *
   * @author TheTemportalist
   */
-/*
-@Mod(modid = Sorcery.MOD_ID, name = Sorcery.MOD_NAME, version = Sorcery.MOD_VERSION,
-	modLanguage = "scala",
-	guiFactory = Sorcery.proxyClient,
-	dependencies = "required-after:Forge;" + "required-after:origin;" + "required-after:esotericraft;"
-)
-*/
-object Sorcery extends ModBase {
+object Sorcery extends IModPlugin with IModDetails {
 
 	private var plugin: Plugin = _
 
@@ -32,35 +24,20 @@ object Sorcery extends ModBase {
 		override def onCreated(): Unit = plugin = this
 	}
 
-	// ~~~~~~~~~~ Details & Proxy ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	override def getModId: String = "esoteric_sorcery"
 
-	final val MOD_ID = "esoteric" + "sorcery"
-	final val MOD_NAME = "Esoteric " + "ApiSorcery"
-	final val MOD_VERSION = "@MOD_VERSION@"
+	override def getModName: String = "Esoteric Sorcery"
 
-	final val proxyClient = "temportalist.esotericraft.sorcery.client.ProxyClient"
-	final val proxyServer = "temportalist.esotericraft.sorcery.server.ProxyServer"
-
-	override def getModId: String = this.MOD_ID
-
-	override def getModVersion: String = this.MOD_ID
-
-	override def getModName: String = this.MOD_ID
+	override def getModVersion: String = "@MOD_VERSION@"
 
 	override def getDetails: IModDetails = this
 
-	@SidedProxy(clientSide = this.proxyClient, serverSide = this.proxyServer)
-	var proxy: IProxy = _
-
-	def getProxy: IProxy = this.proxy
-
-	// ~~~~~~~~~~ Inits ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	override def getNetworkName: String = "esoteric_sorcery"
 
 	override def getOptions: OptionRegister = null
 
-	override def getRegisters: Seq[Register] = Seq()
+	// ~~~~~~~~~~ Inits ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\
 
-	@Mod.EventHandler
 	def preInit(event: FMLPreInitializationEvent): Unit = {
 		super.preInitialize(event)
 
@@ -71,13 +48,11 @@ object Sorcery extends ModBase {
 
 	}
 
-	@Mod.EventHandler
 	def init(event: FMLInitializationEvent): Unit = {
 		super.initialize(event)
 
 	}
 
-	@Mod.EventHandler
 	def postInit(event: FMLPostInitializationEvent): Unit = {
 		super.postInitialize(event)
 

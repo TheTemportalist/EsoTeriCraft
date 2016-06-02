@@ -10,9 +10,9 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand}
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
-import temportalist.esotericraft.galvanization.common.capability.{HelperGalvanize, IPlayerGalvanize}
 import temportalist.esotericraft.galvanization.common.entity.EntityEmpty
 import temportalist.esotericraft.galvanization.common.item.ItemEggGolem._
+import temportalist.esotericraft.transmorigification.common.capability.{HelperGalvanize, IPlayerGalvanize}
 import temportalist.origin.api.common.item.INBTHandler
 import temportalist.origin.api.common.lib.Vect
 

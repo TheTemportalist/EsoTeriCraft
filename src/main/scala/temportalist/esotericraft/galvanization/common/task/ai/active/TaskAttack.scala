@@ -6,8 +6,8 @@ import net.minecraft.entity.{EntityCreature, EntityLiving, EntityLivingBase}
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import net.minecraft.util.{DamageSource, EnumFacing}
 import temportalist.esotericraft.api.galvanize.ai.{EnumTaskType, GalvanizeTask}
+import temportalist.esotericraft.emulation.common.IEntityEmulator
 import temportalist.esotericraft.galvanization.common.Galvanize
-import temportalist.esotericraft.galvanization.common.entity.emulator.IEntityEmulator
 import temportalist.esotericraft.galvanization.common.task.ai.core.TaskBase
 import temportalist.esotericraft.galvanization.common.task.ai.interfaces.{ITargetEntity, ITaskBoundingBoxMixin}
 import temportalist.origin.api.common.lib.Vect

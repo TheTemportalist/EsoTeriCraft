@@ -3,7 +3,6 @@ package temportalist.esotericraft.galvanization.common
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.world.World
-import temportalist.esotericraft.galvanization.server.Server
 import temportalist.origin.foundation.common.IProxy
 
 /**
@@ -12,7 +11,6 @@ import temportalist.origin.foundation.common.IProxy
 class ProxyCommon extends IProxy {
 
 	override def preInit(): Unit = {
-		Server.preInit()
 
 	}
 
