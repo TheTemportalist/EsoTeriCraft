@@ -3,7 +3,6 @@ package temportalist.esotericraft.emulation.common.ability
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagByte
-import temportalist.esotericraft.api.emulation.IAbility
 import temportalist.esotericraft.api.emulation.IAbility.Ability
 import temportalist.esotericraft.api.emulation.ability.IAbilityFly
 import temportalist.esotericraft.galvanization.common.Galvanize
@@ -47,6 +46,7 @@ class AbilityFly extends AbilityBase[NBTTagByte] with IAbilityFly {
 	// ~~~~~ Entity Handling
 
 	override def onUpdate(entity: EntityLivingBase): Unit = {
+		entity.fallDistance = 0F
 		entity match {
 			case player: EntityPlayer =>
 
@@ -104,7 +104,6 @@ class AbilityFly extends AbilityBase[NBTTagByte] with IAbilityFly {
 
 				}
 
-				player.fallDistance = 0F
 			case _ =>
 		}
 	}
