@@ -14,6 +14,8 @@ import temportalist.origin.foundation.common.registers.{OptionRegister, Register
 import temportalist.origin.foundation.common.{IProxy, ModBase}
 import temportalist.origin.foundation.server.ICommand
 
+import scala.collection.mutable.ListBuffer
+
 /**
   *
   * Created by TheTemportalist on 4/23/2016.
@@ -96,6 +98,11 @@ object EsoTeriCraft extends ModBase with IHasCommands {
 
 	}
 
-	override def getCommands: Seq[ICommand] = Seq(CommandETC)
+	override def getCommands: Seq[ICommand] = {
+		val list = ListBuffer[ICommand]()
+		list += CommandETC
+		list ++= transmorigification.common.Transform.getCommands
+		list
+	}
 
 }
