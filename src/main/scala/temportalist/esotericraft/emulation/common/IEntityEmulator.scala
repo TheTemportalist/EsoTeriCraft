@@ -146,11 +146,6 @@ trait IEntityEmulator {
 	final def onTickClient(world: World): Unit = {
 		if (this.entityState != null) {
 			this.onTickEntityState(world)
-			this.getEntityStateInstance(world) match {
-				case living: EntityLivingBase =>
-					this.setSizeAndEye(living.width, living.height, living.getEyeHeight, this.getSelfEntityInstance)
-				case _ => // null
-			}
 			this.syncEntityWithSelf(this.getEntityStateInstance(world), this.getSelfEntityInstance)
 		}
 	}
@@ -168,6 +163,11 @@ trait IEntityEmulator {
 		val self = this.getSelfEntityInstance
 		for (ability <- this._getEntityAbilities) {
 			ability.onUpdate(self)
+		}
+		this.getEntityStateInstance(world) match {
+			case living: EntityLivingBase =>
+				this.setSizeAndEye(living.width, living.height, living.getEyeHeight, this.getSelfEntityInstance)
+			case _ => // null
 		}
 	}
 
@@ -287,21 +287,16 @@ trait IEntityEmulator {
 
 			// Start; setSize because it protected
 			if (width != self.width || height != self.height) {
-				val currentWidth = self.width
 				self.width = width
 				self.height = height
-				val aabb = self.getEntityBoundingBox
-				///*
 				self.setEntityBoundingBox(new AxisAlignedBB(
-					aabb.minX, aabb.minY, aabb.minZ,
-					aabb.minX + width,
-					aabb.minY + height,
-					aabb.minZ + width
+					self.posX - width / 2F,
+					self.posY,
+					self.posZ - width / 2F,
+					self.posX + width / 2F,
+					self.posY + height,
+					self.posZ + width / 2F
 				))
-				//*/
-				if (width > currentWidth && !self.getEntityWorld.isRemote) {
-					self.moveEntity(currentWidth - width, 0, currentWidth - width)
-				}
 			}
 			// End
 

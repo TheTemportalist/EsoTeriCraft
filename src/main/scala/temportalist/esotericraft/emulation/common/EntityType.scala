@@ -44,6 +44,7 @@ class EntityType extends Comparable[EntityType] with INBTSerializable[NBTTagComp
 			EntityList.createEntityFromNBT(tagForCreation, world) match {
 				case living: EntityLivingBase =>
 					entity = living
+					entity.readEntityFromNBT(this.tagEntity)
 				case _ =>
 			}
 		}
