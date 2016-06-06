@@ -128,6 +128,8 @@ class PlayerGalvanize(
 	override def addModelEntity(entity: EntityLivingBase): Unit = {
 		if (!this.getWorld.isRemote) {
 			val state = new EntityState(EntityType.create(entity))
+			if (this.availableEntityStates contains state)
+				return
 			this.availableEntityStates += state
 			this.sendNBTToClient(this.player, {
 				val ret = new NBTTagCompound
