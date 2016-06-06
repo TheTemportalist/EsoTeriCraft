@@ -33,6 +33,8 @@ final class EntityState extends Comparable[EntityState] with INBTSerializable[NB
 		this.instance = null
 	}
 
+	def getType: EntityType = this.entityType
+
 	def getName: String = {
 		if (this.instance == null) this.entityType.getEntityName
 		else this.instance.getName

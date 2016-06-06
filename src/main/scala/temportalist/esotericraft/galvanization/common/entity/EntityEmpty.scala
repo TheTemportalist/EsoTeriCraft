@@ -44,7 +44,7 @@ class EntityEmpty(world: World) extends EntityCreature(world)
 
 	override def getSelfEntityInstance: EntityLivingBase = this
 
-	override protected def syncEntityNameToClient(name: String): Unit = {}
+	override protected def syncEntityDataToClient(name: NBTTagCompound): Unit = {}
 
 	override def entityInit(): Unit = {
 		super.entityInit()

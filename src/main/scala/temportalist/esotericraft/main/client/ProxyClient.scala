@@ -34,6 +34,7 @@ class ProxyClient extends ProxyCommon with IModGuiFactory with IModelLoader {
 
 		emulation.client.Client.preInit()
 		transmorigification.client.Client.preInit()
+		//galvanization.client.Client.preInit()
 		sorcery.client.Client.preInit()
 
 	}

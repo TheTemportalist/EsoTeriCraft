@@ -58,6 +58,17 @@ class PlayerGalvanize(
 		if (nbt.hasKey("removeModelEntity_index"))
 			this.removeModelEntity(nbt.getInteger("removeModelEntity_index"))
 
+		if (nbt.hasKey("entity_data")) {
+			val data = nbt.getCompoundTag("entity_data")
+			if (data.hasNoTags) this.clearEntityState(this.getWorld)
+			else {
+				val state = new EntityState()
+				state.deserializeNBT(data)
+				this.setEntityState(state)
+			}
+			return
+		}
+
 		if (nbt.hasKey("entity_name")) {
 			this.setEntityState(nbt.getString("entity_name"), this.getWorld)
 		}
@@ -89,11 +100,11 @@ class PlayerGalvanize(
 
 	override def getSelfEntityInstance: EntityLivingBase = this.player
 
-	override protected def syncEntityNameToClient(name: String): Unit = {
+	override protected def syncEntityDataToClient(tag: NBTTagCompound): Unit = {
 		this.sendNBTToClient(this.player, {
-			val ret = new NBTTagCompound
-			ret.setString("entity_name", name)
-			ret
+			val nbt = new NBTTagCompound
+			nbt.setTag("entity_data", tag)
+			nbt
 		})
 	}
 

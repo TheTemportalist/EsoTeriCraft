@@ -94,7 +94,11 @@ trait IEntityEmulator {
 		else this.setEntityName(entityName)
 
 		if (world != null) {
-			if (!world.isRemote) this.syncEntityNameToClient(this.entityName)
+			if (!world.isRemote) this.syncEntityDataToClient({
+				val tag = new NBTTagCompound
+				tag.setString("id", this.entityName)
+				tag
+			})
 			else if (this.entityModel != null) this.entityModel = null
 
 			EntityList.createEntityByName(this.entityName, world) match {
@@ -118,7 +122,7 @@ trait IEntityEmulator {
 		this.entityState = state
 		val world = this.getSelfEntityInstance.getEntityWorld
 		if (!world.isRemote) {
-			this.syncEntityNameToClient(this.entityName)
+			this.syncEntityDataToClient(this.entityState.serializeNBT())
 			this.onEntityConstructed(this.getEntityStateInstance(world))
 		}
 		else this.entityModel = null
@@ -126,7 +130,7 @@ trait IEntityEmulator {
 	}
 
 	final def clearEntityState(world: World): Unit = {
-		if (!world.isRemote) this.syncEntityNameToClient("")
+		if (!world.isRemote) this.syncEntityDataToClient()
 		else this.entityModel = null
 		this.entityName = null
 		this.entityState = null
@@ -138,7 +142,7 @@ trait IEntityEmulator {
 
 	// ~~~~~~~~~~ Syncing ~~~~~~~~~~
 
-	protected def syncEntityNameToClient(name: String): Unit
+	protected def syncEntityDataToClient(tag: NBTTagCompound = new NBTTagCompound): Unit
 
 	// ~~~~~~~~~~ Ticking ~~~~~~~~~~
 

@@ -95,6 +95,26 @@ class EntityType extends Comparable[EntityType] with INBTSerializable[NBTTagComp
 
 		tag.removeTag("bukkit")
 
+		tag.removeTag("Motion")
+		tag.removeTag("HealF")
+		tag.removeTag("HandItems")
+		tag.removeTag("ArmorItems")
+		tag.removeTag("NoAI")
+		tag.removeTag("Invulnerable")
+		tag.removeTag("OnGround")
+		tag.removeTag("ArmorDropChances")
+		tag.removeTag("Dimension")
+		tag.removeTag("Pos")
+		tag.removeTag("CanPickUpLoot")
+		tag.removeTag("PortalCooldown")
+		tag.removeTag("HandDropChances")
+		tag.removeTag("PersistenceRequired")
+		tag.removeTag("LeftHanded")
+		tag.removeTag("FallDistance")
+		tag.removeTag("Rotation")
+		tag.removeTag("UUIDMost")
+		tag.removeTag("UUIDLeast")
+
 		tag
 	}
 
