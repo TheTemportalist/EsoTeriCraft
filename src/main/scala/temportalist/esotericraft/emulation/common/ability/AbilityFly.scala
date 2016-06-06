@@ -3,6 +3,7 @@ package temportalist.esotericraft.emulation.common.ability
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagByte
+import net.minecraft.util.DamageSource
 import temportalist.esotericraft.api.emulation.IAbility.Ability
 import temportalist.esotericraft.api.emulation.ability.IAbilityFly
 import temportalist.esotericraft.galvanization.common.Galvanize
@@ -119,6 +120,10 @@ class AbilityFly extends AbilityBase[NBTTagByte] with IAbilityFly {
 				}
 			case _ =>
 		}
+	}
+
+	override def canTakeDamage(source: DamageSource, entity: EntityLivingBase): Boolean = {
+		source != DamageSource.fall
 	}
 
 }

@@ -521,6 +521,11 @@ class EntityEmpty(world: World) extends EntityCreature(world)
 		}
 	}
 
+	override def attackEntityFrom(source: DamageSource, amount: Float): Boolean = {
+		if (this.canTakeDamage(source)) super.attackEntityFrom(source, amount)
+		else false
+	}
+
 	// ~~~~~ Inventory
 
 	final def markInventoryDirty(): Unit = {

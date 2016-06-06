@@ -2,6 +2,7 @@ package temportalist.esotericraft.api.emulation;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTBase;
+import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -37,5 +38,7 @@ public interface IAbility<N extends NBTBase> extends INBTSerializable<N> {
 
 	@SideOnly(Side.CLIENT)
 	void renderPost(EntityLivingBase entity);
+
+	boolean canTakeDamage(DamageSource source, EntityLivingBase entity);
 
 }

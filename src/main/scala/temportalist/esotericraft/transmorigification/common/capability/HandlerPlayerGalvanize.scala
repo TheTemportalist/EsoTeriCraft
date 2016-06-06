@@ -6,7 +6,7 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EntityDamageSource
 import net.minecraft.world.World
 import net.minecraftforge.common.capabilities.{Capability, ICapabilityProvider}
-import net.minecraftforge.event.entity.living.LivingDeathEvent
+import net.minecraftforge.event.entity.living.{LivingDeathEvent, LivingHurtEvent}
 import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import temportalist.esotericraft.transmorigification.common.Transform
@@ -84,6 +84,20 @@ object HandlerPlayerGalvanize
 					this.sendOtherModelsToClient(world, player)
 				case _ => // non MP, shouldnt happen if world is not remote (client)
 			}
+		}
+	}
+
+	@SubscribeEvent
+	def onEntityHurt(event: LivingHurtEvent): Unit = {
+		event.getEntityLiving match {
+			case player: EntityPlayer =>
+				HelperGalvanize.get(player) match {
+					case galvanized: IPlayerGalvanize =>
+						if (!galvanized.canTakeDamage(event.getSource))
+							event.setCanceled(true)
+					case _ =>
+				}
+			case _ =>
 		}
 	}
 

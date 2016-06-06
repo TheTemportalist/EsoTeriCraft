@@ -3,6 +3,7 @@ package temportalist.esotericraft.transmorigification.common.capability;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.relauncher.Side;
@@ -44,5 +45,7 @@ public interface IPlayerGalvanize extends INBTSerializable<NBTTagCompound> {
 	List<EntityState> getModelEntities();
 
 	void removeModelEntity(int index);
+
+	boolean canTakeDamage(DamageSource source);
 
 }

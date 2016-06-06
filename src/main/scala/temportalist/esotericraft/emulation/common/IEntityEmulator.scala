@@ -367,4 +367,14 @@ trait IEntityEmulator {
 		}
 	}
 
+	// ~~~~~~~~~~ Ability ~~~~~~~~~~
+
+	def canTakeDamage(source: DamageSource): Boolean = {
+		// assumes true
+		this.abilities.foreach(ability => {
+			if (!ability.canTakeDamage(source, this.getSelfEntityInstance)) return false
+		})
+		true
+	}
+
 }

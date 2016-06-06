@@ -3,6 +3,7 @@ package temportalist.esotericraft.emulation.common.ability
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTBase
+import net.minecraft.util.DamageSource
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import temportalist.esotericraft.api.emulation.IAbility
 
@@ -51,5 +52,7 @@ abstract class AbilityBase[N <: NBTBase] extends IAbility[N] {
 			case _ => false
 		}
 	}
+
+	override def canTakeDamage(source: DamageSource, entity: EntityLivingBase): Boolean = true
 
 }
