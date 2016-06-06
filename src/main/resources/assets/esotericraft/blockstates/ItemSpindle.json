@@ -1,7 +1,10 @@
 {
 	"forge_marker": 1,
 	"defaults": {
-		"model": "esotericgalvanization:item/ItemEggGolem",
+		"model": "builtin/generated",
+		"textures": {
+			"layer0": "esotericraft:items/spindle"
+		},
 		"transform": "forge:default-item"
 	},
 	"variants": {

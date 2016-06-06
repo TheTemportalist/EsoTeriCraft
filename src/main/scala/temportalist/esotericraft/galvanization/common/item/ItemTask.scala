@@ -10,7 +10,7 @@ import net.minecraft.util._
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
-import temportalist.esotericraft.galvanization.common.Galvanize
+import temportalist.esotericraft.api.init.Details
 import temportalist.esotericraft.galvanization.common.task.Task
 import temportalist.esotericraft.galvanization.common.task.ai.core.LoaderTask
 import temportalist.esotericraft.galvanization.common.task.core.ControllerTask
@@ -120,11 +120,13 @@ class ItemTask extends ItemGalvanize {
 
 	@SideOnly(Side.CLIENT)
 	def getModelLocation(stack: ItemStack): ModelResourceLocation = {
-		new ModelResourceLocation(Galvanize.getModId + ":" + this.name,
-			//if (stack.hasTagCompound) "task=" + stack.getTagCompound.getString("name")
-			//else
-			"inventory"
-		)
+		var modid = Details.MOD_ID
+		var variant = "inventory"
+		if (stack.hasTagCompound) {
+			modid = stack.getTagCompound.getString("modid")
+			variant = "task=" + stack.getTagCompound.getString("name")
+		}
+		new ModelResourceLocation(modid + ":" + this.name, variant)
 	}
 
 }

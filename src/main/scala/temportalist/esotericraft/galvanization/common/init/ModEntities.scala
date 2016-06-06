@@ -1,7 +1,7 @@
 package temportalist.esotericraft.galvanization.common.init
 
-import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.esotericraft.galvanization.common.entity.EntityEmpty
+import temportalist.esotericraft.main.common.EsoTeriCraft
 import temportalist.origin.foundation.common.registers.EntityRegister
 
 /**
@@ -14,7 +14,7 @@ object ModEntities extends EntityRegister {
 
 	override def register(): Unit = {
 
-		this.addEntity(classOf[EntityEmpty], "Empty", Galvanize)
+		this.addEntity(classOf[EntityEmpty], "Empty", EsoTeriCraft)
 
 	}
 

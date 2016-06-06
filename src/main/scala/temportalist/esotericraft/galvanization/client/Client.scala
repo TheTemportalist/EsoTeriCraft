@@ -8,9 +8,9 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.client.registry.RenderingRegistry
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import temportalist.esotericraft.api.init.IPluginClient
-import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.esotericraft.galvanization.common.entity.EntityEmpty
 import temportalist.esotericraft.galvanization.common.init.ModItems
+import temportalist.esotericraft.main.common.EsoTeriCraft
 import temportalist.origin.foundation.client.IModelLoader
 
 /**
@@ -29,7 +29,8 @@ object Client extends IPluginClient with IModelLoader {
 
 		RenderingRegistry.registerEntityRenderingHandler(classOf[EntityEmpty], RenderEmpty)
 
-		this.autoLoadModels(Galvanize)
+		this.registerModel(EsoTeriCraft, ModItems.golemEgg)
+		this.registerModel(EsoTeriCraft, ModItems.debugTask)
 
 		// TODO move this to IModelLoader
 		ModelBakery.registerItemVariants(ModItems.taskItem, ModItems.taskItem.getPossibleModelLocations:_*)

@@ -4,6 +4,7 @@ import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.oredict.ShapedOreRecipe
+import temportalist.esotericraft.main.common.EsoTeriCraft
 import temportalist.origin.foundation.common.registers.ItemRegister
 
 /**
@@ -18,7 +19,7 @@ object ModItems extends ItemRegister {
 
 	override def register(): Unit = {
 
-		this.spindle = this.registerObject(new ItemSpindle(this.getMod))
+		this.spindle = this.registerObject(new ItemSpindle(EsoTeriCraft))
 		this.spindle.setCreativeTab(CreativeTabs.TOOLS)
 
 	}

@@ -3,7 +3,7 @@ package temportalist.esotericraft.utils.common
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 import temportalist.esotericraft.api.init.IEsoTeriCraft
 import temportalist.esotericraft.api.init.IEsoTeriCraft.PluginEsoTeriCraft
-import temportalist.esotericraft.galvanization.common.init.ModItems
+import temportalist.esotericraft.utils.common.init.ModItems
 import temportalist.origin.api.common.IModDetails
 import temportalist.origin.foundation.common.IModPlugin
 import temportalist.origin.foundation.common.registers.{OptionRegister, Register}

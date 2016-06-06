@@ -70,10 +70,16 @@ object ControllerTask {
 			stack: ItemStack = new ItemStack(ModItems.taskItem)): ItemStack = {
 		stack.setTagCompound(new NBTTagCompound)
 		val info = LoaderTask.getAnnotationInfo(aiClass)
+
 		val display = info.getOrElse("displayName", null)
 		if (display != null) stack.getTagCompound.setString("displayName", display.toString)
+
 		val name = info.getOrElse("name", null)
 		if (name != null) stack.getTagCompound.setString("name", name.toString)
+
+		val modid = info.getOrElse("modid", null)
+		if (name != null) stack.getTagCompound.setString("modid", modid.toString)
+
 		stack.getTagCompound.setString("className", aiClass.getName)
 		stack
 	}

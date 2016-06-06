@@ -71,7 +71,7 @@ object EsoTeriCraft extends ModBase with IHasCommands {
 		utils.common.Utils.preInit(event)
 		emulation.common.Emulation.preInit(event)
 		transmorigification.common.Transform.preInit(event)
-		//galvanization.common.Galvanize.preInit(event)
+		galvanization.common.Galvanize.preInit(event)
 		sorcery.common.Sorcery.preInit(event)
 
 		super.preInitialize(event)
@@ -87,7 +87,7 @@ object EsoTeriCraft extends ModBase with IHasCommands {
 		utils.common.Utils.init(event)
 		emulation.common.Emulation.init(event)
 		transmorigification.common.Transform.init(event)
-		//galvanization.common.Galvanize.init(event)
+		galvanization.common.Galvanize.init(event)
 		sorcery.common.Sorcery.init(event)
 	}
 
@@ -99,7 +99,7 @@ object EsoTeriCraft extends ModBase with IHasCommands {
 		utils.common.Utils.postInit(event)
 		emulation.common.Emulation.postInit(event)
 		transmorigification.common.Transform.postInit(event)
-		//galvanization.common.Galvanize.postInit(event)
+		galvanization.common.Galvanize.postInit(event)
 		sorcery.common.Sorcery.postInit(event)
 
 	}

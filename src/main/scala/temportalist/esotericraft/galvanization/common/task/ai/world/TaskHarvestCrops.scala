@@ -7,7 +7,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, EnumHand}
 import net.minecraft.world.{World, WorldServer}
 import temportalist.esotericraft.api.galvanize.ai.GalvanizeTask
-import temportalist.esotericraft.galvanization.common.Galvanize
+import temportalist.esotericraft.api.init.Details
 import temportalist.esotericraft.galvanization.common.task.ai.interfaces.{IFakePlayer, ITaskBoundingBoxMixin}
 
 /**
@@ -16,7 +16,7 @@ import temportalist.esotericraft.galvanization.common.task.ai.interfaces.{IFakeP
   *
   * @author TheTemportalist
   */
-@GalvanizeTask(modid = Galvanize.MOD_ID,
+@GalvanizeTask(modid = Details.MOD_ID,
 	name = "harvestCrop",
 	displayName = "Harvest (Crops)"
 )

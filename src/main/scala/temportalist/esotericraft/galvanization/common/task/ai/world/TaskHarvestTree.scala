@@ -20,7 +20,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import temportalist.esotericraft.api.galvanize.ai.GalvanizeTask
-import temportalist.esotericraft.galvanization.common.Galvanize
+import temportalist.esotericraft.api.init.Details
 import temportalist.esotericraft.galvanization.common.task.ai.interfaces.IFakePlayer
 
 import scala.collection.mutable
@@ -32,7 +32,7 @@ import scala.collection.mutable.ListBuffer
   *
   * @author TheTemportalist
   */
-@GalvanizeTask(modid = Galvanize.MOD_ID,
+@GalvanizeTask(modid = Details.MOD_ID,
 	name = "harvestTree",
 	displayName = "Harvest (Tree)"
 )

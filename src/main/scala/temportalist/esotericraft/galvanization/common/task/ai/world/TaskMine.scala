@@ -4,7 +4,7 @@ import net.minecraft.entity.EntityCreature
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import temportalist.esotericraft.api.galvanize.ai.{EnumTaskType, GalvanizeTask}
-import temportalist.esotericraft.galvanization.common.Galvanize
+import temportalist.esotericraft.api.init.Details
 import temportalist.esotericraft.galvanization.common.task.ai.core.TaskBase
 import temportalist.esotericraft.galvanization.common.task.ai.interfaces.ITaskBoundingBoxMixin
 
@@ -14,7 +14,7 @@ import temportalist.esotericraft.galvanization.common.task.ai.interfaces.ITaskBo
   *
   * @author TheTemportalist
   */
-@GalvanizeTask(modid = Galvanize.MOD_ID,
+@GalvanizeTask(modid = Details.MOD_ID,
 	name = "mine",
 	displayName = "Mine"
 )

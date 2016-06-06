@@ -1,6 +1,6 @@
 {
 	"parent": "builtin/generated",
 	"textures": {
-		"layer0": "esotericutils:items/spindle"
+		"layer0": "esotericraft:items/taskDebug"
 	}
 }

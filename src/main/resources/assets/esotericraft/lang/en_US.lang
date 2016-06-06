@@ -1,5 +1,18 @@
+
 esotericraft.commands.esoteric.usage=/esoteric spell <player name> add <name>
 esotericraft.commands.esoteric.usage.spell=/esoteric spell <player name> add <name>
 
 tile.esotericraft:BlockCrystal.name=Crystal
 tile.esotericraft:BlockPillar.name=Pillar
+
+item.esotericraft:ItemEggGolem.name=Golem Egg
+item.esotericraft:ItemTask.name=Task
+item.esotericraft:ItemTaskDebug.name=Task Debugger
+
+esotericgalvanization.commands.setModel.usage=/setModel <namePlayer> <nameEntity>
+esotericgalvanization.commands.setModel.usage.invalidPlayer=Invalid player name
+esotericgalvanization.commands.setModel.usage.invalidEntity=Invalid entity name
+esotericgalvanization.commands.setModel.usage.notLivingEntity=Entity is not a living entity
+
+item.esotericraft:ItemSpindle.name=Spindle
+esotericutils.ItemSpindle.invalid_ground=This ground is not safe

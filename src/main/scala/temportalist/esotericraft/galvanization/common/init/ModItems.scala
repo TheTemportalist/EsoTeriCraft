@@ -2,9 +2,9 @@ package temportalist.esotericraft.galvanization.common.init
 
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.init.{Blocks, Items}
-import net.minecraft.item.{Item, ItemStack}
+import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.registry.GameRegistry
-import temportalist.esotericraft.galvanization.common.item.{ItemEggGolem, ItemTask, ItemTaskDebug}
+import temportalist.esotericraft.galvanization.common.item.{ItemEggGolem, ItemGalvanize, ItemTask, ItemTaskDebug}
 import temportalist.esotericraft.galvanization.common.task.ai.active.{TaskAttack, TaskFollowPlayer}
 import temportalist.esotericraft.galvanization.common.task.ai.status.TaskItemDeposit
 import temportalist.esotericraft.galvanization.common.task.ai.world.{TaskHarvestCrops, TaskHarvestTree, TaskItemCollect}
@@ -19,9 +19,9 @@ import temportalist.origin.foundation.common.registers.ItemRegister
   */
 object ModItems extends ItemRegister {
 
-	var golemEgg: Item = null
+	var golemEgg: ItemGalvanize = null
 	var taskItem: ItemTask = null
-	var debugTask: Item = null
+	var debugTask: ItemGalvanize = null
 
 	override def register(): Unit = {
 

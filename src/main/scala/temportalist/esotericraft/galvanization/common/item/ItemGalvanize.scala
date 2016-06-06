@@ -1,6 +1,6 @@
 package temportalist.esotericraft.galvanization.common.item
 
-import temportalist.esotericraft.galvanization.common.Galvanize
+import temportalist.esotericraft.main.common.EsoTeriCraft
 import temportalist.origin.api.common.item.ItemBase
 
 /**
@@ -10,6 +10,6 @@ import temportalist.origin.api.common.item.ItemBase
   * @author TheTemportalist
   */
 class ItemGalvanize(itemMetaRange: Range = Range.apply(0, 1))
-		extends ItemBase(Galvanize, itemMetaRange = itemMetaRange) {
+		extends ItemBase(EsoTeriCraft, itemMetaRange = itemMetaRange) {
 
 }

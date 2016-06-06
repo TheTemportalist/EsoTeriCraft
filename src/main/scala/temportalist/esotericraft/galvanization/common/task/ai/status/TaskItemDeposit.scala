@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, EnumHand}
 import temportalist.esotericraft.api.galvanize.ai.{EnumTaskType, GalvanizeTask}
-import temportalist.esotericraft.galvanization.common.Galvanize
+import temportalist.esotericraft.api.init.Details
 import temportalist.esotericraft.galvanization.common.task.ai.core.TaskBase
 import temportalist.esotericraft.galvanization.common.task.ai.interfaces.ITaskInventory
 import temportalist.origin.api.common.lib.Vect
@@ -17,7 +17,7 @@ import temportalist.origin.api.common.lib.Vect
   *
   * @author TheTemportalist
   */
-@GalvanizeTask(modid = Galvanize.MOD_ID,
+@GalvanizeTask(modid = Details.MOD_ID,
 	name = "itemDeposit",
 	displayName = "Deposit Items"
 )
