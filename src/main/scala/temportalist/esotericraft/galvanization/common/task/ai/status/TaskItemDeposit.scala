@@ -9,6 +9,7 @@ import temportalist.esotericraft.api.galvanize.ai.{EnumTaskType, GalvanizeTask}
 import temportalist.esotericraft.api.init.Details
 import temportalist.esotericraft.galvanization.common.task.ai.core.TaskBase
 import temportalist.esotericraft.galvanization.common.task.ai.interfaces.ITaskInventory
+import temportalist.esotericraft.main.common.api.Capabilities
 import temportalist.origin.api.common.lib.Vect
 
 /**
@@ -72,17 +73,19 @@ class TaskItemDeposit(
 	}
 
 	final def depositItems(entity: EntityCreature): Unit = {
-		entity.getEntityWorld.getTileEntity(this.pos) match {
-			case toInv: IInventory =>
-				var fromStack: ItemStack = null
-				for (hand <- EnumHand.values()) {
-					fromStack = entity.getHeldItem(hand)
-					if (fromStack != null) {
-						fromStack = this.transferStackTo(fromStack.copy(), toInv)
-						entity.setHeldItem(hand, fromStack)
-					}
+		val targetTile = entity.getEntityWorld.getTileEntity(this.getPosition)
+		if (Capabilities.isInventory(targetTile, this.getFace)) {
+			val toInv = Capabilities.getInventory(targetTile, this.getFace)
+
+			var fromStack: ItemStack = null
+			for (hand <- EnumHand.values()) {
+				fromStack = entity.getHeldItem(hand)
+				if (fromStack != null) {
+					fromStack = this.transferStackTo(fromStack.copy(), toInv)
+					entity.setHeldItem(hand, fromStack)
 				}
-			case _ =>
+			}
+
 		}
 	}
 

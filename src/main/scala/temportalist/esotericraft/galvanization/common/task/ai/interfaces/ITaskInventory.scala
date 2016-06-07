@@ -4,6 +4,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumHand
+import net.minecraftforge.items.IItemHandler
 
 /**
   *
@@ -38,6 +39,19 @@ trait ITaskInventory {
 
 				}
 
+			}
+		}
+
+		fromStack
+	}
+
+	final def transferStackTo(fromStack: ItemStack, toInv: IItemHandler): ItemStack = {
+		if (fromStack == null) return null
+
+		for (toSlot <- 0 until toInv.getSlots) {
+			val remainder = toInv.insertItem(toSlot, fromStack, true)
+			if (remainder == null || remainder.stackSize != fromStack.stackSize) {
+				return toInv.insertItem(toSlot, fromStack, false)
 			}
 		}
 

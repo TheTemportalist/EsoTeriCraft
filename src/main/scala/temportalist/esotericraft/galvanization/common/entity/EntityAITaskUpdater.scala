@@ -8,6 +8,8 @@ import temportalist.esotericraft.api.galvanize.ai.{EnumTaskType, IGalvanizeTask}
 import temportalist.esotericraft.galvanization.common.task.ITask
 import temportalist.esotericraft.galvanization.common.task.core.ControllerTask
 
+import scala.collection.JavaConversions
+
 /**
   *
   * Created by TheTemportalist on 5/25/2016.
@@ -21,6 +23,10 @@ class EntityAITaskUpdater(
 	private val currentTasks = new util.EnumMap[EnumTaskType, ITask](classOf[EnumTaskType])
 
 	def getWorld: World = this.owner.getEntityWorld
+
+	def getCurrentTasks: Iterable[ITask] = {
+		JavaConversions.collectionAsScalaIterable(this.currentTasks.values())
+	}
 
 	override def shouldExecute(): Boolean = true
 

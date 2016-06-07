@@ -20,8 +20,10 @@ import net.minecraftforge.common.util.INBTSerializable
 import net.minecraftforge.fml.common.network.ByteBufUtils
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData
 import temportalist.esotericraft.api.emulation.ability.IAbilityFly
+import temportalist.esotericraft.api.galvanize.ai.IGalvanizeTask
 import temportalist.esotericraft.emulation.common.{EntityState, IEntityEmulator}
-import temportalist.esotericraft.galvanization.common.task.INBTCreator
+import temportalist.esotericraft.galvanization.common.task.core.ControllerTask
+import temportalist.esotericraft.galvanization.common.task.{INBTCreator, ITask}
 import temportalist.origin.api.common.lib.Vect
 
 import scala.collection.mutable.ListBuffer
@@ -34,7 +36,9 @@ import scala.collection.{JavaConversions, mutable}
   * @author TheTemportalist
   */
 class EntityEmpty(world: World) extends EntityCreature(world)
-		with IEntityAdditionalSpawnData with IEntityEmulator with INBTCreator {
+		with IEntityAdditionalSpawnData with IEntityEmulator with INBTCreator with IEntityItemUser {
+
+	private var aiUpdater: EntityAITaskUpdater = null
 
 	def this(world: World, entityName: String, origin: Vect) {
 		this(world)
@@ -76,7 +80,8 @@ class EntityEmpty(world: World) extends EntityCreature(world)
 		if (this.getEntityState == null) return
 
 		this.tasks.addTask(0, new EntityAISwimming(this))
-		this.tasks.addTask(1, new EntityAITaskUpdater(this))
+		this.aiUpdater = new EntityAITaskUpdater(this)
+		this.tasks.addTask(1, this.aiUpdater)
 
 	}
 
@@ -344,6 +349,23 @@ class EntityEmpty(world: World) extends EntityCreature(world)
 			}
 		}
 
+	}
+
+	override def canUse(stack: ItemStack): Boolean = {
+		for (pos <- this.taskPositions.keySet) {
+			for (face <- this.taskPositions(pos)) {
+				ControllerTask.getTaskAt(this.getEntityWorld, pos, face) match {
+					case taskObj: ITask =>
+						taskObj.getAI match {
+							case taskAI: IGalvanizeTask =>
+								if (taskAI.canEntityUse(this.getEntityWorld, stack)) return true
+							case _ => // null
+						}
+					case _ =>
+				}
+			}
+		}
+		false
 	}
 
 	// ~~~~~ NBT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

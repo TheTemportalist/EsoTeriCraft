@@ -1,5 +1,6 @@
 package temportalist.esotericraft.galvanization.common.task.ai.interfaces
 
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumFacing.Axis
 import net.minecraft.util.math.AxisAlignedBB
 import temportalist.esotericraft.galvanization.common.task.ai.core.TaskBase
@@ -16,7 +17,10 @@ trait ITaskSized extends TaskBase with ITaskBoundingBoxMixin {
 	def getRadius(axis: Axis): Double
 
 	def getCenter: Vect = {
-		new Vect(this.getPosition) + Vect.CENTER + new Vect(this.getFace)
+		val face = this.getFace
+		var pos = new Vect(this.getPosition) + Vect.CENTER
+		if (face == EnumFacing.DOWN) pos += face
+		pos
 	}
 
 	override def createBoundingBox: AxisAlignedBB = {

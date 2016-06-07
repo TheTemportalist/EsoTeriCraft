@@ -31,6 +31,12 @@
 			},
 			"mine": {
 				"textures": { "layer0": "esotericraft:items/tasks/blank" }
+			},
+			"itemextract": {
+				"textures": { "layer0": "esotericraft:items/tasks/blank" }
+			},
+			"placeplant": {
+				"textures": { "layer0": "esotericraft:items/tasks/blank" }
 			}
 		}
 

@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand}
 import net.minecraft.world.World
+import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.esotericraft.galvanization.common.entity.EntityEmpty
 import temportalist.esotericraft.galvanization.common.task.core.ControllerTask
 import temportalist.esotericraft.galvanization.common.task.{INBTCreator, ITask}
@@ -43,6 +44,7 @@ class ItemTaskDebug extends ItemGalvanizeRendering with INBTCreator {
 						tag.setInteger("face", facing.ordinal())
 						tag
 					})
+					Galvanize.log(task.getName)
 					return EnumActionResult.SUCCESS
 				case _ =>
 			}
@@ -62,6 +64,7 @@ class ItemTaskDebug extends ItemGalvanizeRendering with INBTCreator {
 					val face = EnumFacing.values()(tag.getInteger("face"))
 					stack.getTagCompound.removeTag("task")
 
+					Galvanize.log("add")
 					empty.addTask(pos, face)
 				}
 			case _ =>
