@@ -69,6 +69,8 @@ class ItemSpindle(mod: IModDetails) extends ItemBase(mod) {
 		ObfuscationReflectionHelper.setPrivateValue(classOf[EntityPlayer], player,
 			0, "sleepTimer", "field_71076_b")
 
+		player.playerLocation = new Vect(player).toBlockPos
+
 		val tag = new NBTTagCompound
 		tag.setTag(KEY_SPAWN, NBT.storePlayerSpawn(player))
 		tag.setTag(KEY_POSITION, NBT.storeEntityPosition(player))
