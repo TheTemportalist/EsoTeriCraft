@@ -3,6 +3,7 @@ package temportalist.esotericraft.galvanization.common.task;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -42,5 +43,9 @@ public interface ITask extends INBTSerializable<NBTTagCompound> {
 	IGalvanizeTask getAI();
 
 	boolean isValid();
+
+	boolean hasBoundingBox();
+
+	AxisAlignedBB getBoundingBox();
 
 }

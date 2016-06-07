@@ -3,11 +3,12 @@ package temportalist.esotericraft.galvanization.common.task.ai.world
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.EntityCreature
 import net.minecraft.util.EnumFacing
-import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
+import net.minecraft.util.EnumFacing.Axis
+import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import temportalist.esotericraft.api.galvanize.ai.EnumTaskType
 import temportalist.esotericraft.galvanization.common.task.ai.core.TaskBase
-import temportalist.esotericraft.galvanization.common.task.ai.interfaces.ITaskBoundingBoxMixin
+import temportalist.esotericraft.galvanization.common.task.ai.interfaces.ITaskSized
 import temportalist.origin.api.common.lib.Vect
 
 /**
@@ -18,10 +19,7 @@ import temportalist.origin.api.common.lib.Vect
   */
 abstract class TaskHarvest(
 		pos: BlockPos, face: EnumFacing
-) extends TaskBase(pos, face) with ITaskBoundingBoxMixin {
-
-	private val radiusXZ: Double = 4
-	private val radiusY: Double = 1
+) extends TaskBase(pos, face) with ITaskSized {
 
 	// ~~~~~ Task Info ~~~~~
 
@@ -29,15 +27,11 @@ abstract class TaskHarvest(
 
 	// ~~~~~ Bounding Box ~~~~~
 
-	override def createBoundingBox: AxisAlignedBB = {
-		new AxisAlignedBB(
-			pos.getX - this.radiusXZ,
-			pos.getY + 0.5 - this.radiusY,
-			pos.getZ - this.radiusXZ,
-			pos.getX + this.radiusXZ,
-			pos.getY + 0.5 + this.radiusY,
-			pos.getZ + this.radiusXZ
-		)
+	override def getRadius(axis: Axis): Double = axis match {
+		case Axis.X => 4.5
+		case Axis.Y => 0.5
+		case Axis.Z => 4.5
+		case _ => 0
 	}
 
 	// ~~~~~ AI ~~~~~

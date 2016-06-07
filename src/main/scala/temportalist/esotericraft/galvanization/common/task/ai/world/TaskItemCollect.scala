@@ -4,11 +4,12 @@ import com.google.common.base.Predicate
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.{Entity, EntityCreature}
 import net.minecraft.util.EnumFacing
-import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
+import net.minecraft.util.EnumFacing.Axis
+import net.minecraft.util.math.BlockPos
 import temportalist.esotericraft.api.galvanize.ai.{EnumTaskType, GalvanizeTask}
 import temportalist.esotericraft.api.init.Details
 import temportalist.esotericraft.galvanization.common.task.ai.core.TaskBase
-import temportalist.esotericraft.galvanization.common.task.ai.interfaces.{ITaskBoundingBoxMixin, ITaskInventory}
+import temportalist.esotericraft.galvanization.common.task.ai.interfaces.{ITaskInventory, ITaskSized}
 import temportalist.origin.api.common.lib.Vect
 
 import scala.collection.{JavaConversions, mutable}
@@ -25,11 +26,9 @@ import scala.collection.{JavaConversions, mutable}
 )
 class TaskItemCollect(
 		pos: BlockPos, face: EnumFacing
-) extends TaskBase(pos, face) with ITaskBoundingBoxMixin with ITaskInventory {
+) extends TaskBase(pos, face) with ITaskSized with ITaskInventory {
 
 	private val speed: Double = 1D
-	private val radiusXZ: Double = 4.5
-	private val radiusY: Double = 0.5
 
 	// ~~~~~ Task Info ~~~~~
 
@@ -37,16 +36,11 @@ class TaskItemCollect(
 
 	// ~~~~~ Bounding Box ~~~~~
 
-	override def createBoundingBox: AxisAlignedBB = {
-		val center = new Vect(this.pos) + Vect.CENTER
-		new AxisAlignedBB(
-			center.x - this.radiusXZ,
-			center.y - this.radiusY,
-			center.z - this.radiusXZ,
-			center.x + this.radiusXZ,
-			center.y + this.radiusY,
-			center.z + this.radiusXZ
-		)
+	override def getRadius(axis: Axis): Double = axis match {
+		case Axis.X => 4.5
+		case Axis.Y => 0.5
+		case Axis.Z => 4.5
+		case _ => 0
 	}
 
 	// ~~~~~ AI ~~~~~

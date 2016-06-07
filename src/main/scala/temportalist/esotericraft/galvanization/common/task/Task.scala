@@ -2,7 +2,7 @@ package temportalist.esotericraft.galvanization.common.task
 
 import net.minecraft.block.Block
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraft.world.World
 import temportalist.esotericraft.api.galvanize.ai.{IGalvanizeTask, ITaskBoundingBox}
@@ -48,6 +48,20 @@ final class Task(private val world: World) extends ITask with INBTCreator {
 	}
 
 	override def isValid: Boolean = ControllerTask.getTaskAt(this.getWorld, this.getPosition, this.getFace) == this
+
+	override def hasBoundingBox: Boolean = {
+		this.aiInstance match {
+			case task: ITaskBoundingBox => true
+			case _ => false
+		}
+	}
+
+	override def getBoundingBox: AxisAlignedBB = {
+		this.aiInstance match {
+			case task: ITaskBoundingBox => task.getBoundingBox
+			case _ => null
+		}
+	}
 
 	// ~~~~~~~~~~ Setters ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

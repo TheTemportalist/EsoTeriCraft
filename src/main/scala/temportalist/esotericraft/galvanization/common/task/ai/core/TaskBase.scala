@@ -28,4 +28,8 @@ abstract class TaskBase(
 
 	// ~~~~~ End ~~~~~
 
+	def getPosition: BlockPos = this.pos
+
+	def getFace: EnumFacing = this.face
+
 }

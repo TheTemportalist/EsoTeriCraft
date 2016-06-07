@@ -3,15 +3,17 @@ package temportalist.esotericraft.galvanization.client
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.opengl.GL11
+import temportalist.esotericraft.galvanization.common.init.ModItems
 import temportalist.esotericraft.galvanization.common.network.PacketUpdateClientTasks
 import temportalist.esotericraft.galvanization.common.task.ITask
-import temportalist.origin.api.client.TessRenderer
+import temportalist.origin.api.client.{Rendering, TessRenderer}
 
 import scala.collection.mutable
 
@@ -24,9 +26,11 @@ import scala.collection.mutable
 @SideOnly(Side.CLIENT)
 object ClientTask {
 
-	private val taskMap = mutable.Map[BlockPos,
-			mutable.Map[EnumFacing, ITask]
-			]()
+	private val taskMap = mutable.Map[BlockPos, mutable.Map[EnumFacing, ITask]]()
+
+	def clear(): Unit = {
+		this.taskMap.clear()
+	}
 
 	def updateTasks(func: Int, task: ITask): Unit = {
 
@@ -69,6 +73,13 @@ object ClientTask {
 		val posToFaceToTask = this.taskMap
 		if (posToFaceToTask.size <= 0) return
 
+		val renderBox = rendEnt match {
+			case player: EntityPlayer =>
+				val held = player.getHeldItemMainhand
+				held != null && held.getItem == ModItems.debugTask
+			case _ => false
+		}
+
 		GlStateManager.pushMatrix()
 
 		if (rendEnt.isSneaking) GlStateManager.disableDepth()
@@ -90,6 +101,7 @@ object ClientTask {
 				this.translate(task.getPosition, task.getFace, 0.05F, scale = 0.5F)
 				this.renderTexture(task.getIconLocation, 0.1F)
 				GlStateManager.popMatrix()
+				if (renderBox) this.renderBoundingBox(task)
 
 			}
 		}
@@ -243,6 +255,77 @@ object ClientTask {
 
 		GlStateManager.popMatrix()
 
+	}
+
+	def renderBoundingBox(task: ITask): Unit = {
+		if (!task.hasBoundingBox) return
+		val aabb = task.getBoundingBox
+		startLine()
+		GlStateManager.color(0, 0, 0.9F, 0.4F)
+
+		// ~~~~~ Four Corners ~~~~~
+		// West (-X) by North (-Z): bottom to top
+		GL11.glVertex3d(aabb.minX, aabb.minY, aabb.minZ)
+		GL11.glVertex3d(aabb.minX, aabb.maxY, aabb.minZ)
+		// East (+X) by North (-Z): bottom to top
+		GL11.glVertex3d(aabb.maxX, aabb.minY, aabb.minZ)
+		GL11.glVertex3d(aabb.maxX, aabb.maxY, aabb.minZ)
+		// West (-X) by South (+Z): bottom to top
+		GL11.glVertex3d(aabb.minX, aabb.minY, aabb.maxZ)
+		GL11.glVertex3d(aabb.minX, aabb.maxY, aabb.maxZ)
+		// East (+X) by South (+Z): bottom to top
+		GL11.glVertex3d(aabb.maxX, aabb.minY, aabb.maxZ)
+		GL11.glVertex3d(aabb.maxX, aabb.maxY, aabb.maxZ)
+
+		// ~~~~~ Bottom ~~~~~
+
+		// West (-X): north to south
+		GL11.glVertex3d(aabb.minX, aabb.minY, aabb.minZ)
+		GL11.glVertex3d(aabb.minX, aabb.minY, aabb.maxZ)
+		// East (+X): north to south
+		GL11.glVertex3d(aabb.maxX, aabb.minY, aabb.minZ)
+		GL11.glVertex3d(aabb.maxX, aabb.minY, aabb.maxZ)
+		// South (+Z): west to east
+		GL11.glVertex3d(aabb.minX, aabb.minY, aabb.maxZ)
+		GL11.glVertex3d(aabb.maxX, aabb.minY, aabb.maxZ)
+		// North (-Z): west to east
+		GL11.glVertex3d(aabb.minX, aabb.minY, aabb.minZ)
+		GL11.glVertex3d(aabb.maxX, aabb.minY, aabb.minZ)
+
+		// ~~~~~ Top ~~~~~
+
+		// West (-X): north to south
+		GL11.glVertex3d(aabb.minX, aabb.maxY, aabb.minZ)
+		GL11.glVertex3d(aabb.minX, aabb.maxY, aabb.maxZ)
+		// East (+X): north to south
+		GL11.glVertex3d(aabb.maxX, aabb.maxY, aabb.minZ)
+		GL11.glVertex3d(aabb.maxX, aabb.maxY, aabb.maxZ)
+		// South (+Z): west to east
+		GL11.glVertex3d(aabb.minX, aabb.maxY, aabb.maxZ)
+		GL11.glVertex3d(aabb.maxX, aabb.maxY, aabb.maxZ)
+		// North (-Z): west to east
+		GL11.glVertex3d(aabb.minX, aabb.maxY, aabb.minZ)
+		GL11.glVertex3d(aabb.maxX, aabb.maxY, aabb.minZ)
+
+		endLine()
+	}
+
+	def startLine(): Unit = {
+		GlStateManager.pushMatrix()
+		GlStateManager.disableTexture2D()
+		GlStateManager.enableBlend()
+		Rendering.blendSrcAlpha()
+		GlStateManager.disableLighting()
+		GL11.glLineWidth(1.5F)
+		GL11.glBegin(GL11.GL_LINES)
+	}
+
+	def endLine(): Unit = {
+		GL11.glEnd()
+		GlStateManager.enableLighting()
+		GlStateManager.disableBlend()
+		GlStateManager.enableTexture2D()
+		GlStateManager.popMatrix()
 	}
 
 }

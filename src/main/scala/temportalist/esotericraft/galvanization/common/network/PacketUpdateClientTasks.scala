@@ -16,9 +16,13 @@ import temportalist.origin.foundation.common.network.IPacket
   */
 class PacketUpdateClientTasks extends IPacket {
 
-	def this(func: Int, task: ITask) {
+	def this(func: Int) {
 		this()
 		this.add(func)
+	}
+
+	def this(func: Int, task: ITask) {
+		this(func)
 		this.add(task.serializeNBT())
 		//Galvanize.log("Constructed")
 	}
@@ -30,24 +34,32 @@ object PacketUpdateClientTasks {
 
 	val SPAWN = 0
 	val BREAK = 1
-	val LOAD = 2
+	val CLEAR = 2
 
 	class Handler extends IMessageHandler[PacketUpdateClientTasks, IMessage] {
 		override def onMessage(message: PacketUpdateClientTasks,
 				ctx: MessageContext): IMessage = {
-			val func = message.get[Int]
-			val nbt = message.get[NBTTagCompound]
-			updateClientTasks(func, nbt)
-			//Galvanize.log("Loaded")
+			Minecraft.getMinecraft.addScheduledTask(new Runnable {
+				override def run(): Unit = {
+					val func = message.get[Int]
+					if (func == PacketUpdateClientTasks.CLEAR) {
+						ClientTask.clear()
+						return
+					}
+					val taskNBT = message.get[NBTTagCompound]
+					val task = new Task(Minecraft.getMinecraft.theWorld)
+					task.deserializeNBT(taskNBT)
+					ClientTask.updateTasks(func, task)
+				}
+			})
 			null
 		}
 	}
 
 	@SideOnly(Side.CLIENT)
-	def updateClientTasks(func: Int, taskNBT: NBTTagCompound): Unit = {
-		val task = new Task(Minecraft.getMinecraft.theWorld)
-		task.deserializeNBT(taskNBT)
-		ClientTask.updateTasks(func, task)
+	def updateClientTasks(message: PacketUpdateClientTasks): Unit = {
+
+
 		/*
 		if (taskNBTs.size > 1) {
 			val tasks = ListBuffer[ITask]()

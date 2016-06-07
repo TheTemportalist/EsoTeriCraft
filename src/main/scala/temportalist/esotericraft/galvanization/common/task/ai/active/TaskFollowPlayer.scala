@@ -2,11 +2,12 @@ package temportalist.esotericraft.galvanization.common.task.ai.active
 
 import net.minecraft.entity.EntityCreature
 import net.minecraft.util.EnumFacing
-import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
+import net.minecraft.util.EnumFacing.Axis
+import net.minecraft.util.math.BlockPos
 import temportalist.esotericraft.api.galvanize.ai.{EnumTaskType, GalvanizeTask}
 import temportalist.esotericraft.api.init.Details
 import temportalist.esotericraft.galvanization.common.task.ai.core.TaskBase
-import temportalist.esotericraft.galvanization.common.task.ai.interfaces.{ITargetEntity, ITaskBoundingBoxMixin}
+import temportalist.esotericraft.galvanization.common.task.ai.interfaces.{ITargetEntity, ITaskSized}
 
 /**
   *
@@ -20,7 +21,7 @@ import temportalist.esotericraft.galvanization.common.task.ai.interfaces.{ITarge
 )
 class TaskFollowPlayer(
 		pos: BlockPos, face: EnumFacing
-) extends TaskBase(pos, face) with ITaskBoundingBoxMixin with ITargetEntity {
+) extends TaskBase(pos, face) with ITaskSized with ITargetEntity {
 
 	private val speed: Double = 1.2D
 	private val radius: Double = 16D
@@ -31,11 +32,11 @@ class TaskFollowPlayer(
 
 	// ~~~~~ Bounding Box ~~~~~
 
-	override def createBoundingBox: AxisAlignedBB = {
-		new AxisAlignedBB(
-			pos.getX - 8, pos.getY + 0, pos.getZ - 8,
-			pos.getX + 8, pos.getY + 5, pos.getZ + 8
-		)
+	override def getRadius(axis: Axis): Double = axis match {
+		case Axis.X => 8
+		case Axis.Y => 5
+		case Axis.Z => 8
+		case _ => 0
 	}
 
 	// ~~~~~ AI ~~~~~

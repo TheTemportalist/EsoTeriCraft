@@ -93,12 +93,14 @@ object ControllerTask {
 		if (event.getWorld.isRemote) return
 		event.getEntity match {
 			case player: EntityPlayerMP =>
+				new PacketUpdateClientTasks(PacketUpdateClientTasks.CLEAR).sendToPlayer(Galvanize, player)
 				val tasks = this.getData(event.getWorld).getTasks
 				if (tasks.nonEmpty) {
-					for (task <- tasks)
-					///* TODO make packet more efficient
-					new PacketUpdateClientTasks(PacketUpdateClientTasks.LOAD, task).sendToPlayer(Galvanize, player)
-					//*/
+					for (task <- tasks) {
+						///* TODO make packet more efficient
+						new PacketUpdateClientTasks(PacketUpdateClientTasks.SPAWN, task).sendToPlayer(Galvanize, player)
+						//*/
+					}
 				}
 			case _ =>
 		}

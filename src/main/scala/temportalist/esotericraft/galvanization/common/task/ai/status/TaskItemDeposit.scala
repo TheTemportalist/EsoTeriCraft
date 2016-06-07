@@ -26,7 +26,7 @@ class TaskItemDeposit(
 ) extends TaskBase(pos, face) with ITaskInventory {
 
 	private val speed: Double = 1.2D
-	private val posVec = new Vect(this.pos) + new Vect(this.face) * 0.5
+	private val posVec = new Vect(this.pos) + Vect.CENTER + new Vect(this.face)
 
 	// ~~~~~ Task Info ~~~~~
 
@@ -59,11 +59,11 @@ class TaskItemDeposit(
 		}
 		if (!hasItem) return
 
-		val position = this.posVec
+		val position = new Vect(this.pos)
 		val ownerDistanceToInventory = (new Vect(entity) - position).length
-		if (ownerDistanceToInventory > 1.25D)
+		if (ownerDistanceToInventory > 2D)
 			this.moveEntityTowards(entity,
-				position.x, position.y, position.z,
+				this.posVec.x, this.posVec.y, this.posVec.z,
 				this.speed, this.getCanFly)
 		else {
 			this.depositItems(entity)

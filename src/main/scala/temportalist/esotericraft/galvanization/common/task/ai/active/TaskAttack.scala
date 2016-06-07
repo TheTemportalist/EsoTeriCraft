@@ -3,13 +3,14 @@ package temportalist.esotericraft.galvanization.common.task.ai.active
 import com.google.common.base.Predicate
 import net.minecraft.entity.monster.{EntityCreeper, IMob}
 import net.minecraft.entity.{EntityCreature, EntityLiving, EntityLivingBase}
-import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
+import net.minecraft.util.EnumFacing.Axis
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{DamageSource, EnumFacing}
 import temportalist.esotericraft.api.galvanize.ai.{EnumTaskType, GalvanizeTask}
 import temportalist.esotericraft.api.init.Details
 import temportalist.esotericraft.emulation.common.IEntityEmulator
 import temportalist.esotericraft.galvanization.common.task.ai.core.TaskBase
-import temportalist.esotericraft.galvanization.common.task.ai.interfaces.{ITargetEntity, ITaskBoundingBoxMixin}
+import temportalist.esotericraft.galvanization.common.task.ai.interfaces.{ITargetEntity, ITaskSized}
 import temportalist.origin.api.common.lib.Vect
 
 import scala.collection.{JavaConversions, mutable}
@@ -26,7 +27,7 @@ import scala.collection.{JavaConversions, mutable}
 )
 class TaskAttack(
 		pos: BlockPos, face: EnumFacing
-) extends TaskBase(pos, face) with ITaskBoundingBoxMixin with ITargetEntity {
+) extends TaskBase(pos, face) with ITaskSized with ITargetEntity {
 
 	private val speed: Double = 1.2D
 	private val posVect = new Vect(this.pos) + new Vect(this.face) * 0.5
@@ -37,11 +38,11 @@ class TaskAttack(
 
 	// ~~~~~ Bounding Box ~~~~~
 
-	override def createBoundingBox: AxisAlignedBB = {
-		new AxisAlignedBB(
-			pos.getX - 8, pos.getY + 0, pos.getZ - 8,
-			pos.getX + 8, pos.getY + 5, pos.getZ + 8
-		)
+	override def getRadius(axis: Axis): Double = axis match {
+		case Axis.X => 8
+		case Axis.Y => 5
+		case Axis.Z => 8
+		case _ => 0
 	}
 
 	// ~~~~~ AI ~~~~~
