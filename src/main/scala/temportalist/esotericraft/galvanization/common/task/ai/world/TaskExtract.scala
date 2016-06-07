@@ -11,8 +11,8 @@ import temportalist.esotericraft.api.init.Details
 import temportalist.esotericraft.galvanization.common.entity.IEntityItemUser
 import temportalist.esotericraft.galvanization.common.task.ai.core.TaskBase
 import temportalist.esotericraft.galvanization.common.task.ai.interfaces.ITaskInventory
-import temportalist.esotericraft.main.common.api.Capabilities
 import temportalist.origin.api.common.lib.Vect
+import temportalist.origin.api.common.utility.Capabilities
 
 /**
   *

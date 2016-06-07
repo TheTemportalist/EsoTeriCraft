@@ -3,6 +3,7 @@ package temportalist.esotericraft.main.common.api
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 import temportalist.esotericraft.api.init.IEsoTeriCraft
 import temportalist.esotericraft.api.init.IEsoTeriCraft.PluginEsoTeriCraft
+import temportalist.origin.api.common.lib.loader.InstanceLoader
 
 /**
   *

@@ -7,7 +7,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import temportalist.esotericraft.api.emulation.IAbility
 import temportalist.esotericraft.api.emulation.IAbility.Ability
 import temportalist.esotericraft.emulation.common.Emulation
-import temportalist.esotericraft.main.common.api.AnnotationLoader
+import temportalist.origin.api.common.lib.loader.AnnotationLoader
 
 import scala.collection.mutable
 

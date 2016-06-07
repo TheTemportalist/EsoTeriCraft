@@ -2,7 +2,7 @@ package temportalist.esotericraft.galvanization.common.task.ai.core
 
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import temportalist.esotericraft.api.galvanize.ai.{GalvanizeTask, IGalvanizeTask}
-import temportalist.esotericraft.main.common.api.AnnotationLoader
+import temportalist.origin.api.common.lib.loader.AnnotationLoader
 
 import scala.collection.mutable
 
