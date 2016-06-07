@@ -106,7 +106,12 @@ final class Task(private val world: World) extends ITask with INBTCreator {
 
 	// ~~~~~~~~~~ Logic ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	override def onSpawn(world: World, pos: BlockPos, face: EnumFacing): Unit = {}
+	override def onSpawn(world: World, pos: BlockPos, face: EnumFacing): Unit = {
+		this.getAI match {
+			case task: IGalvanizeTask => task.onSpawn(world)
+			case _ =>
+		}
+	}
 
 	override def onBreak(world: World, pos: BlockPos, face: EnumFacing): Unit = {}
 

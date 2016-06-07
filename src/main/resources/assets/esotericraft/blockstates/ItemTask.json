@@ -37,6 +37,9 @@
 			},
 			"placeplant": {
 				"textures": { "layer0": "esotericraft:items/tasks/blank" }
+			},
+			"iteminsertfilter": {
+				"textures": { "layer0": "esotericraft:items/tasks/blank" }
 			}
 		}
 

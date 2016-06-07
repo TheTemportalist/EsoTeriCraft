@@ -13,6 +13,8 @@ public interface IGalvanizeTask {
 
 	EnumTaskType getTaskType();
 
+	void onSpawn(World world);
+
 	boolean shouldExecute(EntityCreature entity);
 
 	void startExecuting(EntityCreature entity);

@@ -58,7 +58,6 @@ class ItemTask extends ItemGalvanize {
 			task.setPosition(taskPos, face)
 			task.setInfoAI(aiModID.toString, registryName, displayName, classAI)
 			if (ControllerTask.spawnTask(worldIn, taskPos, face, task)) {
-				//Galvanize.log("placed")
 				if (!playerIn.capabilities.isCreativeMode) {
 					stack.stackSize -= 1
 					if (stack.stackSize <= 0) stack = null

@@ -1,10 +1,11 @@
 package temportalist.esotericraft.galvanization.common.task.ai.status
 
 import net.minecraft.entity.EntityCreature
-import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, EnumHand}
+import net.minecraft.world.World
+import net.minecraftforge.items.CapabilityItemHandler
 import temportalist.esotericraft.api.galvanize.ai.{EnumTaskType, GalvanizeTask}
 import temportalist.esotericraft.api.init.Details
 import temportalist.esotericraft.galvanization.common.task.ai.core.TaskBase
@@ -22,7 +23,7 @@ import temportalist.origin.api.common.lib.Vect
 	name = "itemDeposit",
 	displayName = "Deposit Items"
 )
-class TaskItemDeposit(
+class TaskItemInsert(
 		pos: BlockPos, face: EnumFacing
 ) extends TaskBase(pos, face) with ITaskInventory {
 
@@ -35,19 +36,26 @@ class TaskItemDeposit(
 
 	// ~~~~~ AI ~~~~~
 
+	override def canEntityUse(world: World, stack: ItemStack): Boolean = true
+
 	override def shouldExecute(entity: EntityCreature): Boolean = {
-		entity.getEntityWorld.getTileEntity(this.pos) match {
-			case inv: IInventory => // Block at target pos is an inventory
-			case _ => return false
+
+		val tile = entity.getEntityWorld.getTileEntity(this.getPosition)
+		if (tile == null ||
+				!tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, this.getFace)) {
+			return false
 		}
 
-		//Galvanize.log("should?")
-
 		// Check if there is SOMETHING being held
-		for (hand <- EnumHand.values())
-			if (entity.getHeldItem(hand) != null) {
-				return true
+		for (hand <- EnumHand.values()) {
+			if (entity.getHeldItem(hand) != null) return true
+			entity.getHeldItem(hand) match {
+				case stack: ItemStack =>
+					if (this.canEntityUse(entity.getEntityWorld, stack))
+						return true
+				case _ => // null
 			}
+		}
 
 		false
 	}
@@ -80,7 +88,7 @@ class TaskItemDeposit(
 			var fromStack: ItemStack = null
 			for (hand <- EnumHand.values()) {
 				fromStack = entity.getHeldItem(hand)
-				if (fromStack != null) {
+				if (fromStack != null && this.canEntityUse(entity.getEntityWorld, fromStack)) {
 					fromStack = this.transferStackTo(fromStack.copy(), toInv)
 					entity.setHeldItem(hand, fromStack)
 				}

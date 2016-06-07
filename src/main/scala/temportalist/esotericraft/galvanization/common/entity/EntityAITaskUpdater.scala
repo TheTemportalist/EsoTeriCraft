@@ -38,8 +38,10 @@ class EntityAITaskUpdater(
 		for (taskType <- EnumTaskType.values()) {
 
 			if (!this.currentTasks.containsKey(taskType)) {
+				//Galvanize.log("find " + taskType)
 				this.findNextTask(taskType) match {
 					case task: ITask =>
+						//Galvanize.log("found " + task.getName)
 						this.currentTasks.put(taskType, task)
 						task.getAI.startExecuting(this.owner)
 					case _ => // null
@@ -47,6 +49,7 @@ class EntityAITaskUpdater(
 			}
 
 			if (this.currentTasks.containsKey(taskType)) {
+				//Galvanize.log(taskType + ": " + this.currentTasks.get(taskType))
 				val priority = this.currentTasks.get(taskType).getAI.getTaskType.ordinal()
 				if (lowestPriorityNumber < 0 || priority < lowestPriorityNumber) {
 					if (!this.currentTasks.get(taskType).isValid)
@@ -63,6 +66,7 @@ class EntityAITaskUpdater(
 
 		if (currentTask == null) return
 
+		//Galvanize.log(currentTask.getName)
 		val currentAI = currentTask.getAI
 
 		currentAI.updateTask(this.owner)
@@ -76,13 +80,17 @@ class EntityAITaskUpdater(
 
 	def findNextTask(taskType: EnumTaskType): ITask = {
 		val taskPositions = this.owner.getTaskPositionsAsSeq
+		//Galvanize.log(taskPositions)
 		for (posFace <- taskPositions) {
 			ControllerTask.getTaskAt(this.getWorld, posFace._1, posFace._2) match {
 				case task: ITask =>
+					//Galvanize.log(task.getName)
+					//Galvanize.log(task.getAI)
 					task.getAI match {
 						case aiTask: IGalvanizeTask =>
 							//Galvanize.log("" + aiTask.getClass.getSimpleName + " " + taskType)
 							if (aiTask.getTaskType == taskType) {
+								//Galvanize.log(task.getName)
 								if (aiTask.shouldExecute(this.owner))
 									return task
 							}

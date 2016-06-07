@@ -58,16 +58,19 @@ trait ITaskInventory {
 		fromStack
 	}
 
-	final def addItemToHands(stackIn: ItemStack, entity: EntityLivingBase): ItemStack = {
+	final def addItemToHands(stackIn: ItemStack, entity: EntityLivingBase, capacity: Int = 1): ItemStack = {
 		if (stackIn == null) return null
 
 		var stackHeld: ItemStack = null
-		val stack = stackIn
+		val stack = stackIn.copy()
+		stack.stackSize = Math.min(capacity, stack.stackSize)
+		val ret = stackIn.copy()
+		ret.stackSize -= stack.stackSize
 		for (hand <- EnumHand.values()) {
 			stackHeld = entity.getHeldItem(hand)
 			if (stackHeld == null) {
 				entity.setHeldItem(hand, stack)
-				return null
+				return ret
 			}
 			else if (stackHeld.stackSize < stackHeld.getMaxStackSize) {
 				if (ItemStack.areItemsEqual(stackHeld, stack) &&
@@ -75,6 +78,7 @@ trait ITaskInventory {
 					val availableSize = stackHeld.getMaxStackSize - stackHeld.stackSize
 					val amtInserted = Math.min(availableSize, stack.stackSize)
 					stack.stackSize -= amtInserted
+					stack.stackSize += ret.stackSize
 					stackHeld.stackSize += amtInserted
 					entity.setHeldItem(hand, stackHeld)
 					if (stack.stackSize <= 0) return null

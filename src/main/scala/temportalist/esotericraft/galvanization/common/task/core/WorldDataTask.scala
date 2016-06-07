@@ -6,6 +6,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.{World, WorldSavedData}
 import net.minecraftforge.common.DimensionManager
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent
+import temportalist.esotericraft.galvanization.common.Galvanize
 import temportalist.esotericraft.galvanization.common.task.{INBTCreator, ITask, Task}
 
 import scala.collection.mutable
@@ -45,8 +46,10 @@ final class WorldDataTask(key: String) extends WorldSavedData(key) with INBTCrea
 		if (!this.taskObjects.contains(pos))
 			this.taskObjects.put(pos, mutable.Map[EnumFacing, ITask]())
 
-		if (this.taskObjects(pos).contains(face))
+		if (this.taskObjects(pos).contains(face)) {
+			Galvanize.log(this.taskObjects(pos)(face))
 			return false
+		}
 
 		this.taskObjects(pos)(face) = task
 

@@ -1,7 +1,8 @@
 package temportalist.esotericraft.galvanization.common.task.ai.status
 
 import net.minecraft.entity.EntityCreature
-import net.minecraft.item.ItemStack
+import net.minecraft.init.{Blocks, Items}
+import net.minecraft.item.{ItemBlock, ItemStack}
 import net.minecraft.util.EnumFacing.Axis
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, EnumHand}
@@ -50,9 +51,10 @@ class TaskUsePlant(
 
 	def getPositionForStack(world: World, stack: ItemStack): BlockPos = {
 
-		if (stack == null || !stack.getItem.isInstanceOf[IPlantable]) return null
+		if (stack == null) return null
 
-		val plantable = stack.getItem.asInstanceOf[IPlantable]
+		val plantable: IPlantable = this.getPlantable(stack)
+		if (plantable == null) return null
 
 		val aabb = this.getBoundingBox
 		for {
@@ -69,6 +71,20 @@ class TaskUsePlant(
 		}
 
 		null
+	}
+
+	def getPlantable(stack: ItemStack): IPlantable = {
+		stack.getItem match {
+			case plantable: IPlantable => plantable
+			case itemBlock: ItemBlock =>
+				itemBlock.getBlock match {
+					case plantable: IPlantable => plantable
+					case _ => null
+				}
+			case _ =>
+				if (stack.getItem == Items.REEDS) Blocks.REEDS
+				else null
+		}
 	}
 
 	override def shouldExecute(entity: EntityCreature): Boolean = {
@@ -125,14 +141,16 @@ class TaskUsePlant(
 	def plantItem(world: World, pos: BlockPos, stack: ItemStack): ItemStack = {
 		if (stack == null) return stack
 		if (!world.isAirBlock(pos)) return stack
-		stack.getItem match {
+
+		this.getPlantable(stack) match {
 			case plantable: IPlantable =>
 				world.setBlockState(pos, plantable.getPlant(world, pos))
 				stack.stackSize -= 1
 				if (stack.stackSize <= 0) return null
 				else return stack
-			case _ =>
+			case _ => // null
 		}
+
 		stack
 	}
 

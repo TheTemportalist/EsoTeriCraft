@@ -3,9 +3,10 @@ package temportalist.esotericraft.galvanization.common.task.ai.world
 import com.google.common.base.Predicate
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.{Entity, EntityCreature}
-import net.minecraft.util.EnumFacing
+import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing.Axis
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.{EnumFacing, EnumHand}
 import temportalist.esotericraft.api.galvanize.ai.{EnumTaskType, GalvanizeTask}
 import temportalist.esotericraft.api.init.Details
 import temportalist.esotericraft.galvanization.common.task.ai.core.TaskBase
@@ -46,6 +47,14 @@ class TaskItemCollect(
 	// ~~~~~ AI ~~~~~
 
 	override def shouldExecute(entity: EntityCreature): Boolean = {
+
+		for (hand <- EnumHand.values()) {
+			entity.getHeldItem(hand) match {
+				case stack: ItemStack => return false
+				case _ =>
+			}
+		}
+
 		val entities = this.findEntitiesInRange(entity)
 		entities.nonEmpty
 	}
@@ -103,7 +112,7 @@ class TaskItemCollect(
 	}
 
 	final def pickUpItem(entity: EntityCreature, entityItem: EntityItem): Unit = {
-		val stackRemaining = this.addItemToHands(entityItem.getEntityItem.copy(), entity)
+		val stackRemaining = this.addItemToHands(entityItem.getEntityItem.copy(), entity, capacity = 64)
 		if (stackRemaining == null) entityItem.setDead()
 		else entityItem.setEntityItemStack(stackRemaining)
 	}

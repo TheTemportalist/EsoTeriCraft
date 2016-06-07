@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.registry.GameRegistry
 import temportalist.esotericraft.galvanization.common.item.{ItemEggGolem, ItemGalvanize, ItemTask, ItemTaskDebug}
 import temportalist.esotericraft.galvanization.common.task.ai.active.{TaskAttack, TaskFollowPlayer}
-import temportalist.esotericraft.galvanization.common.task.ai.status.TaskItemDeposit
+import temportalist.esotericraft.galvanization.common.task.ai.status.TaskItemInsert
 import temportalist.esotericraft.galvanization.common.task.ai.world.{TaskHarvestCrops, TaskHarvestTree, TaskItemCollect}
 import temportalist.esotericraft.galvanization.common.task.core.ControllerTask
 import temportalist.origin.foundation.common.registers.ItemRegister
@@ -53,7 +53,7 @@ object ModItems extends ItemRegister {
 			Items.PAPER, Items.ROTTEN_FLESH
 		)
 		GameRegistry.addShapelessRecipe(
-			ControllerTask.getNewItemStackForAIClass(classOf[TaskItemDeposit]),
+			ControllerTask.getNewItemStackForAIClass(classOf[TaskItemInsert]),
 			Items.PAPER, Blocks.CHEST
 		)
 		GameRegistry.addShapelessRecipe(

@@ -20,6 +20,8 @@ abstract class TaskBase(
 
 	// ~~~~~ AI ~~~~~
 
+	override def onSpawn(world: World): Unit = {}
+
 	override def startExecuting(entity: EntityCreature): Unit = {
 		this.checkCanFly(entity)
 	}
