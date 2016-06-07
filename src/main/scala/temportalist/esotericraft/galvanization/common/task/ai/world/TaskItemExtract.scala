@@ -24,7 +24,7 @@ import temportalist.origin.api.common.utility.Capabilities
 	name = "itemExtract",
 	displayName = "Take Items"
 )
-class TaskExtract(
+class TaskItemExtract(
 		pos: BlockPos, face: EnumFacing
 ) extends TaskBase(pos, face) with ITaskInventory {
 
