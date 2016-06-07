@@ -1,12 +1,14 @@
 package temportalist.esotericraft.galvanization.common.task.ai.status
 
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraftforge.items.CapabilityItemHandler
 import temportalist.esotericraft.api.galvanize.ai.{EnumTaskType, GalvanizeTask}
 import temportalist.esotericraft.api.init.Details
+import temportalist.origin.api.common.utility.NBTHelper
 
 import scala.collection.mutable.ListBuffer
 
@@ -59,5 +61,33 @@ class TaskItemInsertFilter(
 	}
 
 	// ~~~~~ End ~~~~~
+
+	override def serializeNBT(): NBTTagCompound = {
+		val nbt = super.serializeNBT()
+
+		val filterTag = new NBTTagList
+		for (template <- this.filterList) {
+			filterTag.appendTag({
+				val tag = new NBTTagCompound
+				template.writeToNBT(tag)
+				tag
+			})
+		}
+		nbt.setTag("filter", filterTag)
+
+		nbt
+	}
+
+	override def deserializeNBT(nbt: NBTTagCompound): Unit = {
+
+		if (nbt.hasKey("filter")) {
+			val filterTag = NBTHelper.getTagList[NBTTagCompound](nbt, "filter")
+			this.filterList.clear()
+			for (i <- 0 until filterTag.tagCount()) {
+				this.filterList += ItemStack.loadItemStackFromNBT(filterTag.getCompoundTagAt(i))
+			}
+		}
+
+	}
 
 }

@@ -315,14 +315,14 @@ object ClientTask {
 		GlStateManager.disableTexture2D()
 		GlStateManager.enableBlend()
 		Rendering.blendSrcAlpha()
-		GlStateManager.disableLighting()
+		//GlStateManager.disableLighting()
 		GL11.glLineWidth(1.5F)
 		GL11.glBegin(GL11.GL_LINES)
 	}
 
 	def endLine(): Unit = {
 		GL11.glEnd()
-		GlStateManager.enableLighting()
+		//GlStateManager.enableLighting()
 		GlStateManager.disableBlend()
 		GlStateManager.enableTexture2D()
 		GlStateManager.popMatrix()

@@ -2,14 +2,16 @@ package temportalist.esotericraft.api.galvanize.ai;
 
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.INBTSerializable;
 
 /**
  * Created by TheTemportalist on 5/22/2016.
  *
  * @author TheTemportalist
  */
-public interface IGalvanizeTask {
+public interface IGalvanizeTask extends INBTSerializable<NBTTagCompound> {
 
 	EnumTaskType getTaskType();
 

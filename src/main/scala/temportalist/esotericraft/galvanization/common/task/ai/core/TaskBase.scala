@@ -2,6 +2,7 @@ package temportalist.esotericraft.galvanization.common.task.ai.core
 
 import net.minecraft.entity.EntityCreature
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
@@ -39,5 +40,9 @@ abstract class TaskBase(
 	// ~~~~~ Other ~~~~~
 
 	override def canEntityUse(world: World, stack: ItemStack): Boolean = false
+
+	override def serializeNBT(): NBTTagCompound = new NBTTagCompound
+
+	override def deserializeNBT(nbt: NBTTagCompound): Unit = {}
 
 }

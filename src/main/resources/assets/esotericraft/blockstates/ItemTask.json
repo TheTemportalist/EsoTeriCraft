@@ -30,16 +30,16 @@
 				"textures": { "layer0": "esotericraft:items/tasks/itemDeposit" }
 			},
 			"mine": {
-				"textures": { "layer0": "esotericraft:items/tasks/blank" }
+				"textures": { "layer0": "esotericraft:items/tasks/mine" }
 			},
 			"itemextract": {
-				"textures": { "layer0": "esotericraft:items/tasks/blank" }
+				"textures": { "layer0": "esotericraft:items/tasks/itemExtract" }
 			},
 			"placeplant": {
-				"textures": { "layer0": "esotericraft:items/tasks/blank" }
+				"textures": { "layer0": "esotericraft:items/tasks/placePlant" }
 			},
 			"iteminsertfilter": {
-				"textures": { "layer0": "esotericraft:items/tasks/blank" }
+				"textures": { "layer0": "esotericraft:items/tasks/itemInsertFilter" }
 			}
 		}
 

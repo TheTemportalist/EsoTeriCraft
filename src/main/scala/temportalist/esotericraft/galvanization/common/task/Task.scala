@@ -161,6 +161,7 @@ final class Task(private val world: World) extends ITask with INBTCreator {
 		if (this.aiName != null) tagAI.setString("name", this.aiName)
 		if (this.aiDisplayName != null) tagAI.setString("displayName", this.aiDisplayName)
 		if (this.aiClass != null) tagAI.setString("class", this.aiClass.getName)
+		if (this.aiInstance != null) tagAI.setTag("instance", this.aiInstance.serializeNBT())
 		if (!tagAI.hasNoTags) tag.setTag("ai", tagAI)
 
 		tag
@@ -185,13 +186,17 @@ final class Task(private val world: World) extends ITask with INBTCreator {
 			if (tagAI.hasKey("name")) this.aiName = tagAI.getString("name")
 			this.createIconLocation()
 			if (tagAI.hasKey("displayName")) this.aiDisplayName = tagAI.getString("displayName")
-			if (tagAI.hasKey("class"))
+			if (tagAI.hasKey("class")) {
 				try {
 					this.aiClass = Class.forName(tagAI.getString("class"))
 							.asInstanceOf[Class[_ <: IGalvanizeTask]]
 					this.createInstanceOfAI()
 				}
 				catch {case e: Exception =>}
+				if (this.aiInstance != null && tagAI.hasKey("instance")) {
+					this.aiInstance.deserializeNBT(tagAI.getCompoundTag("instance"))
+				}
+			}
 		}
 
 	}
