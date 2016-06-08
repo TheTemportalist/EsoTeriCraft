@@ -9,6 +9,7 @@ import net.minecraftforge.common.capabilities.{Capability, ICapabilityProvider}
 import net.minecraftforge.event.entity.living.{LivingDeathEvent, LivingHurtEvent}
 import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import temportalist.esotericraft.emulation.common.EntityState
 import temportalist.esotericraft.transmorigification.common.Transform
 import temportalist.esotericraft.transmorigification.common.network.PacketUpdateClientModels
 import temportalist.origin.foundation.common.capability.ExtendedHandler.ExtendedEntity
@@ -72,7 +73,21 @@ object HandlerPlayerGalvanize
 
 	def onEntityKilledByPlayer(target: EntityLivingBase, player: EntityPlayer): Unit = {
 		HelperGalvanize.get(player) match {
-			case galvanized: IPlayerGalvanize => galvanized.addModelEntity(target)
+			case galvanized: IPlayerGalvanize =>
+				target match {
+					case playerKilled: EntityPlayer =>
+						HelperGalvanize.get(playerKilled) match {
+							case galvanizedKilled: IPlayerGalvanize =>
+								galvanizedKilled.getEntityState match {
+									case state: EntityState => // in entity form
+										galvanized.addModelEntity(state)
+									case _ => // in player form
+										galvanized.addModelEntity(playerKilled)
+								}
+							case _ =>
+						}
+					case _ => galvanized.addModelEntity(target)
+				}
 			case _ =>
 		}
 	}

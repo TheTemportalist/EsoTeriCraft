@@ -42,6 +42,8 @@ public interface IPlayerGalvanize extends INBTSerializable<NBTTagCompound> {
 
 	void addModelEntity(EntityLivingBase entity);
 
+	void addModelEntity(EntityState state);
+
 	List<EntityState> getModelEntities();
 
 	void removeModelEntity(int index);

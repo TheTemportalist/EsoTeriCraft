@@ -2,6 +2,7 @@ package temportalist.esotericraft.emulation.common
 
 import javax.annotation.{Nonnull, Nullable}
 
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.{EntityList, EntityLiving, EntityLivingBase}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.world.World
@@ -112,8 +113,11 @@ class EntityType extends Comparable[EntityType] with INBTSerializable[NBTTagComp
 		tag.removeTag("LeftHanded")
 		tag.removeTag("FallDistance")
 		tag.removeTag("Rotation")
-		tag.removeTag("UUIDMost")
-		tag.removeTag("UUIDLeast")
+
+		if (!entity.isInstanceOf[EntityPlayer]) {
+			tag.removeTag("UUIDMost")
+			tag.removeTag("UUIDLeast")
+		}
 
 		tag
 	}

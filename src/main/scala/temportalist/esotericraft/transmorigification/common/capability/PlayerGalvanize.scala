@@ -126,8 +126,11 @@ class PlayerGalvanize(
 	private val availableEntityStates = ListBuffer[EntityState]()
 
 	override def addModelEntity(entity: EntityLivingBase): Unit = {
+		if (!this.getWorld.isRemote) this.addModelEntity(new EntityState(EntityType.create(entity)))
+	}
+
+	override def addModelEntity(state: EntityState): Unit = {
 		if (!this.getWorld.isRemote) {
-			val state = new EntityState(EntityType.create(entity))
 			if (this.availableEntityStates contains state)
 				return
 			this.availableEntityStates += state
