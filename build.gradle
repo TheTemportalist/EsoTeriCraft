@@ -45,6 +45,9 @@ repositories {
 dependencies {
 	deobfCompile "temportalist.origin:Origin:${version_origin_dep}"
 	deobfCompile "mezz.jei:jei_${version_minecraft}:${version_jei}"
+
+	deobfCompile "slimeknights.mantle:Mantle:1.9.4-0.10.1.jenkins142"
+	deobfCompile "slimeknights:TConstruct:1.9.4-2.3.1.jenkins229"
 }
 
 group = "${org}.${groupName}"
