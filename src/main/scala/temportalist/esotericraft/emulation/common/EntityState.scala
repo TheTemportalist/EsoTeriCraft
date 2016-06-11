@@ -56,7 +56,8 @@ final class EntityState extends Comparable[EntityState] with INBTSerializable[NB
 
 	override def equals(obj: scala.Any): Boolean = {
 		obj match {
-			case other: EntityState => this.entityType.equals(other.entityType)
+			case other: EntityState =>
+				this.entityType != null && this.entityType.equals(other.entityType)
 			case _ => false
 		}
 	}

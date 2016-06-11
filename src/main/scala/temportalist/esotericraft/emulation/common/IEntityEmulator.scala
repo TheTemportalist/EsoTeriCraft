@@ -64,13 +64,15 @@ trait IEntityEmulator {
 		}
 	}
 
-	final def getEntityAbilities: java.lang.Iterable[IAbility[_ <: NBTBase]] = JavaConversions.asJavaIterable(this._getEntityAbilities)
+	final def getEntityAbilities: java.lang.Iterable[IAbility[_ <: NBTBase]] = JavaConversions
+			.asJavaIterable(this._getEntityAbilities)
 
 	final def _getEntityAbilities: Iterable[IAbility[_ <: NBTBase]] = this.abilities
 
 	@SideOnly(Side.CLIENT)
 	@Nullable
-	final def getEntityModelInstance(world: World): EntityModel[_ <: EntityLivingBase, _ <: EntityLivingBase] = {
+	final def getEntityModelInstance(
+			world: World): EntityModel[_ <: EntityLivingBase, _ <: EntityLivingBase] = {
 		this.getEntityState match {
 			case entityState: EntityState =>
 				if (this.entityModel == null)
@@ -114,7 +116,12 @@ trait IEntityEmulator {
 
 	final def setEntityStateEntity(entity: EntityLivingBase): Unit = {
 		if (entity == null) this.entityState = null
-		else this.entityState = new EntityState(EntityType.create(entity))
+		else {
+			this.entityState = EntityType.create(entity) match {
+				case entType: EntityType => new EntityState(entType)
+				case _ => null
+			}
+		}
 	}
 
 	final def setEntityState(state: EntityState): Unit = {
@@ -170,7 +177,8 @@ trait IEntityEmulator {
 		}
 		this.getEntityStateInstance(world) match {
 			case living: EntityLivingBase =>
-				this.setSizeAndEye(living.width, living.height, living.getEyeHeight, this.getSelfEntityInstance)
+				this.setSizeAndEye(living.width, living.height, living.getEyeHeight,
+					this.getSelfEntityInstance)
 			case _ => // null
 		}
 	}
@@ -261,7 +269,8 @@ trait IEntityEmulator {
 			if (ent.getItemStackFromSlot(i) == null && self.getItemStackFromSlot(i) != null ||
 					ent.getItemStackFromSlot(i) != null && self.getItemStackFromSlot(i) == null ||
 					ent.getItemStackFromSlot(i) != null && self.getItemStackFromSlot(i) != null &&
-							!ent.getItemStackFromSlot(i).isItemEqual(self.getItemStackFromSlot(i))) {
+							!ent.getItemStackFromSlot(i)
+									.isItemEqual(self.getItemStackFromSlot(i))) {
 				ent.setItemStackToSlot(i,
 					if (self.getItemStackFromSlot(i) != null) self.getItemStackFromSlot(i).copy
 					else null)
@@ -273,14 +282,16 @@ trait IEntityEmulator {
 				for (hand <- EnumHand.values()) {
 					if (entPlayer.getHeldItem(hand) != self.getHeldItem(hand))
 						entPlayer.setHeldItem(hand,
-							if (self.getHeldItem(hand) == null) null else self.getHeldItem(hand).copy())
+							if (self.getHeldItem(hand) == null) null
+							else self.getHeldItem(hand).copy())
 				}
 			case _ =>
 		}
 
 	}
 
-	private final def setSizeAndEye(width: Float, height: Float, eyeHeight: Float, self: EntityLivingBase): Unit = {
+	private final def setSizeAndEye(width: Float, height: Float, eyeHeight: Float,
+			self: EntityLivingBase): Unit = {
 		if (self != null) {
 
 			self match {
@@ -344,10 +355,12 @@ trait IEntityEmulator {
 		for (abilityName <- abilityKeys) {
 			val abilityTag = nbt.getCompoundTag(abilityName)
 			val mappingArgs = abilityTag.getString("mappingArguments")
-			Emulation.createAbility(abilityName, mappingArgs, abilityName + "|" + mappingArgs) match {
+			Emulation.createAbility(abilityName, mappingArgs,
+				abilityName + "|" + mappingArgs) match {
 				case ability: IAbility[_] =>
 					if (ability.hasNBT)
-						ability.asInstanceOf[IAbility[_ <: NBTBase]].deserialize(abilityTag.getTag("nbt"))
+						ability.asInstanceOf[IAbility[_ <: NBTBase]]
+								.deserialize(abilityTag.getTag("nbt"))
 					abilities += ability.asInstanceOf[IAbility[_ <: NBTBase]]
 				case _ =>
 			}
