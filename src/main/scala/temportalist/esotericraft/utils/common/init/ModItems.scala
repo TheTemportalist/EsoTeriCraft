@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.oredict.ShapedOreRecipe
 import temportalist.esotericraft.main.common.EsoTeriCraft
+import temportalist.origin.api.common.item.ItemBase
 import temportalist.origin.foundation.common.registers.ItemRegister
 
 /**
@@ -16,11 +17,15 @@ import temportalist.origin.foundation.common.registers.ItemRegister
 object ModItems extends ItemRegister {
 
 	var spindle: ItemSpindle = _
+	var multi: ItemBase = _
 
 	override def register(): Unit = {
 
 		this.spindle = this.registerObject(new ItemSpindle(EsoTeriCraft))
 		this.spindle.setCreativeTab(CreativeTabs.TOOLS)
+
+		this.multi = this.registerObject(new ItemMulti)
+		this.multi.setCreativeTab(CreativeTabs.TOOLS)
 
 	}
 
