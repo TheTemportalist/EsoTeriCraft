@@ -41,7 +41,8 @@ class ItemSpindle(mod: IModDetails) extends ItemBase(mod) {
 
 		if (worldIn.isRemote) return getActionSUCCESS(itemStackIn)
 
-		this.putToSleep(worldIn, playerIn, itemStackIn)
+		if (playerIn.isSneaking) playerIn.setSpawnPoint(playerIn.getPosition, true)
+		else this.putToSleep(worldIn, playerIn, itemStackIn)
 
 		getActionSUCCESS(itemStackIn)
 	}
