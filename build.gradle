@@ -1,131 +1,178 @@
-// For those who want the bleeding edge
+// Using old gradle because ForgeGradle needs maven for snapshots,
+// and because ForgeGradle doesn't like sourceSets outside of api, main, and test
+
 buildscript {
 	repositories {
 		jcenter()
 		maven {
-			name = "forge"
-			url = "http://files.minecraftforge.net/maven"
-		}
-		maven {
-			// for cursegradle
-			url "https://plugins.gradle.org/m2/"
-		}
-	}
-	dependencies {
-		classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
-		// for cursegradle
-		classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.0.7"
-	}
-}
-
-apply from: 'gradle_scripts/curse/applyMe.gradle'
-
-apply plugin: 'scala'
-apply plugin: 'net.minecraftforge.gradle.forge'
-
-def getRepositoryMap() {
-	return [
-		'ddd': 'http://doubledoordev.net:8082/artifactory/mods/',
-		'dsiriusArt': 'http://box1.dmodoomsirius.me:8081/artifactory/libs-release/'
-	]
-}
-
-// TODO MOVE ME
-repositories {
-	mavenCentral()
-	jcenter()
-	getRepositoryMap().each { repoName, repoURL ->
-		repositories.maven {
-			name "${repoName}"
-			url "${repoURL}"
+			name "forge"
+			url "http://files.minecraftforge.net/maven"
 		}
 	}
 }
 
-dependencies {
-	deobfCompile "temportalist.origin:Origin:${version_origin_dep}"
-	deobfCompile "mezz.jei:jei_${version_minecraft}:${version_jei}"
-
-	deobfCompile "slimeknights.mantle:Mantle:1.9.4-0.10.1.jenkins142"
-	deobfCompile "slimeknights:TConstruct:1.9.4-2.3.1.jenkins229"
+// ~~~ Start: Gradle plugin application
+plugins {
+	id 'java'
+	id 'scala'
+	id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.32"
+	id "temportalist.automata" version "0.0.1b47"
 }
+// ~~~~~ End: Gradle plugin application
 
-group = "${org}.${groupName}"
+// ~~~ Start: Java Compatibility
+sourceCompatibility = org.gradle.api.JavaVersion.VERSION_1_7
+targetCompatibility = org.gradle.api.JavaVersion.VERSION_1_7
+// ~~~~~ End: Java Compatibility
 
-apply from: "gradle_scripts/java/applyMe.gradle"
-
-minecraft {
-	version = "${version_minecraft}-${version_forge}${version_forge_b}"
-	runDir = "run"
-	mappings = "${version_mcp}"
-
-	replace "required-after:Forge", "required-after:Forge@[${version_forge},)"
-	replace "required-after:origin", "required-after:origin@[${version_origin},)"
-	replace "required-after:esotericraft", "required-after:esotericraft@[${version_major}.${version_minor}.${version_patch},)"
-	replace "@MOD_VERSION@", "${version_major}.${version_minor}.${version_patch}"
-}
-
-archivesBaseName = "${archiveName}-${project.minecraft.version}"
-apply from: 'gradle_scripts/versions/versioning.gradle'
-
+// ~~~ Start: SourceSets
 apply from: "gradle_scripts/jar/sourceSets.gradle"
 apply from: "gradle_scripts/jar/jar.gradle"
 apply from: "gradle_scripts/jar/sources.gradle"
-apply from: "gradle_scripts/other/processResources.gradle"
+// ~~~~~ End: SourceSets
 
-apply plugin: 'maven'
-apply plugin: 'maven-publish'
+// ~~~ Start: Automata
 
-uploadArchives {
-	repositories {
-		// official DDD maven stuffs
-		if (project.hasProperty("dddUser") && project.hasProperty("dddUrl") && project.hasProperty("dddPass")) {
-			mavenDeployer {
-				repository(url: dddUrl) {
-					authentication(userName: dddUser, password: dddPass)
-				}
-				pom {
-					groupId = project.group
-					version = project.version
-					artifactId = "${archiveName}"
-					project {
-						name project.archivesBaseName
-						packaging 'jar'
-						description '${gitConfig.gitName}'
-						url 'https://github.com/TheTemportalist/${gitConfig.gitName}'
-
-						scm {
-							url 'https://github.com/TheTemportalist/${gitConfig.gitName}'
-							connection 'scm:git:git://github.com/TheTemportalist/${gitConfig.gitName}.git'
-							developerConnection 'scm:git:git@github.com:TheTemportalist/${gitConfig.gitName}.git'
-						}
-
-						issueManagement {
-							system 'github'
-							url 'https://github.com/TheTemportalist/${gitConfig.gitName}/issues'
-						}
-
-						licenses {
-							license {
-								name '${gitConfig.license}'
-								url 'https://github.com/TheTemportalist/${gitConfig.gitName}/blob/master/LICENSE'
-								distribution 'repo'
-							}
-						}
-
-						developers {
-							developer {
-								id 'TheTemportalist'
-								name 'TheTemportalist'
-								roles { role 'developer' }
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+ext {
+	gitName = "EsoTeriCraft"
+	gitBase = "https://github.com/TheTemportalist/" + project.gitName
+	gitUrl = project.gitBase
+	curseID = "245423"
 }
 
+automata {
+
+	// ~~~ Start: Dependencies
+	dependencies {
+		repositories = [
+				'ddd'       : 'http://doubledoordev.net:8082/artifactory/mods/',
+				'dsiriusArt': 'http://box1.dmodoomsirius.me:8081/artifactory/libs-release/'
+		]
+		dependencies = [
+				{
+					group = 'temportalist.origin'
+					name = 'Origin'
+					version = '9.+'
+					compileWith = 'deobfCompile' // compile, provided, deobfCompile, deobfProvided
+					replace = { // optional
+						// before, after, required-before or required-after
+						instruction = 'required-after'
+						modid = 'origin'
+						versionRange = '[9,)'
+					}
+				},
+				{
+					group = 'mezz.jei'
+					name = 'jei_1.9.4'
+					version = '3.4.0.204'
+					compileWith = 'deobfCompile'
+				},
+				{
+					group = 'slimeknights.mantle'
+					name = 'Mantle'
+					version = '1.9.4-0.10.1.jenkins142'
+					compileWith = 'deobfCompile'
+				},
+				{
+					group = 'slimeknights'
+					name = 'TConstruct'
+					version = '1.9.4-2.3.1.jenkins229'
+					compileWith = 'deobfCompile'
+				}
+		]
+	}
+	// ~~~~~ End: Dependencies
+
+	// ~~~ Start: Project ID
+	organization = "temportalist"
+	groupName = "esotericraft"
+	// ~~~~~ End: Project ID
+
+	// ~~~ Start: Versioning
+	versionMajor = 0
+	versionMinor = 0
+	versionPatch = 1
+
+	if (project.hasProperty("MANUAL"))
+		manualBuildNumber = MANUAL
+
+	def branch = getBranch()
+	if (project.hasProperty("build_type")) {
+		if (build_type == "dev")
+			autoBuildNumber = getBuildNumber()
+	} else if (!branch.startsWith("master"))
+		autoBuildNumber = getBuildNumber()
+	// ~~~~~ End: Versioning
+
+	// ~~~ Start: Forge Data
+	versionMinecraft = "1.9.4"
+	versionForge = "12.17.0.1963"
+	versionMappings = "snapshot_20160518"
+	// ~~~~~ End: Forge Data
+
+	// ~~~ Start: Replacements
+	replace { // MUST be defined after "Versioning" and "Forge Data"
+		version = "@MOD_VERSION@"
+		forge = 'required-after:Forge'
+		replaceMap = [
+				"required-after:esotericraft":
+						"required-after:esotericraft@[" + getVersionPure() + ",)"
+		]
+	}
+	// ~~~~~ End: Replacements
+
+	// ~~~ Start: Resources
+	resources = true
+	// ~~~~~ End: Resources
+
+	// ~~~ Start: Changelog
+	changelog { // MUST be defined before it's corresponding curseProject block (if linked)
+		id = curseID
+		fileExtension = 'html'
+		template = file('changelog.min.html').getText("UTF-8")
+		fromRef = '709e925c6584f4d999cce318ea3b9104f3ab86d6'
+		toRef = 'HEAD'
+	}
+	// ~~~~~ End: Changelog
+
+	// ~~~ Start: CurseForge
+	if (project.hasProperty("tempCurseAPI")) curseKey = tempCurseAPI
+	curseProject {
+		id = curseID
+		releaseType = "alpha"
+		// Changelog file generated and set by automata
+		addGameVersion getVersionMinecraft() // Automata function
+		addArtifact sourcesJar
+	}
+	// ~~~~~ End: CurseForge
+
+	// ~~~ Start: Archives
+	if (project.hasProperty("dddUser") && project.hasProperty("dddPass")) {
+		archives {
+			name = "Origin"
+			description = project.gitName
+			repoUrl = "http://doubledoordev.net:8082/artifactory/mods"
+			repoUsername = dddUser
+			repoPassword = dddPass
+			sourceUrl = project.gitUrl
+			scmUrl = "scm:git:git://github.com/TheTemportalist/" + project.gitName + ".git"
+			issueTrackerType = "github"
+			issueTrackerUrl = project.gitBase + "issues"
+			licenseType = "Apache License Version 2.0"
+			licenseUrl = project.gitUrl + "LICENSE"
+			developers = [
+					[
+							"id"  : "TheTemportalist",
+							"name": "The Temportalist",
+							"role": "developer"
+					]
+			]
+		}
+	}
+	// ~~~~~ End: Archives
+
+}
+
+// ~~~~~ End: Automata
+
 apply from: 'gradle_scripts/compat/idea.gradle'
-apply from: 'gradle_scripts/curse/impl.gradle'
