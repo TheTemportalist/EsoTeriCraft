@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Changelog</title>
+	</head>
+	<body>
+		<h1>Changelog</h1>
+
+		{{#tags}}
+		<div>
+			<h2>{{name}}</h2>
+			<ul>
+				{{#commits}}
+				<li>{{{message}}}</li>
+				{{/commits}}
+			</ul>
+		</div>
+		{{/tags}}
+
+	</body>
+</html>
