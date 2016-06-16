@@ -16,7 +16,7 @@ plugins {
 	id 'java'
 	id 'scala'
 	id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.32"
-	id "temportalist.automata" version "0.0.1b47"
+	id "temportalist.automata" version "0.0.1.54"
 }
 // ~~~~~ End: Gradle plugin application
 
